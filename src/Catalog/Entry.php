@@ -30,7 +30,7 @@ final class Entry {
 	 * @param string                           $type                  page|fragment|internal.
 	 * @param string                           $group                 Catalog group.
 	 * @param array<string, mixed>             $applies_when          Applicability rule.
-	 * @param array<int, array<string, mixed>> $required_elements     {key, label, legal_ref, placeholders}.
+	 * @param array<int, array<string, mixed>> $required_elements     {key, label (English), labels (language => label), legal_ref, placeholders}.
 	 * @param string[]                         $placeholders_used     Placeholder keys.
 	 * @param string[]                         $legal_refs            Legal references.
 	 * @param int                              $review_cadence_months Review cadence.
@@ -61,9 +61,12 @@ final class Entry {
 	public static function from_array( array $data ): self {
 		$elements = array();
 		foreach ( (array) ( $data['required_elements'] ?? array() ) as $element ) {
+			// A label is a language => text map, or a single English string.
+			$labels     = is_array( $element['label'] ) ? array_map( 'strval', $element['label'] ) : array( 'en' => (string) $element['label'] );
 			$elements[] = array(
 				'key'          => (string) $element['key'],
-				'label'        => (string) $element['label'],
+				'label'        => $labels['en'] ?? (string) reset( $labels ),
+				'labels'       => $labels,
 				'legal_ref'    => (string) ( $element['legal_ref'] ?? '' ),
 				'placeholders' => array_values( (array) ( $element['placeholders'] ?? array() ) ),
 			);
@@ -91,14 +94,34 @@ final class Entry {
 	 * @param string $lang Language code.
 	 */
 	public function title( string $lang ): string {
-		if ( isset( $this->titles[ $lang ] ) ) {
-			return $this->titles[ $lang ];
+		return self::localized( $this->titles, $lang );
+	}
+
+	/**
+	 * Label of a required element in a language, with the same fallbacks as the title.
+	 *
+	 * @param array<string, mixed> $element Required element.
+	 * @param string               $lang    Language code.
+	 */
+	public static function element_label( array $element, string $lang ): string {
+		return self::localized( (array) ( $element['labels'] ?? array( 'en' => (string) $element['label'] ) ), $lang );
+	}
+
+	/**
+	 * Text in a language: exact code, then primary subtag, then English, then any.
+	 *
+	 * @param array<string, string> $texts Language => text.
+	 * @param string                $lang  Language code.
+	 */
+	private static function localized( array $texts, string $lang ): string {
+		if ( isset( $texts[ $lang ] ) ) {
+			return $texts[ $lang ];
 		}
 		$primary = Languages::primary( $lang );
-		if ( isset( $this->titles[ $primary ] ) ) {
-			return $this->titles[ $primary ];
+		if ( isset( $texts[ $primary ] ) ) {
+			return $texts[ $primary ];
 		}
-		return $this->titles['en'] ?? (string) reset( $this->titles );
+		return $texts['en'] ?? (string) reset( $texts );
 	}
 
 	/**

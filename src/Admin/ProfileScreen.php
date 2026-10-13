@@ -168,7 +168,12 @@ final class ProfileScreen extends Screen {
 		echo '<h2>' . esc_html__( 'Seller', 'hive-compliance' ) . '</h2>';
 		printf( '<p><label for="hive-seller-country">%1$s</label><br><input type="text" id="hive-seller-country" name="seller_country" value="%2$s" maxlength="2" class="small-text" pattern="[A-Za-z]{2}"> <span class="description">%3$s</span></p>', esc_html__( 'Seller country (ISO code, e.g. IT)', 'hive-compliance' ), esc_attr( (string) $values['seller_country'] ), esc_html( Markets::country_name( (string) $values['seller_country'] ) ) );
 		$this->source_note( $detected['seller_country'] ?? null, (string) $values['seller_country'] );
-		printf( '<p><label><input type="checkbox" name="is_micro_enterprise" value="1"%1$s> %2$s</label></p>', checked( ! empty( $values['is_micro_enterprise'] ), true, false ), esc_html__( 'Micro-enterprise (fewer than 10 employees and turnover or balance sheet of at most €2 million)', 'hive-compliance' ) );
+		printf(
+			'<p><label><input type="checkbox" name="is_micro_enterprise" value="1" aria-describedby="hive-micro-definition"%1$s> %2$s</label></p><p class="description" id="hive-micro-definition">%3$s</p>',
+			checked( ! empty( $values['is_micro_enterprise'] ), true, false ),
+			esc_html__( 'Micro-enterprise', 'hive-compliance' ),
+			esc_html__( 'Definition: fewer than 10 staff, and annual turnover or balance sheet total up to €2 million (Commission Recommendation 2003/361/EC). Check it before answering: the answer changes which documents apply, for example the accessibility statement.', 'hive-compliance' )
+		);
 	}
 
 	/**

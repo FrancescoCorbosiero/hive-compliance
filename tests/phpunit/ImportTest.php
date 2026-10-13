@@ -176,6 +176,62 @@ class ImportTest extends Hive_TestCase {
 		}
 	}
 
+	/**
+	 * Findings of one document in an analysed bundle, keyed by rule.
+	 */
+	private function findings_for( array $analysis, string $key ): array {
+		$findings = array();
+		foreach ( $this->report_for( $analysis, $key )->findings as $finding ) {
+			$findings[ $finding->rule ] = $finding;
+		}
+		return $findings;
+	}
+
+	public function test_rewritten_heading_text_with_the_anchor_kept_raises_no_heading_warning() {
+		$entry = $this->plugin()->catalog()->get( 'terms_of_sale' );
+		$this->plugin()->repository()->save( 'terms_of_sale', 'it', $this->plugin()->skeletons()->skeleton( $entry, 'it' ) );
+		$bundle = $this->export();
+
+		// The model rewrites every heading of the document in its own words, keeping the anchors.
+		$rewritten = preg_replace_callback(
+			'~(<!-- hive:begin id="terms_of_sale" lang="it".*?<!-- hive:end id="terms_of_sale" -->)~s',
+			static fn( $m ) => preg_replace( '/^## .+ \{#([a-z0-9_]+)\}$/m', '## Sezione riscritta ($1) {#$1}', $m[1] ),
+			$bundle
+		);
+		$this->assertNotSame( $bundle, $rewritten );
+		$findings = $this->findings_for( $this->importer()->analyze( $rewritten ), 'terms_of_sale|it' );
+		$this->assertArrayNotHasKey( 'missing_heading', $findings );
+
+		// The exact label without its anchor no longer counts.
+		$label     = $entry->required_elements[0]['labels']['it'];
+		$no_anchor = str_replace( '## ' . $label . ' {#seller_identity}', '## ' . $label, $bundle );
+		$findings  = $this->findings_for( $this->importer()->analyze( $no_anchor ), 'terms_of_sale|it' );
+		$this->assertSame( array( $label . ' {#seller_identity}' ), $findings['missing_heading']->details );
+	}
+
+	public function test_fragments_are_imported_without_a_heading_check() {
+		$this->plugin()->repository()->save( 'frag_checkout_terms_consent', 'it', '{{links.terms_of_sale}} {{links.withdrawal_policy}} {{links.privacy_policy}}' );
+		$bundle   = $this->export();
+		$text     = 'Ho letto le [condizioni di vendita]({{links.terms_of_sale}}), le [informazioni sul recesso]({{links.withdrawal_policy}}) e l\'[informativa privacy]({{links.privacy_policy}}).';
+		$imported = str_replace( "---\n{{links.terms_of_sale}} {{links.withdrawal_policy}} {{links.privacy_policy}}\n<!-- hive:end", "---\n" . $text . "\n<!-- hive:end", $bundle );
+		$this->assertNotSame( $bundle, $imported );
+
+		$analysis = $this->importer()->analyze( $imported );
+		$this->assertSame( BlockReport::CHANGED, $this->report_for( $analysis, 'frag_checkout_terms_consent|it' )->status() );
+		$this->assertArrayNotHasKey( 'missing_heading', $this->findings_for( $analysis, 'frag_checkout_terms_consent|it' ) );
+	}
+
+	public function test_bundles_exported_with_the_previous_header_still_import() {
+		$bundle = $this->export();
+		$old    = str_replace( BundleFormat::HEADER, str_replace( " Heading text may be rewritten in the document's language as long as its `{#key}` anchor is kept exactly.", '', BundleFormat::HEADER ), $bundle );
+		$this->assertNotSame( $bundle, $old );
+		$analysis = $this->importer()->analyze( $old );
+		$this->assertSame( array(), $analysis['errors'] );
+		foreach ( $analysis['reports'] as $report ) {
+			$this->assertSame( BlockReport::UNCHANGED, $report->status(), $report->key() );
+		}
+	}
+
 	public function test_base_hash_conflict_is_flagged_with_a_three_way_base() {
 		$old_hash = Markdown::hash( self::BASE );
 		$this->plugin()->repository()->save( 'terms_of_sale', 'it', self::BASE . "\n\nModifica fatta sul sito dopo l'export." );

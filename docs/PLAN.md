@@ -138,7 +138,7 @@ These rules are reported per document:
 | **error** | Delimiter pairs, ID match, unknown ID or language, duplicate (id, lang), front matter malformed, a placeholder dropped vs. current, unknown namespace, malformed `{{…}}`, HTML tags, `javascript:`, `on*=`, catalog lint errors (ODR link). |
 | **warning** | `base_hash` conflict (with three-way note: the base revision is found by hash, and the diffs shown are base→site and site→import), literal URLs, empty `changelog_note` on change, `TODO(data):` (listed), missing required-element headings, unknown key in a known namespace, non-allow-listed shortcode. |
 
-A heading counts for a required element if it carries the `{#key}` anchor (the skeletons add these) or its text equals the element's label.
+A heading counts for a required element only if it carries the `{#key}` anchor (the skeletons add these). Its text may be rewritten in the document's language, and rule 3 of the bundle header says so. Fragments have no heading check.
 
 ## Decisions confirmed with the product owner
 

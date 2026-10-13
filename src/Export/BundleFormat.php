@@ -36,7 +36,7 @@ final class BundleFormat {
 		. "Rules:\n"
 		. "1. Keep every `<!-- hive:begin … -->` / `<!-- hive:end … -->` delimiter exactly as is. Do not add, remove, rename or reorder them.\n"
 		. "2. Keep every `{{placeholder}}` token unchanged. Never replace a placeholder with a literal value. Do not invent new placeholders; if you need data that has no placeholder, write `TODO(data): <what is needed>`.\n"
-		. "3. Edit only the Markdown between the YAML front matter and the end delimiter, plus the `changelog_note` field.\n"
+		. "3. Edit only the Markdown between the YAML front matter and the end delimiter, plus the `changelog_note` field. Heading text may be rewritten in the document's language as long as its `{#key}` anchor is kept exactly.\n"
 		. "4. For every document you change, set `changelog_note` to one line describing what changed and why (cite the rule).\n"
 		. "5. Use the REQUIRED ELEMENTS checklist of each document; every element must be covered.\n"
 		. "6. No HTML, no scripts, no links except `{{links.*}}` placeholders and official authority URLs.\n"

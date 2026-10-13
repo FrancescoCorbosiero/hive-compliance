@@ -39,13 +39,21 @@ final class Generator {
 	/**
 	 * Skeleton Markdown of an entry.
 	 *
-	 * One "## label {#key}" heading per required element, followed by that element's
-	 * placeholders as a list. Placeholders used by the document but not tied to an element
-	 * come first.
+	 * Pages and internal documents: one "## label {#key}" heading per required element, in the
+	 * document's language, followed by that element's placeholders as a list. Placeholders used
+	 * by the document but not tied to an element come first.
 	 *
-	 * @param Entry $entry Catalog entry.
+	 * Fragments are inline texts (labels, notices), so they get no headings: only their
+	 * placeholders, on one line. A fragment without placeholders has an empty skeleton.
+	 *
+	 * @param Entry  $entry Catalog entry.
+	 * @param string $lang  Document language.
 	 */
-	public function skeleton( Entry $entry ): string {
+	public function skeleton( Entry $entry, string $lang = 'en' ): string {
+		if ( $entry->is_fragment() ) {
+			return implode( ' ', array_map( static fn( $token ) => '{{' . $token . '}}', $entry->all_placeholders() ) );
+		}
+
 		$mapped = array();
 		foreach ( $entry->required_elements as $element ) {
 			$mapped = array_merge( $mapped, $element['placeholders'] );
@@ -58,7 +66,7 @@ final class Generator {
 			$blocks[] = $list( $unmapped );
 		}
 		foreach ( $entry->required_elements as $element ) {
-			$block = '## ' . $element['label'] . ' {#' . $element['key'] . '}';
+			$block = '## ' . Entry::element_label( $element, $lang ) . ' {#' . $element['key'] . '}';
 			if ( $element['placeholders'] ) {
 				$block .= "\n\n" . $list( $element['placeholders'] );
 			}
@@ -72,17 +80,19 @@ final class Generator {
 	 *
 	 * @param Entry  $entry Catalog entry.
 	 * @param string $lang  Language.
-	 * @return Document|WP_Error|null Null when the document already has content.
+	 * @return Document|WP_Error|null Null when the document already has content, or when there is
+	 *                                nothing to generate (a fragment without placeholders).
 	 */
 	public function generate( Entry $entry, string $lang ) {
+		$skeleton = $this->skeleton( $entry, $lang );
 		$existing = $this->plugin->repository()->find( $entry->id, $lang );
-		if ( null !== $existing && ! $existing->is_empty() ) {
+		if ( '' === $skeleton || ( null !== $existing && ! $existing->is_empty() ) ) {
 			return null;
 		}
 		return $this->plugin->repository()->save(
 			$entry->id,
 			$lang,
-			$this->skeleton( $entry ),
+			$skeleton,
 			array(
 				'title'  => $entry->title( $lang ),
 				/* translators: %s: catalog version. */
@@ -95,6 +105,7 @@ final class Generator {
 
 	/**
 	 * Skeletons for every applicable entry that is still empty, in the given languages.
+	 * Fragments without placeholders have nothing to generate and are not counted.
 	 *
 	 * @param string[] $languages Language codes.
 	 * @return array{created: int, skipped: int}
@@ -104,6 +115,9 @@ final class Generator {
 		$skipped = 0;
 		foreach ( $this->plugin->applicability()->applicable() as $entry ) {
 			foreach ( $languages as $lang ) {
+				if ( '' === $this->skeleton( $entry, $lang ) ) {
+					continue;
+				}
 				$result = $this->generate( $entry, $lang );
 				if ( $result instanceof Document ) {
 					++$created;

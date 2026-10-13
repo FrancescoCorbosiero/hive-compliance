@@ -24,6 +24,13 @@ final class StoreFacts {
 	private ?array $facts = null;
 
 	/**
+	 * Shipping coverage cached per request.
+	 *
+	 * @var array{codes: string[], names: string[], rest_of_world: bool, zones: int}|null
+	 */
+	private ?array $coverage = null;
+
+	/**
 	 * Labels of the store.* keys.
 	 *
 	 * @return array<string, string>
@@ -99,7 +106,8 @@ final class StoreFacts {
 	 * Forgets the cached facts.
 	 */
 	public function reset(): void {
-		$this->facts = null;
+		$this->facts    = null;
+		$this->coverage = null;
 	}
 
 	/**
@@ -137,8 +145,8 @@ final class StoreFacts {
 			'store_address'        => $this->store_address(),
 			'store_country'        => $base ? Markets::country_name( $base ) : null,
 			'currency'             => function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : null,
-			'selling_countries'    => $this->country_names( $countries ? array_keys( $countries->get_allowed_countries() ) : array() ),
-			'shipping_countries'   => $this->country_names( $countries ? array_keys( $countries->get_shipping_countries() ) : array() ),
+			'selling_countries'    => $this->selling_countries(),
+			'shipping_countries'   => $this->shipping_countries(),
 			'shipping_zones'       => $this->shipping_zones(),
 			'payment_gateways'     => $this->payment_gateways(),
 			'guest_checkout'       => 'yes' === get_option( 'woocommerce_enable_guest_checkout' ),
@@ -165,17 +173,109 @@ final class StoreFacts {
 	}
 
 	/**
-	 * Country names for codes; a long list is summarised.
+	 * Country names for codes.
 	 *
 	 * @param string[] $codes Country codes.
 	 * @return string[]
 	 */
 	private function country_names( array $codes ): array {
-		if ( count( $codes ) > 60 ) {
-			/* translators: %d: number of countries. */
-			return array( sprintf( __( '%d countries', 'hive-compliance' ), count( $codes ) ) );
+		return array_values( array_map( array( Markets::class, 'country_name' ), array_map( 'strval', $codes ) ) );
+	}
+
+	/**
+	 * Selling locations: "all countries" in words, or the country names.
+	 *
+	 * @return string|string[]
+	 */
+	private function selling_countries() {
+		$mode = (string) get_option( 'woocommerce_allowed_countries', 'all' );
+		if ( 'specific' === $mode ) {
+			return $this->country_names( (array) get_option( 'woocommerce_specific_allowed_countries', array() ) );
 		}
-		return array_map( array( Markets::class, 'country_name' ), $codes );
+		$except = 'all_except' === $mode ? $this->country_names( (array) get_option( 'woocommerce_all_except_countries', array() ) ) : array();
+		/* translators: %s: list of countries. */
+		return $except ? sprintf( __( 'all countries except %s', 'hive-compliance' ), implode( ', ', $except ) ) : __( 'all countries', 'hive-compliance' );
+	}
+
+	/**
+	 * Shipping countries, derived from the shipping zones that have an enabled method.
+	 * The "rest of the world" zone adds "all other countries" (or "all countries" alone).
+	 *
+	 * @return string[]|null Null when shipping is disabled.
+	 */
+	private function shipping_countries(): ?array {
+		if ( 'disabled' === get_option( 'woocommerce_ship_to_countries' ) ) {
+			return null;
+		}
+		$coverage = $this->shipping_coverage();
+		$names    = $coverage['names'];
+		if ( $coverage['rest_of_world'] ) {
+			$names[] = $names ? __( 'all other countries', 'hive-compliance' ) : __( 'all countries', 'hive-compliance' );
+		}
+		return $names;
+	}
+
+	/**
+	 * Where the shop actually ships: countries of the shipping zones with an enabled method
+	 * (states count for their country; continents for all their countries), and whether the
+	 * "locations not covered by your other zones" zone ships too.
+	 *
+	 * @return array{codes: string[], names: string[], rest_of_world: bool, zones: int}
+	 */
+	public function shipping_coverage(): array {
+		if ( null !== $this->coverage ) {
+			return $this->coverage;
+		}
+		$coverage = array(
+			'codes'         => array(),
+			'names'         => array(),
+			'rest_of_world' => false,
+			'zones'         => 0,
+		);
+		if ( ! class_exists( 'WC_Shipping_Zones' ) || ! function_exists( 'WC' ) || ! WC()->countries ) {
+			$this->coverage = $coverage;
+			return $coverage;
+		}
+
+		$continents = WC()->countries->get_continents();
+		foreach ( \WC_Shipping_Zones::get_zones() as $zone ) {
+			if ( ! self::ships( (array) ( $zone['shipping_methods'] ?? array() ) ) ) {
+				continue;
+			}
+			++$coverage['zones'];
+			foreach ( (array) ( $zone['zone_locations'] ?? array() ) as $location ) {
+				$type = (string) ( is_object( $location ) ? $location->type : ( $location['type'] ?? '' ) );
+				$code = (string) ( is_object( $location ) ? $location->code : ( $location['code'] ?? '' ) );
+				if ( 'continent' === $type && isset( $continents[ $code ] ) ) {
+					$coverage['codes']   = array_merge( $coverage['codes'], (array) $continents[ $code ]['countries'] );
+					$coverage['names'][] = html_entity_decode( (string) $continents[ $code ]['name'], ENT_QUOTES, 'UTF-8' );
+				} elseif ( 'country' === $type || 'state' === $type ) {
+					$country             = (string) strtok( $code, ':' );
+					$coverage['codes'][] = $country;
+					$coverage['names'][] = Markets::country_name( $country );
+				}
+			}
+		}
+		$coverage['rest_of_world'] = self::ships( ( new \WC_Shipping_Zone( 0 ) )->get_shipping_methods( true ) );
+		$coverage['codes']         = array_values( array_unique( $coverage['codes'] ) );
+		$coverage['names']         = array_values( array_unique( $coverage['names'] ) );
+
+		$this->coverage = $coverage;
+		return $coverage;
+	}
+
+	/**
+	 * Whether a list of shipping methods has an enabled one.
+	 *
+	 * @param array<int, mixed> $methods Shipping method objects.
+	 */
+	private static function ships( array $methods ): bool {
+		foreach ( $methods as $method ) {
+			if ( is_object( $method ) && 'yes' === $method->enabled ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -197,7 +297,8 @@ final class StoreFacts {
 	}
 
 	/**
-	 * Titles of the enabled payment gateways.
+	 * Titles of the enabled payment gateways, once each. Several plugins register the same
+	 * methods (WooPayments and PayPal both offer cards, Apple Pay and Google Pay).
 	 *
 	 * @return string[]
 	 */
@@ -207,10 +308,15 @@ final class StoreFacts {
 		}
 		$out = array();
 		foreach ( WC()->payment_gateways()->payment_gateways() as $gateway ) {
-			if ( 'yes' === $gateway->enabled ) {
-				$out[] = wp_strip_all_tags( html_entity_decode( (string) $gateway->get_title(), ENT_QUOTES, 'UTF-8' ) );
+			if ( 'yes' !== $gateway->enabled ) {
+				continue;
+			}
+			$title = trim( (string) preg_replace( '/\s+/u', ' ', wp_strip_all_tags( html_entity_decode( (string) $gateway->get_title(), ENT_QUOTES, 'UTF-8' ) ) ) );
+			$key   = mb_strtolower( $title, 'UTF-8' );
+			if ( '' !== $title && ! isset( $out[ $key ] ) ) {
+				$out[ $key ] = $title;
 			}
 		}
-		return $out;
+		return array_values( $out );
 	}
 }

@@ -8,6 +8,7 @@
 namespace Hive\Compliance\Admin;
 
 use Hive\Compliance\I18n\Languages;
+use Hive\Compliance\Settings;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -40,6 +41,13 @@ final class SettingsScreen extends Screen {
 	}
 
 	/**
+	 * Repeater script for the custom integrations.
+	 */
+	public function enqueue(): void {
+		wp_enqueue_script( 'hive-compliance-repeater', HIVE_COMPLIANCE_URL . 'assets/js/repeater.js', array(), HIVE_COMPLIANCE_VERSION, true );
+	}
+
+	/**
 	 * Handles the form submission (admin-post.php).
 	 */
 	public function handle_save(): void {
@@ -52,6 +60,7 @@ final class SettingsScreen extends Screen {
 				'enabled_languages'        => array_map( 'sanitize_text_field', (array) wp_unslash( $_POST['enabled_languages'] ?? array() ) ),
 				'remove_data_on_uninstall' => ! empty( $_POST['remove_data_on_uninstall'] ),
 				'max_import_kb'            => absint( $_POST['max_import_kb'] ?? 0 ),
+				'custom_integrations'      => isset( $_POST['custom_integrations'] ) && is_array( $_POST['custom_integrations'] ) ? map_deep( wp_unslash( $_POST['custom_integrations'] ), 'sanitize_text_field' ) : array(),
 			)
 		);
 		Notices::add( 'success', __( 'Settings saved.', 'hive-compliance' ) );
@@ -107,8 +116,57 @@ final class SettingsScreen extends Screen {
 			esc_html__( 'Off by default: data is kept. Bound pages are ordinary pages and are never deleted.', 'hive-compliance' )
 		);
 
+		echo '<tr><th scope="row">' . esc_html__( 'Custom integrations', 'hive-compliance' ) . '</th><td>';
+		$this->integrations( (array) $settings['custom_integrations'] );
+		echo '</td></tr>';
+
 		echo '</tbody></table>';
 		submit_button();
 		echo '</form></div>';
+	}
+
+	/**
+	 * Repeater of custom integrations (always one empty row, so it works without JavaScript).
+	 *
+	 * @param array<int, array<string, string>> $rows Stored rows.
+	 */
+	private function integrations( array $rows ): void {
+		$labels = array(
+			'name'      => __( 'Name', 'hive-compliance' ),
+			'role'      => __( 'Role', 'hive-compliance' ),
+			'data'      => __( 'Data sent', 'hive-compliance' ),
+			'recipient' => __( 'Recipient', 'hive-compliance' ),
+			'transfer'  => __( 'Transfer outside the EU', 'hive-compliance' ),
+		);
+		echo '<p class="description">' . esc_html__( 'In-house plugins and services that cannot be detected. They are listed in the export context with the detected integrations.', 'hive-compliance' ) . '</p>';
+		echo '<table class="widefat striped hive-repeater" data-hive-repeater="custom_integrations"><thead><tr>';
+		foreach ( $labels as $label ) {
+			echo '<th>' . esc_html( $label ) . '</th>';
+		}
+		echo '</tr></thead><tbody>';
+		$rows[] = array_fill_keys( Settings::INTEGRATION_FIELDS, '' );
+		foreach ( array_values( $rows ) as $index => $row ) {
+			echo '<tr>';
+			foreach ( array( 'name', 'role', 'data', 'recipient' ) as $field ) {
+				printf(
+					'<td><input type="text" name="custom_integrations[%1$d][%2$s]" value="%3$s" class="widefat" aria-label="%4$s"></td>',
+					(int) $index,
+					esc_attr( $field ),
+					esc_attr( (string) ( $row[ $field ] ?? '' ) ),
+					esc_attr( $labels[ $field ] )
+				);
+			}
+			printf(
+				'<td><select name="custom_integrations[%1$d][transfer]" aria-label="%2$s"><option value="no"%3$s>%4$s</option><option value="yes"%5$s>%6$s</option></select></td></tr>',
+				(int) $index,
+				esc_attr( $labels['transfer'] ),
+				selected( 'yes' !== ( $row['transfer'] ?? '' ), true, false ),
+				esc_html__( 'No', 'hive-compliance' ),
+				selected( 'yes' === ( $row['transfer'] ?? '' ), true, false ),
+				esc_html__( 'Yes', 'hive-compliance' )
+			);
+		}//end foreach
+		echo '</tbody></table>';
+		printf( '<p><button type="button" class="button" data-hive-add-row="custom_integrations">%s</button></p>', esc_html__( 'Add row', 'hive-compliance' ) );
 	}
 }
