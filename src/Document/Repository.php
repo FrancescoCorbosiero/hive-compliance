@@ -201,6 +201,69 @@ final class Repository {
 	}
 
 	/**
+	 * Restores a document from a JSON backup record.
+	 *
+	 * The content is saved as a new revision with source "import". Version numbers never go
+	 * backwards on this site: a restored text gets max(next version, backup version). For a
+	 * document that did not exist here, the backup's changelog history is kept (revision links
+	 * point to the other site, so they are cleared).
+	 *
+	 * @param array<string, mixed> $record Backup record (doc_id, lang, markdown, version, status, dates, changelog, checklist).
+	 * @param string               $title  Post title.
+	 * @return Document|WP_Error
+	 */
+	public function restore( array $record, string $title ) {
+		$doc_id  = sanitize_key( (string) ( $record['doc_id'] ?? '' ) );
+		$lang    = \Hive\Compliance\I18n\Languages::normalize_code( (string) ( $record['lang'] ?? '' ) );
+		$version = absint( $record['version'] ?? 0 );
+		$current = $this->find( $doc_id, $lang );
+
+		$document = $this->save(
+			$doc_id,
+			$lang,
+			(string) ( $record['markdown'] ?? '' ),
+			array(
+				'title'          => $title,
+				/* translators: %d: version number in the backup. */
+				'note'           => sprintf( __( 'Restored from a JSON backup (backup version %d).', 'hive-compliance' ), $version ),
+				'source'         => Document::SOURCE_IMPORT,
+				'status'         => PostType::sanitize_status( $record['status'] ?? Document::STATUS_DRAFT ),
+				'last_reviewed'  => PostType::sanitize_date( $record['last_reviewed'] ?? '' ),
+				'effective_date' => PostType::sanitize_date( $record['effective_date'] ?? '' ),
+				'checklist'      => PostType::sanitize_checklist( $record['checklist'] ?? array() ),
+			)
+		);
+		if ( is_wp_error( $document ) || $document->is_empty() || $version <= $document->version ) {
+			return $document;
+		}
+
+		// Keep the backup's numbering (the restored text becomes $version).
+		$changelog = $document->changelog;
+		$latest    = array_pop( $changelog );
+		if ( null === $current ) {
+			$history   = array_filter(
+				PostType::sanitize_changelog( $record['changelog'] ?? array() ),
+				static fn( array $entry ) => $entry['version'] < $version
+			);
+			$changelog = array_map(
+				static function ( array $entry ): array {
+					$entry['revision_id'] = 0;
+					return $entry;
+				},
+				array_values( $history )
+			);
+		}
+		if ( is_array( $latest ) ) {
+			$latest['version'] = $version;
+			$changelog[]       = $latest;
+		}
+		update_post_meta( $document->post_id, PostType::META_VERSION, $version );
+		update_post_meta( $document->post_id, PostType::META_CHANGELOG, wp_slash( $changelog ) );
+		$this->flush();
+		return $this->find_by_post( $document->post_id ) ?? $document;
+	}
+
+	/**
 	 * Updates status, dates or checklist without touching the content or version.
 	 *
 	 * @param string               $doc_id Catalog ID.

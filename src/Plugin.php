@@ -12,6 +12,7 @@ use Hive\Compliance\Admin\BusinessScreen;
 use Hive\Compliance\Admin\DashboardScreen;
 use Hive\Compliance\Admin\EditorScreen;
 use Hive\Compliance\Admin\ExportScreen;
+use Hive\Compliance\Admin\ImportScreen;
 use Hive\Compliance\Admin\Menu;
 use Hive\Compliance\Admin\Notices;
 use Hive\Compliance\Admin\PrintScreen;
@@ -122,6 +123,7 @@ final class Plugin {
 			new BusinessScreen( $this ),
 			new ProfileScreen( $this ),
 			new ExportScreen( $this ),
+			new ImportScreen( $this ),
 			new SettingsScreen( $this ),
 			new PrintScreen( $this ),
 		);
