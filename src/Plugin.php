@@ -7,6 +7,7 @@
 
 namespace Hive\Compliance;
 
+use Hive\Compliance\Business\BusinessData;
 use Hive\Compliance\Catalog\Applicability;
 use Hive\Compliance\Catalog\Catalog;
 use Hive\Compliance\Catalog\RuleEngine;
@@ -14,7 +15,15 @@ use Hive\Compliance\Document\PostType;
 use Hive\Compliance\Document\Repository;
 use Hive\Compliance\I18n\Languages;
 use Hive\Compliance\Integrations\Detector;
+use Hive\Compliance\Placeholders\BusinessProvider;
+use Hive\Compliance\Placeholders\CustomProvider;
+use Hive\Compliance\Placeholders\LinksProvider;
+use Hive\Compliance\Placeholders\Registry;
+use Hive\Compliance\Placeholders\Resolver;
+use Hive\Compliance\Placeholders\StoreProvider;
 use Hive\Compliance\Profile\Profile;
+use Hive\Compliance\Profile\StoreFacts;
+use Hive\Compliance\Render\PageBindings;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -147,6 +156,59 @@ final class Plugin {
 	 */
 	public function applicability(): Applicability {
 		return $this->service( Applicability::class, fn() => new Applicability( $this->catalog(), $this->rules(), $this->profile() ) );
+	}
+
+	/**
+	 * Business data.
+	 */
+	public function business(): BusinessData {
+		return $this->service( BusinessData::class, static fn() => new BusinessData() );
+	}
+
+	/**
+	 * Auto-detected store facts.
+	 */
+	public function store_facts(): StoreFacts {
+		return $this->service( StoreFacts::class, static fn() => new StoreFacts() );
+	}
+
+	/**
+	 * Page bindings.
+	 */
+	public function bindings(): PageBindings {
+		return $this->service( PageBindings::class, static fn() => new PageBindings() );
+	}
+
+	/**
+	 * Placeholder namespaces.
+	 */
+	public function placeholders(): Registry {
+		return $this->service(
+			Registry::class,
+			fn() => new Registry(
+				array(
+					'business' => new BusinessProvider( $this->business() ),
+					'store'    => new StoreProvider( $this->store_facts() ),
+					'links'    => new LinksProvider( $this->bindings(), $this->catalog(), $this->languages() ),
+					'custom'   => new CustomProvider( $this->business() ),
+				)
+			)
+		);
+	}
+
+	/**
+	 * Placeholder resolver.
+	 */
+	public function resolver(): Resolver {
+		return $this->service( Resolver::class, fn() => new Resolver( $this->placeholders() ) );
+	}
+
+	/**
+	 * Seller country from the profile (used to validate business data).
+	 */
+	public function seller_country(): string {
+		$business = $this->business()->value( 'country' );
+		return '' !== $business ? $business : (string) ( $this->profile()->get()['seller_country'] ?? '' );
 	}
 
 	/**
