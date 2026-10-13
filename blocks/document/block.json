@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "hive/document",
+	"version": "0.1.0",
+	"title": "Compliance document",
+	"category": "widgets",
+	"icon": "shield",
+	"description": "Shows a legal document managed in Hive Compliance. Keep it as the only content of the page.",
+	"keywords": [ "legal", "privacy", "terms", "compliance", "policy" ],
+	"textdomain": "hive-compliance",
+	"attributes": {
+		"docId": { "type": "string", "default": "" },
+		"lang": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"multiple": false
+	},
+	"editorScript": "file:./index.js"
+}

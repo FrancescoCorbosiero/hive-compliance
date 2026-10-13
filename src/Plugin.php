@@ -7,6 +7,8 @@
 
 namespace Hive\Compliance;
 
+use Hive\Compliance\Admin\BindingActions;
+use Hive\Compliance\Admin\Notices;
 use Hive\Compliance\Business\BusinessData;
 use Hive\Compliance\Catalog\Applicability;
 use Hive\Compliance\Catalog\Catalog;
@@ -23,7 +25,12 @@ use Hive\Compliance\Placeholders\Resolver;
 use Hive\Compliance\Placeholders\StoreProvider;
 use Hive\Compliance\Profile\Profile;
 use Hive\Compliance\Profile\StoreFacts;
+use Hive\Compliance\Render\Block;
 use Hive\Compliance\Render\PageBindings;
+use Hive\Compliance\Render\PageManager;
+use Hive\Compliance\Render\Renderer;
+use Hive\Compliance\Render\ShellGuard;
+use Hive\Compliance\Render\Shortcodes;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -82,14 +89,22 @@ final class Plugin {
 		add_action( 'init', array( $this, 'on_init' ), 5 );
 		add_action( 'admin_init', array( Installer::class, 'maybe_upgrade' ), 5 );
 		$this->repository()->register();
+		$this->shell_guard()->register();
+
+		if ( is_admin() ) {
+			( new Notices() )->register();
+			( new BindingActions( $this->page_manager() ) )->register();
+		}
 	}
 
 	/**
-	 * Init: translations, post type.
+	 * Init: translations, post type, shortcodes and block.
 	 */
 	public function on_init(): void {
 		load_plugin_textdomain( 'hive-compliance', false, dirname( plugin_basename( HIVE_COMPLIANCE_FILE ) ) . '/languages' );
 		$this->post_type()->register();
+		( new Shortcodes( $this->renderer() ) )->register();
+		( new Block( $this->renderer(), $this->catalog(), $this->languages() ) )->register();
 	}
 
 	/**
@@ -201,6 +216,27 @@ final class Plugin {
 	 */
 	public function resolver(): Resolver {
 		return $this->service( Resolver::class, fn() => new Resolver( $this->placeholders() ) );
+	}
+
+	/**
+	 * Render pipeline.
+	 */
+	public function renderer(): Renderer {
+		return $this->service( Renderer::class, fn() => new Renderer( $this->catalog(), $this->repository(), $this->resolver(), $this->languages() ) );
+	}
+
+	/**
+	 * Bound-page guard.
+	 */
+	public function shell_guard(): ShellGuard {
+		return $this->service( ShellGuard::class, fn() => new ShellGuard( $this->bindings() ) );
+	}
+
+	/**
+	 * Page creation and assignment.
+	 */
+	public function page_manager(): PageManager {
+		return $this->service( PageManager::class, fn() => new PageManager( $this->bindings(), $this->catalog(), $this->languages() ) );
 	}
 
 	/**
