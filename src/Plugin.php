@@ -11,8 +11,10 @@ use Hive\Compliance\Admin\BindingActions;
 use Hive\Compliance\Admin\BusinessScreen;
 use Hive\Compliance\Admin\DashboardScreen;
 use Hive\Compliance\Admin\EditorScreen;
+use Hive\Compliance\Admin\ExportScreen;
 use Hive\Compliance\Admin\Menu;
 use Hive\Compliance\Admin\Notices;
+use Hive\Compliance\Admin\PrintScreen;
 use Hive\Compliance\Admin\ProfileScreen;
 use Hive\Compliance\Admin\SettingsScreen;
 use Hive\Compliance\Business\BusinessData;
@@ -119,7 +121,9 @@ final class Plugin {
 			new EditorScreen( $this ),
 			new BusinessScreen( $this ),
 			new ProfileScreen( $this ),
+			new ExportScreen( $this ),
 			new SettingsScreen( $this ),
+			new PrintScreen( $this ),
 		);
 	}
 
