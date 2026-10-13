@@ -8,7 +8,13 @@
 namespace Hive\Compliance;
 
 use Hive\Compliance\Admin\BindingActions;
+use Hive\Compliance\Admin\BusinessScreen;
+use Hive\Compliance\Admin\DashboardScreen;
+use Hive\Compliance\Admin\EditorScreen;
+use Hive\Compliance\Admin\Menu;
 use Hive\Compliance\Admin\Notices;
+use Hive\Compliance\Admin\ProfileScreen;
+use Hive\Compliance\Admin\SettingsScreen;
 use Hive\Compliance\Business\BusinessData;
 use Hive\Compliance\Catalog\Applicability;
 use Hive\Compliance\Catalog\Catalog;
@@ -17,6 +23,7 @@ use Hive\Compliance\Document\PostType;
 use Hive\Compliance\Document\Repository;
 use Hive\Compliance\I18n\Languages;
 use Hive\Compliance\Integrations\Detector;
+use Hive\Compliance\Lint\ContentLinter;
 use Hive\Compliance\Placeholders\BusinessProvider;
 use Hive\Compliance\Placeholders\CustomProvider;
 use Hive\Compliance\Placeholders\LinksProvider;
@@ -31,6 +38,7 @@ use Hive\Compliance\Render\PageManager;
 use Hive\Compliance\Render\Renderer;
 use Hive\Compliance\Render\ShellGuard;
 use Hive\Compliance\Render\Shortcodes;
+use Hive\Compliance\Rest\Controller;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -91,10 +99,28 @@ final class Plugin {
 		$this->repository()->register();
 		$this->shell_guard()->register();
 
+		add_action( 'rest_api_init', array( new Controller( $this ), 'register_routes' ) );
+
 		if ( is_admin() ) {
 			( new Notices() )->register();
 			( new BindingActions( $this->page_manager() ) )->register();
+			( new Menu( $this->screens() ) )->register();
 		}
+	}
+
+	/**
+	 * Admin screens in menu order.
+	 *
+	 * @return Admin\Screen[]
+	 */
+	public function screens(): array {
+		return array(
+			new DashboardScreen( $this ),
+			new EditorScreen( $this ),
+			new BusinessScreen( $this ),
+			new ProfileScreen( $this ),
+			new SettingsScreen( $this ),
+		);
 	}
 
 	/**
@@ -223,6 +249,13 @@ final class Plugin {
 	 */
 	public function renderer(): Renderer {
 		return $this->service( Renderer::class, fn() => new Renderer( $this->catalog(), $this->repository(), $this->resolver(), $this->languages() ) );
+	}
+
+	/**
+	 * Content checks shared by the editor and the importer.
+	 */
+	public function linter(): ContentLinter {
+		return $this->service( ContentLinter::class, fn() => new ContentLinter( $this->placeholders() ) );
 	}
 
 	/**

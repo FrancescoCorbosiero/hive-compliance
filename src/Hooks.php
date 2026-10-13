@@ -62,6 +62,12 @@ final class Hooks {
 	const DOCUMENT_SAVED = 'hive_compliance_document_saved';
 
 	/**
+	 * Action: printed above the document editor form (e.g. extra buttons).
+	 * Args: Catalog\Entry $entry, Document $document.
+	 */
+	const EDITOR_BEFORE_FORM = 'hive_compliance_editor_before_form';
+
+	/**
 	 * Filter: absolute path of the catalog JSON file.
 	 * Args: string $path.
 	 */

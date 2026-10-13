@@ -1,0 +1,340 @@
+/* Hive Compliance admin screens. WordPress admin look; small additions only. */
+
+.hive-wrap .hive-subtitle {
+	color: #50575e;
+	margin: 0.25em 0 0;
+}
+
+.hive-meta {
+	color: #646970;
+	font-size: 12px;
+}
+
+.hive-badges .hive-badge,
+.hive-badge {
+	display: inline-block;
+	padding: 1px 8px;
+	border-radius: 10px;
+	font-size: 11px;
+	line-height: 18px;
+	background: #f0f0f1;
+	color: #1d2327;
+	white-space: nowrap;
+}
+
+.hive-badge--published,
+.hive-badge--ok {
+	background: #d1f0d8;
+	color: #0a5f22;
+}
+
+.hive-badge--draft,
+.hive-badge--warning {
+	background: #fcf0c3;
+	color: #5c4400;
+}
+
+.hive-badge--empty,
+.hive-badge--muted {
+	background: #f0f0f1;
+	color: #50575e;
+}
+
+.hive-badge--error,
+.hive-badge--conflict {
+	background: #fbdcdc;
+	color: #8a1f11;
+}
+
+.hive-badge--info {
+	background: #dbeafe;
+	color: #1e3a8a;
+}
+
+/* Cards */
+.hive-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+	gap: 12px;
+	margin: 16px 0;
+}
+
+.hive-card {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-left-width: 4px;
+	padding: 8px 12px;
+}
+
+.hive-card h2,
+.hive-card h3 {
+	font-size: 14px;
+	margin: 4px 0 8px;
+}
+
+.hive-card ul {
+	margin: 0;
+}
+
+.hive-card--ok {
+	border-left-color: #00a32a;
+}
+
+.hive-card--warning {
+	border-left-color: #dba617;
+}
+
+.hive-card--error {
+	border-left-color: #d63638;
+}
+
+.hive-count {
+	font-weight: 400;
+	color: #646970;
+}
+
+/* Table */
+.hive-lang {
+	display: inline-block;
+	min-width: 22px;
+	padding: 0 4px;
+	border-radius: 3px;
+	text-align: center;
+	text-decoration: none;
+	font-size: 11px;
+	border: 1px solid #c3c4c7;
+}
+
+.hive-lang--published {
+	background: #d1f0d8;
+}
+
+.hive-lang--draft {
+	background: #fcf0c3;
+}
+
+.hive-lang--empty {
+	color: #8c8f94;
+}
+
+.hive-lang.is-current {
+	outline: 2px solid #2271b1;
+}
+
+.hive-progress {
+	display: inline-block;
+	width: 60px;
+	height: 6px;
+	background: #f0f0f1;
+	border-radius: 3px;
+	vertical-align: middle;
+	overflow: hidden;
+}
+
+.hive-progress span {
+	display: block;
+	height: 100%;
+	background: #2271b1;
+}
+
+/* Editor */
+.hive-editor {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 320px;
+	gap: 20px;
+	margin-top: 12px;
+}
+
+@media (max-width: 1100px) {
+	.hive-editor {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.hive-editor .CodeMirror {
+	height: 480px;
+	border: 1px solid #c3c4c7;
+}
+
+.hive-panels {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	gap: 16px;
+	margin-top: 16px;
+}
+
+@media (max-width: 1400px) {
+	.hive-panels {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.hive-panel h2 {
+	font-size: 14px;
+}
+
+.hive-preview {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	padding: 4px 16px;
+	max-height: 600px;
+	overflow: auto;
+}
+
+.hive-findings,
+.hive-checklist,
+.hive-changelog {
+	margin: 0;
+}
+
+.hive-finding {
+	padding: 6px 8px;
+	margin: 0 0 6px;
+	border-left: 4px solid #c3c4c7;
+	background: #fff;
+	list-style: none;
+}
+
+.hive-finding--error {
+	border-left-color: #d63638;
+}
+
+.hive-finding--warning,
+.hive-finding--conflict {
+	border-left-color: #dba617;
+}
+
+.hive-finding ul {
+	margin: 4px 0 0 16px;
+	list-style: disc;
+}
+
+.hive-ok {
+	color: #0a5f22;
+}
+
+.hive-box .inside {
+	margin-top: 8px;
+}
+
+.hive-box h2.hndle {
+	font-size: 14px;
+	padding: 8px 12px;
+	margin: 0;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.hive-checklist li {
+	margin-bottom: 8px;
+}
+
+.hive-placeholders details {
+	margin-bottom: 6px;
+}
+
+.hive-placeholders ul {
+	margin: 4px 0 0 4px;
+}
+
+.hive-placeholders .button-link {
+	font-family: Menlo, Consolas, monospace;
+	font-size: 12px;
+}
+
+.hive-value {
+	color: #0a5f22;
+	font-size: 12px;
+}
+
+.hive-assign {
+	margin-top: 8px;
+}
+
+.hive-assign select {
+	max-width: 100%;
+}
+
+/* Business data and profile */
+.hive-required {
+	color: #d63638;
+}
+
+.hive-token {
+	font-size: 11px;
+	color: #646970;
+}
+
+.hive-invalid {
+	border-color: #d63638 !important;
+}
+
+.hive-field-message {
+	margin: 4px 0 0;
+	font-size: 12px;
+}
+
+.hive-field-message--error {
+	color: #b32d2e;
+}
+
+.hive-field-message--warning {
+	color: #8a6100;
+}
+
+.hive-steps {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	margin: 12px 0 16px;
+}
+
+.hive-steps a {
+	padding: 6px 12px;
+	border: 1px solid #c3c4c7;
+	background: #fff;
+	text-decoration: none;
+	border-radius: 3px;
+}
+
+.hive-steps a.is-current {
+	background: #2271b1;
+	border-color: #2271b1;
+	color: #fff;
+}
+
+.hive-checkgrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+	gap: 4px 12px;
+}
+
+.hive-checkgrid--small {
+	grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+}
+
+.hive-check {
+	display: block;
+	margin: 4px 0;
+}
+
+.hive-source {
+	color: #2271b1;
+	font-size: 12px;
+}
+
+.hive-facts td {
+	vertical-align: top;
+}
+
+/* Import review */
+.hive-review-item {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	margin: 0 0 16px;
+	padding: 8px 16px;
+}
+
+.hive-review-item table.diff {
+	table-layout: fixed;
+	width: 100%;
+}
