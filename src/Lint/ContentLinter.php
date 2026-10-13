@@ -149,13 +149,16 @@ final class ContentLinter {
 
 	/**
 	 * Required elements without a heading (warning). A heading counts when it carries the
-	 * element's {#key} anchor or its text equals the element's label.
+	 * element's {#key} anchor or its text equals the element's label. Not applied to fragments.
 	 *
 	 * @param string $markdown Markdown.
 	 * @param Entry  $entry    Catalog entry.
 	 * @return Finding[]
 	 */
 	private function headings( string $markdown, Entry $entry ): array {
+		if ( $entry->is_fragment() ) {
+			return array();
+		}
 		$missing = array();
 		foreach ( $entry->required_elements as $element ) {
 			if ( ! self::has_heading( $markdown, $element['key'], $element['label'] ) ) {

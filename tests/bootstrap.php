@@ -36,6 +36,18 @@ tests_add_filter(
 	}
 );
 
+// WooCommerce tables and roles, installed the way WooCommerce's own test bootstrap does.
+tests_add_filter(
+	'setup_theme',
+	static function () {
+		if ( class_exists( 'WC_Install' ) ) {
+			WC_Install::install();
+			$GLOBALS['wp_roles'] = null; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Reload roles after the install.
+			wp_roles();
+		}
+	}
+);
+
 require $hive_tests_dir . '/includes/bootstrap.php';
 
 \Hive\Compliance\Installer::install();

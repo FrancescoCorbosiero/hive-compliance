@@ -248,9 +248,9 @@ final class Profile {
 	}
 
 	/**
-	 * Seller country from the WooCommerce store address, else from the site language.
+	 * Seller country from the WooCommerce store address, else from the site language (a fallback guess).
 	 *
-	 * @return array{value: string, source: string}
+	 * @return array{value: string, source: string, fallback?: bool}
 	 */
 	private function detect_country(): array {
 		$base = (string) get_option( 'woocommerce_default_country', '' );
@@ -263,23 +263,25 @@ final class Profile {
 		$parts   = explode( '_', (string) get_locale() );
 		$country = isset( $parts[1] ) && preg_match( '/^[A-Z]{2}$/', $parts[1] ) ? $parts[1] : '';
 		return array(
-			'value'  => $country,
-			'source' => __( 'Site language', 'hive-compliance' ),
+			'value'    => $country,
+			'source'   => __( 'Site language', 'hive-compliance' ),
+			'fallback' => true,
 		);
 	}
 
 	/**
-	 * Markets from the WooCommerce selling locations.
+	 * Markets from the WooCommerce selling locations, else the seller country (a fallback guess).
 	 *
 	 * @param string $seller_country Seller country.
-	 * @return array{value: string[], source: string, note?: string}
+	 * @return array{value: string[], source: string, note?: string, fallback?: bool}
 	 */
 	private function detect_markets( string $seller_country ): array {
 		if ( ! class_exists( 'WooCommerce' ) || ! function_exists( 'WC' ) || ! WC()->countries ) {
 			$market = '' !== $seller_country ? Markets::from_country( $seller_country ) : null;
 			return array(
-				'value'  => $market ? array( $market ) : array(),
-				'source' => __( 'Seller country', 'hive-compliance' ),
+				'value'    => $market ? array( $market ) : array(),
+				'source'   => __( 'Seller country', 'hive-compliance' ),
+				'fallback' => true,
 			);
 		}
 

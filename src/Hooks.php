@@ -107,7 +107,8 @@ final class Hooks {
 
 	/**
 	 * Filter: the complete LLM bundle string.
-	 * Args: string $bundle, array $documents, array $options.
+	 * Args: string $bundle, array $blocks (id, lang, type, version, base_hash, front_matter, body),
+	 * array $selection (mode, groups, docs, langs, include_internal).
 	 */
 	const EXPORT_BUNDLE = 'hive_compliance_export_bundle';
 
@@ -121,8 +122,8 @@ final class Hooks {
 
 	/**
 	 * Filter: validation findings of one imported document block.
-	 * Add your own Import\Finding objects to extend validation.
-	 * Args: Import\Finding[] $findings, Import\ParsedBlock $block, Document|null $current.
+	 * Add your own Lint\Finding objects to extend validation (Finding::ERROR blocks the document).
+	 * Args: Lint\Finding[] $findings, Import\ParsedBlock $block, Document|null $current.
 	 */
 	const IMPORT_FINDINGS = 'hive_compliance_import_findings';
 

@@ -182,9 +182,16 @@
 }
 
 .hive-findings,
-.hive-checklist,
-.hive-changelog {
+.hive-checklist {
 	margin: 0;
+}
+
+.hive-changelog {
+	margin: 0 0 0 1.75em;
+}
+
+.hive-changelog li {
+	margin-bottom: 6px;
 }
 
 .hive-finding {

@@ -5,43 +5,41 @@ file tree, data model, endpoints and the decisions that fill gaps in the spec.
 
 ## File tree
 
+As built (the plan's tree, updated after implementation).
+
 ```
-hive-compliance.php            Plugin header, constants, autoloader, bootstrap, HPOS declaration
+hive-compliance.php            Plugin header, constants, autoloader, bootstrap, HPOS + blocks compatibility
 uninstall.php                  Keeps data unless Settings → "remove all data on uninstall"
 composer.json                  require-dev only (tests / standards); no runtime dependencies
 phpunit.xml.dist  phpcs.xml.dist  .wp-env.json
 catalog/
   catalog.json                 Versioned registry (catalog_version at the top)
   catalog.schema.json          JSON Schema, validated on load
-lib/                           Parsedown 1.8.0 + ParsedownExtra 0.9.0 (MIT), vendored untouched
-  Parsedown.php  ParsedownExtra.php  LICENSE.txt  README.md
+lib/                           Parsedown 1.8.0 + ParsedownExtra 0.9.0 (MIT), namespaced, see lib/README.md
 includes/functions.php         Global helper hive_fragment( $id, $lang = null ): string
 src/                           PSR-4 Hive\Compliance\ → src/
-  Plugin.php                   Wires services and hooks
-  Installer.php                Activation, capability, upgrades, first-run skeletons
-  Settings.php                 hive_settings option
-  Hooks.php                    Hook name constants (the documented extension points)
-  Document/   PostType.php  Document.php  Repository.php  Markdown.php (normalise + hash)
-  Catalog/    Catalog.php  Entry.php  SchemaValidator.php  RuleEngine.php
-  Profile/    Profile.php  StoreFacts.php  Markets.php
-  Business/   BusinessData.php  Validator.php (P.IVA, EU VAT, e-mail, E.164)
-  Placeholders/ Resolver.php  Registry.php
-  Render/     Renderer.php  Shortcodes.php  Block.php  PageBindings.php  ShellGuard.php
-  I18n/       Languages.php (WPML / Polylang / own list)
-  Integrations/ Detector.php (slug → service, role, transfer outside EU)
-  Lint/       ContentLinter.php (rules shared by the editor and the importer)
-  Export/     BundleExporter.php  JsonExporter.php  PrintView.php
-  Import/     BundleParser.php  BundleValidator.php  ImportSession.php  Applier.php  JsonRestorer.php
-  Skeleton/   Generator.php
-  Rest/       Controller.php
-  Admin/      Menu.php  Notices.php  DashboardScreen.php  DocumentsTable.php (WP_List_Table)
-              EditorScreen.php  BusinessScreen.php  ProfileScreen.php  ExportScreen.php
-              ImportScreen.php  SettingsScreen.php  PrintScreen.php  views/*.php
+  Plugin.php  Installer.php  Settings.php  Hooks.php  Autoloader.php
+  Document/     PostType.php  Document.php  Repository.php  Markdown.php (normalise + hash)
+  Catalog/      Catalog.php  Entry.php  SchemaValidator.php  RuleEngine.php  Applicability.php
+  Profile/      Profile.php  StoreFacts.php  Markets.php
+  Business/     BusinessData.php  Validator.php (P.IVA, codice fiscale, EU VAT, REA, e-mail, E.164, URL)  Check.php
+  Placeholders/ Syntax.php  Registry.php  Resolver.php  Resolution.php  Provider.php (+ Business, Store, Links, Custom providers)
+  Render/       Renderer.php  MarkdownRenderer.php  Shortcodes.php  Block.php  PageBindings.php  PageManager.php  ShellGuard.php
+  I18n/         Languages.php (WPML / Polylang / own list)
+  Integrations/ Detector.php (slug → service, role, transfer outside the EU)
+  Lint/         ContentLinter.php (rules shared by the editor and the importer)  Finding.php
+  Export/       BundleFormat.php  BundleExporter.php  JsonExporter.php  Selection.php
+  Import/       BundleParser.php  ParsedBlock.php  BundleValidator.php  BlockReport.php  Importer.php
+                ImportSession.php  Upload.php  JsonRestorer.php
+  Skeleton/     Generator.php
+  Rest/         Controller.php
+  Admin/        Menu.php  Screen.php  Request.php  Notices.php  Overview.php  DocumentsTable.php (WP_List_Table)
+                DashboardScreen.php  EditorScreen.php  BusinessScreen.php  ProfileScreen.php  ExportScreen.php
+                ImportScreen.php  SettingsScreen.php  PrintScreen.php  BindingActions.php  SkeletonActions.php
 blocks/document/  block.json  index.js  index.asset.php (hand-written; no build step)
 assets/css/  admin.css  print.css  front.css
-assets/js/   editor.js  business.js  profile.js  import.js  page-guard.js
-languages/
-tests/        bootstrap.php, PHPUnit suites, fixtures/import/*.md (one failing fixture per rule)
+assets/js/   editor.js  page-guard.js  repeater.js
+tests/       bootstrap.php, TestCase.php, phpunit/*Test.php, fixtures/import/*.md (one failing fixture per rule)
 ```
 
 ## Data model
@@ -115,12 +113,13 @@ REST (`hive-compliance/v1`). Every route has a `permission_callback` requiring `
 
 `admin-post.php` actions. Each has its own nonce and a capability check, and redirects back with a notice.
 
-- `hive_compliance_save_document`, `hive_compliance_generate_skeleton`
+- `hive_compliance_save_document`
+- `hive_compliance_generate_skeleton` (one document), `hive_compliance_generate_skeletons` (every empty applicable document)
 - `hive_compliance_bind_page`, `hive_compliance_unbind_page`
 - `hive_compliance_save_business`, `hive_compliance_save_profile`, `hive_compliance_save_settings`
 - `hive_compliance_export` (bundle or JSON download)
-- `hive_compliance_import_upload` (goes to review), `hive_compliance_import_apply`
-- `hive_compliance_restore_upload` (goes to preview counts), `hive_compliance_restore_apply`
+- `hive_compliance_import_upload` (a `.md` bundle goes to the review, a `.json` backup to the restore preview)
+- `hive_compliance_import_apply`, `hive_compliance_restore_apply`, `hive_compliance_import_discard`
 
 The print view is `admin.php?page=hive-compliance-print&…&_wpnonce=…`. It is a standalone HTML page with a print stylesheet.
 
@@ -156,7 +155,12 @@ These fill gaps in the spec; each is easy to change.
 - Restoring a WP revision counts as a manual change: version +1 and a changelog entry.
 - Bound pages are created as WP **drafts**. The plugin never publishes a page by itself.
 - The JSON restore overwrites business data, profile, settings and documents. Version numbers never go backwards; the version becomes max(current + 1, backup). Page bindings are re-matched by slug when the IDs differ.
-- `wp-env` needs Docker. The container used to build this has none, so the suite is run here against WordPress 7.1.x and MariaDB installed locally. `.wp-env.json` is shipped for local use.
+- Fragments are short labels and texts, so the "missing heading" check does not apply to them.
+- "Review due" applies only to published documents. A draft is not in force, so freshly generated skeletons are not flagged.
+- The integration detector was built with the store profile (milestone 2), because the profile pre-fills features from it.
+- The store profile is pre-filled from WooCommerce until the first save. After that, the answers are the merchant's own. A step warns when an answer differs from what WooCommerce reports (seller country, selling locations), and fallback guesses such as the site language never warn.
+- `wp-env` needs Docker. The container used to build this has none. The suite was run there against WordPress 7.1.3 and MariaDB installed locally, on PHP 8.3 and on PHP 8.1 (the minimum), both without WooCommerce and with WooCommerce 11.2.1 loaded (taken from its GitHub release). With WooCommerce loaded, the test bootstrap installs WooCommerce's tables the way WooCommerce's own tests do. `.wp-env.json` is shipped for local use.
+- The admin UI was also checked in a browser against a real site, with and without WooCommerce 11.2.1 and with HPOS enabled. WooCommerce lists the plugin as compatible with HPOS and the cart and checkout blocks.
 
 ## Milestones (one commit each)
 

@@ -243,11 +243,12 @@ final class ImportScreen extends Screen {
 		}
 
 		if ( $groups[ BlockReport::UNCHANGED ] ) {
-			echo '<h2>' . esc_html__( 'Unchanged', 'hive-compliance' ) . '</h2><ul class="ul-disc">';
+			/* translators: %d: number of unchanged documents. */
+			printf( '<details class="hive-unchanged"><summary>%s</summary><ul class="ul-disc">', esc_html( sprintf( __( 'Unchanged documents (%d)', 'hive-compliance' ), count( $groups[ BlockReport::UNCHANGED ] ) ) ) );
 			foreach ( $groups[ BlockReport::UNCHANGED ] as $report ) {
 				printf( '<li>%1$s <code>%2$s</code></li>', esc_html( $this->report_title( $report ) ), esc_html( $report->key() ) );
 			}
-			echo '</ul>';
+			echo '</ul></details>';
 		}
 
 		if ( $groups[ BlockReport::CHANGED ] ) {

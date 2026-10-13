@@ -177,12 +177,12 @@ final class Validator {
 		if ( ! isset( self::VAT_FORMATS[ $country ] ) ) {
 			return Check::warning( $normalized, __( 'No format check is available for this country.', 'hive-compliance' ) );
 		}
+		if ( 'IT' === $country && ! self::is_valid_partita_iva( $number ) ) {
+			return Check::error( $normalized, __( 'Invalid partita IVA: 11 digits with a valid check digit are required.', 'hive-compliance' ) );
+		}
 		if ( ! preg_match( '/^(?:' . self::VAT_FORMATS[ $country ] . ')$/', $number ) ) {
 			/* translators: %s: country code. */
 			return Check::error( $normalized, sprintf( __( 'This is not a valid %s VAT number format.', 'hive-compliance' ), $country ) );
-		}
-		if ( 'IT' === $country && ! self::is_valid_partita_iva( $number ) ) {
-			return Check::error( $normalized, __( 'Invalid partita IVA: 11 digits with a valid check digit are required.', 'hive-compliance' ) );
 		}
 		return Check::ok( $normalized );
 	}

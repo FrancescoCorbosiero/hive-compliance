@@ -403,7 +403,8 @@ final class EditorScreen extends Screen {
 			submit_button( __( 'Remove binding', 'hive-compliance' ), 'link-delete small', 'submit', false );
 			echo '</form>';
 		} else {
-			echo '<p>' . esc_html__( 'Not bound to a page yet: links to it ({{links.*}}) stay empty.', 'hive-compliance' ) . '</p>';
+			/* translators: %s: links placeholder of this document. */
+			echo '<p>' . esc_html( sprintf( __( 'Not bound to a page yet, so %s stays empty.', 'hive-compliance' ), '{{links.' . $entry->id . '}}' ) ) . '</p>';
 			$this->form_open( BindingActions::ACTION_BIND );
 			printf( '<input type="hidden" name="doc" value="%s"><input type="hidden" name="lang" value="%s"><input type="hidden" name="mode" value="create">', esc_attr( $entry->id ), esc_attr( $lang ) );
 			submit_button( __( 'Create draft page', 'hive-compliance' ), 'secondary', 'submit', false );

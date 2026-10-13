@@ -37,6 +37,23 @@ abstract class Hive_TestCase extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Renders one of the plugin's admin screens with the given query arguments.
+	 */
+	protected function render_screen( string $slug, array $query = array() ): string {
+		foreach ( $this->plugin()->screens() as $screen ) {
+			if ( $slug === $screen->slug() ) {
+				$_GET = $query;
+				ob_start();
+				$screen->render();
+				$html = (string) ob_get_clean();
+				$_GET = array();
+				return $html;
+			}
+		}
+		$this->fail( 'Unknown screen: ' . $slug );
+	}
+
+	/**
 	 * Reads a fixture file.
 	 */
 	protected function fixture( string $path ): string {

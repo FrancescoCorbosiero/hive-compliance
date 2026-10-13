@@ -9,6 +9,7 @@ use Hive\Compliance\Admin\EditorScreen;
 use Hive\Compliance\Admin\Overview;
 use Hive\Compliance\Admin\ProfileScreen;
 use Hive\Compliance\Document\Document;
+use Hive\Compliance\Profile\Profile;
 use Hive\Compliance\Render\PageManager;
 
 class AdminTest extends Hive_TestCase {
@@ -84,10 +85,11 @@ class AdminTest extends Hive_TestCase {
 	}
 
 	public function test_overdue_rules() {
-		$doc = static fn( string $reviewed, string $markdown = 'x' ) => new Document( 1, 'a', 'it', $markdown, 1, 'draft', $reviewed, '', array(), array() );
+		$doc = static fn( string $reviewed, string $markdown = 'x', string $status = 'published' ) => new Document( 1, 'a', 'it', $markdown, 1, $status, $reviewed, '', array(), array() );
 		$now = strtotime( '2026-10-13' );
 		$this->assertFalse( Overview::is_overdue( null, 12, $now ) );
 		$this->assertFalse( Overview::is_overdue( $doc( '', '' ), 12, $now ), 'Empty documents are never overdue.' );
+		$this->assertFalse( Overview::is_overdue( $doc( '', 'x', 'draft' ), 12, $now ), 'Drafts are not in force.' );
 		$this->assertTrue( Overview::is_overdue( $doc( '' ), 12, $now ), 'Never reviewed.' );
 		$this->assertTrue( Overview::is_overdue( $doc( '2025-10-12' ), 12, $now ) );
 		$this->assertFalse( Overview::is_overdue( $doc( '2025-10-14' ), 12, $now ) );
@@ -127,6 +129,19 @@ class AdminTest extends Hive_TestCase {
 		$done = ProfileScreen::merge_step( $merged, 'features', array( 'features' => array( 'reviews' ) ) );
 		$this->assertTrue( $done['completed'] );
 		$this->assertSame( array(), ProfileScreen::merge_step( $done, 'flags', array() )['product_flags'] );
+	}
+
+	public function test_profile_shows_where_answers_come_from_until_saved() {
+		delete_option( Profile::OPTION );
+		$this->assertStringContainsString( 'Pre-filled from:', $this->render_screen( 'profile', array( 'step' => 'seller' ) ) );
+
+		$this->plugin()->profile()->save(
+			array(
+				'seller_country' => 'IT',
+				'markets'        => array( 'IT' ),
+			)
+		);
+		$this->assertStringNotContainsString( 'Pre-filled from:', $this->render_screen( 'profile', array( 'step' => 'seller' ) ), 'Saved answers are the merchant\'s own.' );
 	}
 
 	public function test_rest_preview_requires_the_capability_and_renders() {

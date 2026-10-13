@@ -92,14 +92,15 @@ final class Overview {
 	}
 
 	/**
-	 * Whether a document is overdue for review (never reviewed counts as overdue once it has content).
+	 * Whether a published document is overdue for review (never reviewed counts as overdue).
+	 * Drafts are not in force, so they are never overdue.
 	 *
 	 * @param Document|null $document Document.
 	 * @param int           $months   Review cadence.
 	 * @param int|null      $now      Timestamp (tests).
 	 */
 	public static function is_overdue( ?Document $document, int $months, ?int $now = null ): bool {
-		if ( null === $document || $document->is_empty() ) {
+		if ( null === $document || ! $document->is_published() ) {
 			return false;
 		}
 		if ( '' === $document->last_reviewed ) {

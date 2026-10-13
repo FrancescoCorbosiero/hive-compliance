@@ -167,7 +167,7 @@ final class ProfileScreen extends Screen {
 	private function step_seller( array $values, array $detected ): void {
 		echo '<h2>' . esc_html__( 'Seller', 'hive-compliance' ) . '</h2>';
 		printf( '<p><label for="hive-seller-country">%1$s</label><br><input type="text" id="hive-seller-country" name="seller_country" value="%2$s" maxlength="2" class="small-text" pattern="[A-Za-z]{2}"> <span class="description">%3$s</span></p>', esc_html__( 'Seller country (ISO code, e.g. IT)', 'hive-compliance' ), esc_attr( (string) $values['seller_country'] ), esc_html( Markets::country_name( (string) $values['seller_country'] ) ) );
-		$this->source_note( $detected['seller_country'] ?? null );
+		$this->source_note( $detected['seller_country'] ?? null, (string) $values['seller_country'] );
 		printf( '<p><label><input type="checkbox" name="is_micro_enterprise" value="1"%1$s> %2$s</label></p>', checked( ! empty( $values['is_micro_enterprise'] ), true, false ), esc_html__( 'Micro-enterprise (fewer than 10 employees and turnover or balance sheet of at most €2 million)', 'hive-compliance' ) );
 	}
 
@@ -180,7 +180,7 @@ final class ProfileScreen extends Screen {
 	private function step_markets( array $values, array $detected ): void {
 		$markets = (array) $values['markets'];
 		echo '<h2>' . esc_html__( 'Markets you sell to', 'hive-compliance' ) . '</h2>';
-		$this->source_note( $detected['markets'] ?? null );
+		$this->source_note( $detected['markets'] ?? null, $markets );
 
 		echo '<h3>' . esc_html__( 'European Union', 'hive-compliance' ) . '</h3><div class="hive-checkgrid">';
 		foreach ( Markets::EU as $code ) {
@@ -286,19 +286,66 @@ final class ProfileScreen extends Screen {
 	}
 
 	/**
-	 * Where a pre-filled value comes from.
+	 * Where a pre-filled value comes from. Once the profile is saved, the detected value is shown
+	 * only when it differs from the saved answer and was really detected (not a fallback guess).
 	 *
 	 * @param array<string, mixed>|null $detected Detected entry.
+	 * @param string|string[]|null      $value    Current answer (seller country or markets); null skips the comparison.
 	 */
-	private function source_note( ?array $detected ): void {
+	private function source_note( ?array $detected, $value = null ): void {
 		if ( null === $detected ) {
 			return;
 		}
-		/* translators: %s: source of the pre-filled value. */
-		echo '<p class="hive-source">' . esc_html( sprintf( __( 'Pre-filled from: %s', 'hive-compliance' ), (string) $detected['source'] ) ) . '</p>';
+		if ( ! $this->plugin->profile()->is_saved() ) {
+			/* translators: %s: source of the pre-filled value. */
+			echo '<p class="hive-source">' . esc_html( sprintf( __( 'Pre-filled from: %s', 'hive-compliance' ), (string) $detected['source'] ) ) . '</p>';
+		} elseif ( null !== $value && empty( $detected['fallback'] ) && ! self::same_answer( $value, $detected['value'] ) ) {
+			/* translators: 1: where the value was detected, 2: detected value. */
+			echo '<p class="hive-field-message hive-field-message--warning">' . esc_html( sprintf( __( 'Differs from %1$s: %2$s.', 'hive-compliance' ), (string) $detected['source'], self::describe( $detected['value'] ) ) ) . '</p>';
+		}
 		if ( ! empty( $detected['note'] ) ) {
 			echo '<p class="hive-field-message hive-field-message--warning">' . esc_html( (string) $detected['note'] ) . '</p>';
 		}
+	}
+
+	/**
+	 * Whether a saved answer equals a detected value (lists compare without order).
+	 *
+	 * @param string|string[] $answer   Saved answer.
+	 * @param mixed           $detected Detected value.
+	 */
+	private static function same_answer( $answer, $detected ): bool {
+		if ( is_array( $answer ) || is_array( $detected ) ) {
+			$answer   = array_map( 'strval', (array) $answer );
+			$detected = array_map( 'strval', (array) $detected );
+			sort( $answer );
+			sort( $detected );
+			return $answer === $detected;
+		}
+		return strtoupper( (string) $answer ) === strtoupper( (string) $detected );
+	}
+
+	/**
+	 * A detected country or market list as text.
+	 *
+	 * @param mixed $value Country code or market codes.
+	 */
+	private static function describe( $value ): string {
+		if ( ! is_array( $value ) ) {
+			$code = strtoupper( (string) $value );
+			if ( '' === $code ) {
+				return '—';
+			}
+			$name = Markets::country_name( $code );
+			// WooCommerce names some countries with their code already, e.g. "United States (US)".
+			return false !== strpos( $name, $code ) ? $name : $name . ' (' . $code . ')';
+		}
+		$labels = array_map( array( Markets::class, 'label' ), array_map( 'strval', $value ) );
+		if ( count( $labels ) > 6 ) {
+			/* translators: 1: first items of a list, 2: number of further items. */
+			return sprintf( __( '%1$s and %2$d more', 'hive-compliance' ), implode( ', ', array_slice( $labels, 0, 6 ) ), count( $labels ) - 6 );
+		}
+		return $labels ? implode( ', ', $labels ) : '—';
 	}
 
 	/**

@@ -18,6 +18,7 @@ use Hive\Compliance\Admin\Notices;
 use Hive\Compliance\Admin\PrintScreen;
 use Hive\Compliance\Admin\ProfileScreen;
 use Hive\Compliance\Admin\SettingsScreen;
+use Hive\Compliance\Admin\SkeletonActions;
 use Hive\Compliance\Business\BusinessData;
 use Hive\Compliance\Catalog\Applicability;
 use Hive\Compliance\Catalog\Catalog;
@@ -42,6 +43,7 @@ use Hive\Compliance\Render\Renderer;
 use Hive\Compliance\Render\ShellGuard;
 use Hive\Compliance\Render\Shortcodes;
 use Hive\Compliance\Rest\Controller;
+use Hive\Compliance\Skeleton\Generator;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -99,6 +101,7 @@ final class Plugin {
 	private function register_hooks(): void {
 		add_action( 'init', array( $this, 'on_init' ), 5 );
 		add_action( 'admin_init', array( Installer::class, 'maybe_upgrade' ), 5 );
+		add_action( 'admin_init', array( $this, 'first_run' ), 20 );
 		$this->repository()->register();
 		$this->shell_guard()->register();
 
@@ -107,7 +110,18 @@ final class Plugin {
 		if ( is_admin() ) {
 			( new Notices() )->register();
 			( new BindingActions( $this->page_manager() ) )->register();
+			( new SkeletonActions( $this ) )->register();
 			( new Menu( $this->screens() ) )->register();
+		}
+	}
+
+	/**
+	 * First activation: generate the skeletons of the applicable documents once,
+	 * on the first admin request of a user who manages compliance documents.
+	 */
+	public function first_run(): void {
+		if ( current_user_can( self::CAPABILITY ) ) {
+			$this->skeletons()->maybe_generate_on_first_run();
 		}
 	}
 
@@ -276,6 +290,13 @@ final class Plugin {
 	 */
 	public function page_manager(): PageManager {
 		return $this->service( PageManager::class, fn() => new PageManager( $this->bindings(), $this->catalog(), $this->languages() ) );
+	}
+
+	/**
+	 * Skeleton generator.
+	 */
+	public function skeletons(): Generator {
+		return $this->service( Generator::class, fn() => new Generator( $this ) );
 	}
 
 	/**

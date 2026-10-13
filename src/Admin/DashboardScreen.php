@@ -54,6 +54,7 @@ final class DashboardScreen extends Screen {
 
 		$this->render_cards( $cards );
 
+		$this->render_skeleton_form();
 		$this->render_view_toggle( $full );
 		$table = new DocumentsTable( $rows, $this->plugin->languages()->default_language() );
 		$table->prepare_items();
@@ -118,6 +119,17 @@ final class DashboardScreen extends Screen {
 			printf( '<p><a href="%1$s">%2$s</a></p>', esc_url( $link ), esc_html__( 'Fix it', 'hive-compliance' ) );
 		}
 		echo '</div>';
+	}
+
+	/**
+	 * Bulk skeleton generation for empty applicable documents.
+	 */
+	private function render_skeleton_form(): void {
+		$this->form_open( SkeletonActions::ACTION_ALL, array( 'class' => 'hive-skeleton-form alignright' ) );
+		echo '<label for="hive-skeleton-scope" class="screen-reader-text">' . esc_html__( 'Languages', 'hive-compliance' ) . '</label>';
+		echo '<select id="hive-skeleton-scope" name="scope"><option value="default">' . esc_html__( 'Default language', 'hive-compliance' ) . '</option><option value="all">' . esc_html__( 'All enabled languages', 'hive-compliance' ) . '</option></select> ';
+		submit_button( __( 'Generate skeletons for empty documents', 'hive-compliance' ), 'secondary', 'submit', false );
+		echo '</form>';
 	}
 
 	/**
