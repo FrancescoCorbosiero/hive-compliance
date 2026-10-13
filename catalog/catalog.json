@@ -1,0 +1,1437 @@
+{
+	"$schema": "./catalog.schema.json",
+	"catalog_version": "1.0.0",
+	"baseline": "IT/EU",
+	"updated": "2026-10-13",
+	"documents": [
+		{
+			"id": "legal_notice",
+			"title": {"en": "Legal notice", "it": "Note legali"},
+			"type": "page",
+			"group": "core",
+			"description": "Business identity (Impressum, mentions légales, note legali).",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "identity", "label": "Legal name, legal form and trade name", "legal_ref": "D.Lgs. 70/2003, art. 7(1)(a); Codice civile, art. 2250", "placeholders": ["business.legal_name", "business.legal_form", "business.trade_name", "business.owner_name"]},
+				{"key": "registered_office", "label": "Registered office (geographical address)", "legal_ref": "D.Lgs. 70/2003, art. 7(1)(b); D.Lgs. 206/2005, art. 49(1)(c)", "placeholders": ["business.address", "business.country"]},
+				{"key": "contacts", "label": "Contact details for rapid, direct communication, including e-mail", "legal_ref": "D.Lgs. 70/2003, art. 7(1)(c); D.Lgs. 206/2005, art. 49(1)(c)", "placeholders": ["business.email", "business.pec", "business.phone"]},
+				{"key": "register", "label": "Business register / REA registration number", "legal_ref": "D.Lgs. 70/2003, art. 7(1)(d); Codice civile, art. 2250", "placeholders": ["business.rea"]},
+				{"key": "vat_number", "label": "VAT number and tax code", "legal_ref": "D.Lgs. 70/2003, art. 7(1)(g); D.P.R. 633/1972, art. 35", "placeholders": ["business.vat_id", "business.tax_code"]},
+				{"key": "company_data", "label": "Share capital paid up, sole-shareholder or liquidation status (companies)", "legal_ref": "Codice civile, art. 2250", "placeholders": ["business.share_capital"]},
+				{"key": "authorisations", "label": "Licences or authorisations and the supervisory authority, where the activity requires them", "legal_ref": "D.Lgs. 70/2003, art. 7(1)(e)"}
+			],
+			"placeholders_used": ["business.legal_name", "business.trade_name", "business.legal_form", "business.owner_name", "business.address", "business.country", "business.email", "business.pec", "business.phone", "business.rea", "business.vat_id", "business.tax_code", "business.share_capital"],
+			"legal_refs": ["D.Lgs. 70/2003, art. 7", "Directive 2000/31/EC, art. 5", "Codice civile, art. 2250", "D.P.R. 633/1972, art. 35", "D.Lgs. 206/2005 (Codice del Consumo), art. 49(1)(b)-(c)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete",
+			"lint": [
+				{"id": "odr_link", "pattern": "ec\\.europa\\.eu/consumers/odr|webgate\\.ec\\.europa\\.eu/odr", "severity": "error", "message": "Link to the EU ODR platform, discontinued on 20 July 2025 (Reg. (EU) 2024/3228). Remove it."}
+			]
+		},
+		{
+			"id": "privacy_policy",
+			"title": {"en": "Privacy policy", "it": "Informativa sulla privacy"},
+			"type": "page",
+			"group": "core",
+			"description": "Information to data subjects under GDPR arts. 13-14.",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "controller_identity", "label": "Identity and contact details of the controller (and EU representative, if any)", "legal_ref": "Reg. (EU) 2016/679, art. 13(1)(a)", "placeholders": ["business.legal_name", "business.address", "business.email", "business.pec", "business.eu_representative"]},
+				{"key": "dpo_contact", "label": "Contact details of the data protection officer, where appointed", "legal_ref": "Reg. (EU) 2016/679, art. 13(1)(b)", "placeholders": ["business.dpo_name", "business.dpo_email"]},
+				{"key": "purposes_legal_bases", "label": "Purposes of each processing and their legal bases", "legal_ref": "Reg. (EU) 2016/679, arts. 6(1), 13(1)(c)"},
+				{"key": "legitimate_interests", "label": "Legitimate interests pursued, where art. 6(1)(f) is relied on", "legal_ref": "Reg. (EU) 2016/679, art. 13(1)(d)"},
+				{"key": "recipients", "label": "Recipients or categories of recipients (payment, shipping, hosting, marketing providers)", "legal_ref": "Reg. (EU) 2016/679, art. 13(1)(e)", "placeholders": ["store.payment_gateways"]},
+				{"key": "third_country_transfers", "label": "Transfers outside the EEA and the safeguards relied on", "legal_ref": "Reg. (EU) 2016/679, arts. 13(1)(f), 44-49"},
+				{"key": "retention", "label": "Retention periods or the criteria used to set them", "legal_ref": "Reg. (EU) 2016/679, art. 13(2)(a)"},
+				{"key": "data_subject_rights", "label": "Rights of access, rectification, erasure, restriction, portability and objection", "legal_ref": "Reg. (EU) 2016/679, arts. 13(2)(b), 15-22"},
+				{"key": "consent_withdrawal", "label": "Right to withdraw consent at any time", "legal_ref": "Reg. (EU) 2016/679, arts. 7(3), 13(2)(c)"},
+				{"key": "complaint", "label": "Right to lodge a complaint with a supervisory authority (Garante per la protezione dei dati personali)", "legal_ref": "Reg. (EU) 2016/679, arts. 13(2)(d), 77"},
+				{"key": "statutory_contractual", "label": "Whether providing data is a statutory or contractual requirement, and the consequences of not providing it", "legal_ref": "Reg. (EU) 2016/679, art. 13(2)(e)"},
+				{"key": "automated_decisions", "label": "Automated decision-making, including profiling (e.g. fraud scoring)", "legal_ref": "Reg. (EU) 2016/679, arts. 13(2)(f), 22"},
+				{"key": "sources", "label": "Sources of data not collected from the data subject", "legal_ref": "Reg. (EU) 2016/679, art. 14(2)(f)"},
+				{"key": "cookies_reference", "label": "Reference to the cookie policy", "legal_ref": "D.Lgs. 196/2003, art. 122", "placeholders": ["links.cookie_policy"]}
+			],
+			"placeholders_used": ["business.legal_name", "business.address", "business.email", "business.pec", "business.eu_representative", "business.dpo_name", "business.dpo_email", "store.payment_gateways", "links.cookie_policy"],
+			"legal_refs": ["Reg. (EU) 2016/679 (GDPR), arts. 12-14", "D.Lgs. 196/2003 (Codice privacy), as amended by D.Lgs. 101/2018"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "cookie_policy",
+			"title": {"en": "Cookie policy", "it": "Cookie policy"},
+			"type": "page",
+			"group": "core",
+			"description": "Cookies and other tracking tools. Embed the consent plugin's own cookie list through its shortcode.",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "controller", "label": "Controller identity and contact details", "legal_ref": "Reg. (EU) 2016/679, art. 13(1)(a)", "placeholders": ["business.legal_name", "business.email"]},
+				{"key": "categories", "label": "Categories of cookies and trackers (technical, analytics, profiling) and their purposes", "legal_ref": "D.Lgs. 196/2003, art. 122; Garante privacy, guidelines of 10 June 2021"},
+				{"key": "cookie_list", "label": "List of cookies and trackers: name, provider, purpose, duration (consent plugin list)", "legal_ref": "Garante privacy, guidelines of 10 June 2021; Reg. (EU) 2016/679, art. 13(2)(a)"},
+				{"key": "third_parties", "label": "Third parties setting cookies and links to their information", "legal_ref": "Reg. (EU) 2016/679, art. 13(1)(e)"},
+				{"key": "legal_basis", "label": "Legal basis: consent for non-technical cookies; technical cookies exempt", "legal_ref": "Directive 2002/58/EC, art. 5(3); D.Lgs. 196/2003, art. 122(1)"},
+				{"key": "analytics_conditions", "label": "Analytics treated as technical cookies: conditions met, where relied on", "legal_ref": "Garante privacy, guidelines of 10 June 2021"},
+				{"key": "consent_management", "label": "How to give, refuse and withdraw consent (banner, preferences, browser settings)", "legal_ref": "Garante privacy, guidelines of 10 June 2021; Reg. (EU) 2016/679, art. 7(3)"},
+				{"key": "transfers", "label": "Transfers outside the EEA by cookie providers", "legal_ref": "Reg. (EU) 2016/679, arts. 13(1)(f), 44-49"},
+				{"key": "rights", "label": "Data subject rights and complaint to the supervisory authority", "legal_ref": "Reg. (EU) 2016/679, arts. 15-22, 77"},
+				{"key": "privacy_link", "label": "Link to the privacy policy", "legal_ref": "Reg. (EU) 2016/679, art. 12(1)", "placeholders": ["links.privacy_policy"]}
+			],
+			"placeholders_used": ["business.legal_name", "business.email", "links.privacy_policy"],
+			"legal_refs": ["Directive 2002/58/EC (ePrivacy), art. 5(3)", "D.Lgs. 196/2003, art. 122", "Garante privacy, Guidelines on cookies and other tracking tools, 10 June 2021", "Reg. (EU) 2016/679, arts. 7, 13"],
+			"review_cadence_months": 6,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "terms_of_sale",
+			"title": {"en": "Terms and conditions of sale", "it": "Termini e condizioni di vendita"},
+			"type": "page",
+			"group": "core",
+			"description": "General terms of distance sale to consumers.",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "seller_identity", "label": "Seller identity, geographical address and contact details", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(b)-(d)", "placeholders": ["business.legal_name", "business.address", "business.email", "business.phone", "business.vat_id", "links.legal_notice"]},
+				{"key": "scope", "label": "Scope, acceptance, version and date of the terms; terms available for storage and reproduction", "legal_ref": "D.Lgs. 70/2003, art. 12(3)"},
+				{"key": "main_characteristics", "label": "Main characteristics of the goods or services (product pages)", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(a)"},
+				{"key": "prices", "label": "Total price including taxes, delivery and any additional charges", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(e); D.Lgs. 70/2003, art. 7(1)(h)", "placeholders": ["store.currency"]},
+				{"key": "contract_steps", "label": "Technical steps to conclude the contract, correcting input errors, languages, filing of the contract", "legal_ref": "D.Lgs. 70/2003, art. 12(1); Directive 2000/31/EC, art. 10"},
+				{"key": "order_confirmation", "label": "Order button with obligation to pay and confirmation on a durable medium", "legal_ref": "D.Lgs. 206/2005, art. 51(2), (7); D.Lgs. 70/2003, art. 13"},
+				{"key": "payment", "label": "Accepted payment methods and payment terms", "legal_ref": "D.Lgs. 206/2005, arts. 49(1)(g), 51(3)", "placeholders": ["store.payment_gateways", "links.payment_methods"]},
+				{"key": "delivery", "label": "Delivery arrangements, deadline (30 days unless agreed) and areas served", "legal_ref": "D.Lgs. 206/2005, arts. 49(1)(g), 61", "placeholders": ["store.shipping_countries", "links.shipping_policy"]},
+				{"key": "withdrawal", "label": "Right of withdrawal: conditions, time limit, procedure, return costs, exceptions", "legal_ref": "D.Lgs. 206/2005, arts. 49(1)(h)-(m), 52-59", "placeholders": ["links.withdrawal_policy"]},
+				{"key": "legal_guarantee", "label": "Reminder of the legal guarantee of conformity", "legal_ref": "D.Lgs. 206/2005, arts. 49(1)(n), 128-135-septies", "placeholders": ["links.legal_guarantee"]},
+				{"key": "after_sales", "label": "After-sales assistance, services and commercial guarantees, where offered", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(o)"},
+				{"key": "codes_of_conduct", "label": "Relevant codes of conduct, where the seller adheres to any", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(p)"},
+				{"key": "duration", "label": "Duration and termination of indefinite or automatically extended contracts", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(q)-(r)"},
+				{"key": "adr", "label": "Out-of-court complaint and redress mechanisms (ADR)", "legal_ref": "D.Lgs. 206/2005, arts. 49(1)(v), 141-sexies", "placeholders": ["links.dispute_resolution"]},
+				{"key": "governing_law", "label": "Governing law and competent court (consumer's place of residence)", "legal_ref": "D.Lgs. 206/2005, art. 66-bis; Reg. (EC) 593/2008, art. 6; Reg. (EU) 1215/2012, art. 18"}
+			],
+			"placeholders_used": ["business.legal_name", "business.address", "business.email", "business.phone", "business.vat_id", "store.currency", "store.payment_gateways", "store.shipping_countries", "links.legal_notice", "links.payment_methods", "links.shipping_policy", "links.withdrawal_policy", "links.legal_guarantee", "links.dispute_resolution"],
+			"legal_refs": ["D.Lgs. 206/2005 (Codice del Consumo), arts. 49, 51, 61, 66-bis", "D.Lgs. 70/2003, arts. 7, 12, 13", "Directive 2011/83/EU (Consumer Rights Directive)", "Reg. (EC) 593/2008 (Rome I), art. 6"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete",
+			"lint": [
+				{"id": "odr_link", "pattern": "ec\\.europa\\.eu/consumers/odr|webgate\\.ec\\.europa\\.eu/odr", "severity": "error", "message": "Link to the EU ODR platform, discontinued on 20 July 2025 (Reg. (EU) 2024/3228). Remove it."}
+			]
+		},
+		{
+			"id": "withdrawal_policy",
+			"title": {"en": "Right of withdrawal", "it": "Diritto di recesso"},
+			"type": "page",
+			"group": "core",
+			"description": "Withdrawal information for distance contracts with consumers, including the online withdrawal function.",
+			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}]},
+			"required_elements": [
+				{"key": "right_and_period", "label": "Existence of the right and the 14-day period, and when it starts", "legal_ref": "D.Lgs. 206/2005, arts. 49(1)(h), 52"},
+				{"key": "how_to_withdraw", "label": "How to withdraw: unequivocal statement, model form or online withdrawal function", "legal_ref": "D.Lgs. 206/2005, art. 54 and Annex I, part B", "placeholders": ["links.withdrawal_form", "business.email", "business.address"]},
+				{"key": "withdrawal_function", "label": "Online withdrawal function and acknowledgement of receipt on a durable medium", "legal_ref": "D.Lgs. 206/2005, art. 54-bis (D.Lgs. 209/2025); Directive 2011/83/EU, art. 11a"},
+				{"key": "return_of_goods", "label": "Return of goods: 14-day deadline, return address, who bears the return cost", "legal_ref": "D.Lgs. 206/2005, arts. 49(1)(i), 57(1)", "placeholders": ["business.address"]},
+				{"key": "refund", "label": "Refund of all payments, including standard delivery, within 14 days", "legal_ref": "D.Lgs. 206/2005, art. 56", "placeholders": ["links.refund_policy"]},
+				{"key": "diminished_value", "label": "Liability for diminished value from handling beyond what is necessary", "legal_ref": "D.Lgs. 206/2005, art. 57(2)"},
+				{"key": "services_started", "label": "Services started during the withdrawal period: express request and proportionate payment", "legal_ref": "D.Lgs. 206/2005, arts. 49(1)(l), 51(8), 57(3)"},
+				{"key": "exceptions", "label": "Exceptions to the right of withdrawal that apply to the catalogue", "legal_ref": "D.Lgs. 206/2005, arts. 49(1)(m), 59"}
+			],
+			"placeholders_used": ["business.legal_name", "business.address", "business.email", "links.withdrawal_form", "links.refund_policy"],
+			"legal_refs": ["D.Lgs. 206/2005, arts. 49(1)(h)-(m), 52-59", "D.Lgs. 206/2005, art. 54-bis (introduced by D.Lgs. 209/2025)", "Directive 2011/83/EU, arts. 9-16 and Annex I", "Directive (EU) 2023/2673"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "withdrawal_form",
+			"title": {"en": "Model withdrawal form", "it": "Modulo di recesso tipo"},
+			"type": "page",
+			"group": "core",
+			"description": "The model withdrawal form of Annex I, part B.",
+			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}]},
+			"required_elements": [
+				{"key": "addressee", "label": "Addressee: trader name, geographical address and e-mail", "legal_ref": "D.Lgs. 206/2005, Annex I, part B", "placeholders": ["business.legal_name", "business.address", "business.email"]},
+				{"key": "statement", "label": "Statement of withdrawal from the contract for the goods or services", "legal_ref": "D.Lgs. 206/2005, Annex I, part B"},
+				{"key": "order_details", "label": "Ordered on / received on and order reference", "legal_ref": "D.Lgs. 206/2005, Annex I, part B"},
+				{"key": "consumer_details", "label": "Name and address of the consumer(s)", "legal_ref": "D.Lgs. 206/2005, Annex I, part B"},
+				{"key": "signature_date", "label": "Signature (paper form only) and date", "legal_ref": "D.Lgs. 206/2005, Annex I, part B"}
+			],
+			"placeholders_used": ["business.legal_name", "business.address", "business.email"],
+			"legal_refs": ["D.Lgs. 206/2005, art. 54(1) and Annex I, part B", "Directive 2011/83/EU, Annex I(B)"],
+			"review_cadence_months": 24,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "refund_policy",
+			"title": {"en": "Refund policy", "it": "Politica di rimborso"},
+			"type": "page",
+			"group": "core",
+			"description": "When and how payments are refunded.",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "refund_cases", "label": "Cases giving rise to a refund (withdrawal, lack of conformity, non-delivery, cancellation)", "legal_ref": "D.Lgs. 206/2005, arts. 56, 61, 135-bis"},
+				{"key": "refund_deadline", "label": "Refund deadline (14 days) and withholding until the goods are returned", "legal_ref": "D.Lgs. 206/2005, art. 56(1), (3)"},
+				{"key": "refund_method", "label": "Same means of payment as the original transaction, at no cost to the consumer", "legal_ref": "D.Lgs. 206/2005, art. 56(1)"},
+				{"key": "amounts_included", "label": "Amounts refunded: price and standard delivery; extra cost of express delivery excluded", "legal_ref": "D.Lgs. 206/2005, art. 56(1)-(2)"},
+				{"key": "non_delivery", "label": "Refund after failed delivery within the additional period", "legal_ref": "D.Lgs. 206/2005, art. 61(3)-(5)"},
+				{"key": "non_conformity", "label": "Refunds after price reduction or termination for lack of conformity", "legal_ref": "D.Lgs. 206/2005, arts. 135-bis–135-quater", "placeholders": ["links.legal_guarantee"]},
+				{"key": "how_to_request", "label": "How to request a refund", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(c)", "placeholders": ["business.email"]}
+			],
+			"placeholders_used": ["business.email", "links.withdrawal_policy", "links.legal_guarantee"],
+			"legal_refs": ["D.Lgs. 206/2005, arts. 56, 61, 135-bis–135-quater", "Directive 2011/83/EU, arts. 13, 18"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "shipping_policy",
+			"title": {"en": "Shipping policy", "it": "Spedizioni e consegne"},
+			"type": "page",
+			"group": "core",
+			"description": "Delivery areas, times, costs and risk.",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "shipping_areas", "label": "Countries and areas served, and any delivery restrictions", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(g); Reg. (EU) 2018/302, arts. 3-4", "placeholders": ["store.shipping_countries", "store.shipping_zones"]},
+				{"key": "delivery_times", "label": "Delivery times or deadline (30 days unless otherwise agreed)", "legal_ref": "D.Lgs. 206/2005, arts. 49(1)(g), 61(1)"},
+				{"key": "delivery_costs", "label": "Delivery costs and how they are calculated, including free-shipping thresholds", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(e); D.Lgs. 70/2003, art. 7(1)(h)", "placeholders": ["store.currency"]},
+				{"key": "carriers", "label": "Carriers and delivery methods (home, pickup point, locker)", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(g)"},
+				{"key": "risk_transfer", "label": "Risk passes to the consumer on physical possession of the goods", "legal_ref": "D.Lgs. 206/2005, art. 63"},
+				{"key": "failed_delivery", "label": "Late or failed delivery: additional period, termination and refund", "legal_ref": "D.Lgs. 206/2005, art. 61(3)-(5)"},
+				{"key": "transport_damage", "label": "Transport damage and missing items: how to report, without limiting legal rights", "legal_ref": "D.Lgs. 206/2005, arts. 63, 135-bis"},
+				{"key": "customs", "label": "Customs duties and import taxes for destinations outside the EU", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(e)"}
+			],
+			"placeholders_used": ["store.shipping_countries", "store.shipping_zones", "store.currency", "business.email"],
+			"legal_refs": ["D.Lgs. 206/2005, arts. 49(1)(e), (g), 61, 63", "Reg. (EU) 2018/302 (geo-blocking)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "legal_guarantee",
+			"title": {"en": "Legal guarantee of conformity", "it": "Garanzia legale di conformità"},
+			"type": "page",
+			"group": "core",
+			"description": "The statutory guarantee, including the EU harmonised legal-guarantee notice.",
+			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}]},
+			"required_elements": [
+				{"key": "harmonised_notice", "label": "EU harmonised legal-guarantee notice (format and content set by Reg. (EU) 2025/1960)", "legal_ref": "Reg. (EU) 2025/1960; Directive 2011/83/EU, arts. 6(1)(l), 22a, as amended by Directive (EU) 2024/825"},
+				{"key": "duration", "label": "Seller liability for lack of conformity appearing within two years of delivery", "legal_ref": "D.Lgs. 206/2005, art. 133; Directive (EU) 2019/771, art. 10"},
+				{"key": "burden_of_proof", "label": "Presumption that defects appearing within one year existed at delivery", "legal_ref": "D.Lgs. 206/2005, art. 135; Directive (EU) 2019/771, art. 11"},
+				{"key": "remedies", "label": "Remedies: repair or replacement, then price reduction or termination", "legal_ref": "D.Lgs. 206/2005, arts. 135-bis–135-quater; Directive (EU) 2019/771, arts. 13-16"},
+				{"key": "free_of_charge", "label": "Remedies free of charge, within a reasonable time and without significant inconvenience", "legal_ref": "D.Lgs. 206/2005, art. 135-ter; Directive (EU) 2019/771, art. 14"},
+				{"key": "how_to_claim", "label": "How to report a lack of conformity and whom to contact", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(n)", "placeholders": ["business.legal_name", "business.email", "business.address"]},
+				{"key": "used_goods_period", "label": "Shorter liability period agreed for used goods (not less than one year), where applicable", "legal_ref": "Directive (EU) 2019/771, art. 10(6); D.Lgs. 206/2005, art. 133"},
+				{"key": "digital_elements", "label": "Goods with digital elements: updates supplied during the liability period", "legal_ref": "Directive (EU) 2019/771, art. 7(3)"},
+				{"key": "commercial_guarantee_distinction", "label": "Any commercial guarantee is in addition to, and does not affect, the legal guarantee", "legal_ref": "D.Lgs. 206/2005, art. 135-sexies"}
+			],
+			"placeholders_used": ["business.legal_name", "business.email", "business.address"],
+			"legal_refs": ["D.Lgs. 206/2005, arts. 128-135-septies (as replaced by D.Lgs. 170/2021)", "Directive (EU) 2019/771", "Reg. (EU) 2025/1960 (harmonised legal-guarantee notice)", "Directive (EU) 2024/825"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "payment_methods",
+			"title": {"en": "Payment methods", "it": "Metodi di pagamento"},
+			"type": "page",
+			"group": "core",
+			"description": "Accepted payment methods, charging and security.",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "accepted_methods", "label": "Accepted means of payment, stated at the latest at the start of the ordering process", "legal_ref": "D.Lgs. 206/2005, arts. 49(1)(g), 51(3)", "placeholders": ["store.payment_gateways"]},
+				{"key": "no_surcharges", "label": "No surcharges for the use of payment instruments", "legal_ref": "D.Lgs. 206/2005, art. 62; Directive (EU) 2015/2366, art. 62(4)"},
+				{"key": "charge_timing", "label": "When the payment is charged (order, shipment, authorisation holds)", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(g)"},
+				{"key": "currency", "label": "Currency of prices and of the charge", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(e)", "placeholders": ["store.currency"]},
+				{"key": "security", "label": "Payment security: strong customer authentication and who processes card data", "legal_ref": "Directive (EU) 2015/2366, art. 97; Reg. (EU) 2018/389"},
+				{"key": "deferred_payment", "label": "Deferred payment or instalments and the related disclosure, where offered", "legal_ref": "Directive (EU) 2023/2225"}
+			],
+			"placeholders_used": ["store.payment_gateways", "store.currency"],
+			"legal_refs": ["D.Lgs. 206/2005, arts. 49(1)(g), 51(3), 62", "Directive (EU) 2015/2366 (PSD2), arts. 62(4), 97"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "dispute_resolution",
+			"title": {"en": "Complaints and dispute resolution", "it": "Reclami e risoluzione delle controversie"},
+			"type": "page",
+			"group": "core",
+			"description": "Complaint handling and ADR bodies. The EU ODR platform was discontinued on 20 July 2025: links to it are errors.",
+			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}]},
+			"required_elements": [
+				{"key": "complaints_contact", "label": "How and where to submit a complaint", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(v)", "placeholders": ["business.email", "business.pec"]},
+				{"key": "adr_bodies", "label": "ADR bodies the trader uses or must use, with their website address", "legal_ref": "D.Lgs. 206/2005, art. 141-sexies; Directive 2013/11/EU, art. 13"},
+				{"key": "adr_commitment", "label": "Whether the trader commits to using ADR", "legal_ref": "D.Lgs. 206/2005, art. 141-sexies(1)"},
+				{"key": "no_odr_link", "label": "No link to the EU ODR platform (discontinued on 20 July 2025)", "legal_ref": "Reg. (EU) 2024/3228"},
+				{"key": "courts", "label": "Competent court: the consumer's place of residence", "legal_ref": "D.Lgs. 206/2005, art. 66-bis"}
+			],
+			"placeholders_used": ["business.legal_name", "business.email", "business.pec"],
+			"legal_refs": ["D.Lgs. 206/2005, arts. 49(1)(v), 66-bis, 141-sexies", "Directive 2013/11/EU (ADR), art. 13", "Reg. (EU) 2024/3228 (repeal of the ODR Regulation; platform closed on 20 July 2025)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete",
+			"lint": [
+				{"id": "odr_link", "pattern": "ec\\.europa\\.eu/consumers/odr|webgate\\.ec\\.europa\\.eu/odr", "severity": "error", "message": "Link to the EU ODR platform, discontinued on 20 July 2025 (Reg. (EU) 2024/3228). Remove it."},
+				{"id": "odr_mention", "pattern": "\\bODR\\b|online dispute resolution|risoluzione delle controversie online", "severity": "warning", "message": "Mentions the EU ODR platform, which was discontinued on 20 July 2025."}
+			]
+		},
+		{
+			"id": "contact_support",
+			"title": {"en": "Contact and customer support", "it": "Contatti e assistenza clienti"},
+			"type": "page",
+			"group": "core",
+			"description": "How customers reach the shop.",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "channels", "label": "Contact channels: e-mail, telephone, chat, postal address", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(c); D.Lgs. 70/2003, art. 7(1)(c)", "placeholders": ["business.email", "business.phone", "business.whatsapp", "business.address"]},
+				{"key": "hours", "label": "Support hours and expected response times", "legal_ref": "", "placeholders": ["business.support_hours"]},
+				{"key": "phone_cost", "label": "Telephone lines for contract questions cost no more than the basic rate", "legal_ref": "D.Lgs. 206/2005, art. 64-bis; Directive 2011/83/EU, art. 21"},
+				{"key": "complaints", "label": "How to file a complaint", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(v)", "placeholders": ["links.dispute_resolution"]}
+			],
+			"placeholders_used": ["business.email", "business.phone", "business.whatsapp", "business.address", "business.support_hours", "links.dispute_resolution"],
+			"legal_refs": ["D.Lgs. 206/2005, arts. 49(1)(c), 64-bis", "D.Lgs. 70/2003, art. 7(1)(c)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "commercial_guarantee",
+			"title": {"en": "Commercial guarantee", "it": "Garanzia convenzionale"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Seller or producer guarantee offered in addition to the legal guarantee. Shown for electronics and refurbished goods; add it from the full catalog whenever a guarantee is offered.",
+			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}, {"any": [{"field": "product_flags", "op": "includes", "value": "electronics"}, {"field": "product_flags", "op": "includes", "value": "refurbished"}]}]},
+			"required_elements": [
+				{"key": "legal_guarantee_statement", "label": "Clear statement that the legal guarantee applies free of charge and is not affected", "legal_ref": "D.Lgs. 206/2005, art. 135-sexies; Directive (EU) 2019/771, art. 17(2)", "placeholders": ["links.legal_guarantee"]},
+				{"key": "guarantor", "label": "Name and address of the guarantor (seller or producer)", "legal_ref": "D.Lgs. 206/2005, art. 135-sexies; Directive (EU) 2019/771, art. 17(2)", "placeholders": ["business.legal_name", "business.address"]},
+				{"key": "procedure", "label": "Procedure to follow to obtain the guarantee", "legal_ref": "D.Lgs. 206/2005, art. 135-sexies; Directive (EU) 2019/771, art. 17(2)", "placeholders": ["business.email"]},
+				{"key": "goods_covered", "label": "Goods to which the guarantee applies", "legal_ref": "D.Lgs. 206/2005, art. 135-sexies; Directive (EU) 2019/771, art. 17(2)"},
+				{"key": "terms", "label": "Terms of the guarantee: duration, territorial scope, costs", "legal_ref": "D.Lgs. 206/2005, art. 135-sexies; Directive (EU) 2019/771, art. 17(2)"},
+				{"key": "durable_medium", "label": "Guarantee statement on a durable medium at the latest at delivery, in Italian", "legal_ref": "D.Lgs. 206/2005, art. 135-sexies"},
+				{"key": "durability_label", "label": "Harmonised label for a producer's commercial guarantee of durability, where offered", "legal_ref": "Directive 2011/83/EU, art. 22a (Directive (EU) 2024/825); Reg. (EU) 2025/1960"}
+			],
+			"placeholders_used": ["business.legal_name", "business.address", "business.email", "links.legal_guarantee"],
+			"legal_refs": ["D.Lgs. 206/2005, art. 135-sexies", "Directive (EU) 2019/771, art. 17", "Directive (EU) 2024/825; Reg. (EU) 2025/1960 (harmonised label)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "authenticity_guarantee",
+			"title": {"en": "Authenticity guarantee", "it": "Garanzia di autenticità"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Authenticity promise for resold branded goods. Shown for used goods; add it from the full catalog when reselling new branded goods.",
+			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}, {"field": "product_flags", "op": "includes", "value": "used_goods"}]},
+			"required_elements": [
+				{"key": "scope", "label": "Products covered and what the authenticity promise means", "legal_ref": "D.Lgs. 206/2005, arts. 20-22"},
+				{"key": "verification_process", "label": "How authenticity is verified (in-house checks, third-party authentication)", "legal_ref": "D.Lgs. 206/2005, art. 21(1)(b)"},
+				{"key": "guarantor", "label": "Name and address of the guarantor", "legal_ref": "D.Lgs. 206/2005, art. 135-sexies", "placeholders": ["business.legal_name", "business.address"]},
+				{"key": "claim_procedure", "label": "How and within what period to claim, and the evidence required", "legal_ref": "D.Lgs. 206/2005, art. 135-sexies", "placeholders": ["business.email"]},
+				{"key": "remedy", "label": "Remedy when an item is not authentic (refund, return costs)", "legal_ref": "D.Lgs. 206/2005, arts. 135-bis, 135-sexies"},
+				{"key": "legal_guarantee_unaffected", "label": "Statement that the legal guarantee of conformity is not affected", "legal_ref": "D.Lgs. 206/2005, art. 135-sexies", "placeholders": ["links.legal_guarantee"]}
+			],
+			"placeholders_used": ["business.legal_name", "business.address", "business.email", "links.legal_guarantee"],
+			"legal_refs": ["D.Lgs. 206/2005, arts. 20-22, 135-sexies", "Directive (EU) 2019/771, art. 17", "Directive 2005/29/EC (unfair commercial practices)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "used_goods_notice",
+			"title": {"en": "Used and refurbished goods", "it": "Prodotti usati e ricondizionati"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Condition grading and guarantee rules for second-hand and refurbished goods.",
+			"applies_when": {"any": [{"field": "product_flags", "op": "includes", "value": "used_goods"}, {"field": "product_flags", "op": "includes", "value": "refurbished"}]},
+			"required_elements": [
+				{"key": "condition_grading", "label": "Condition grading scale and how each item's condition is described", "legal_ref": "D.Lgs. 206/2005, arts. 21-22, 129-130"},
+				{"key": "known_defects", "label": "Specific defects disclosed and expressly accepted before purchase", "legal_ref": "Directive (EU) 2019/771, art. 7(5); D.Lgs. 206/2005, arts. 129-130"},
+				{"key": "guarantee_period", "label": "Legal guarantee period for used goods (a shorter period of at least one year only if expressly agreed)", "legal_ref": "Directive (EU) 2019/771, art. 10(6); D.Lgs. 206/2005, art. 133", "placeholders": ["links.legal_guarantee"]},
+				{"key": "refurbished_claims", "label": "Meaning of \"refurbished\" and similar claims, and who carried out the refurbishment", "legal_ref": "D.Lgs. 206/2005, arts. 21-22"},
+				{"key": "margin_scheme", "label": "VAT margin scheme, where applied", "legal_ref": "D.L. 41/1995, art. 36"}
+			],
+			"placeholders_used": ["links.legal_guarantee"],
+			"legal_refs": ["D.Lgs. 206/2005, arts. 21-22, 129-130, 133", "Directive (EU) 2019/771, arts. 7(5), 10(6)", "D.L. 41/1995, art. 36 (VAT margin scheme)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "accessibility_statement",
+			"title": {"en": "Accessibility statement", "it": "Dichiarazione di accessibilità"},
+			"type": "page",
+			"group": "conditional",
+			"description": "European Accessibility Act information on the e-commerce service. Not applicable to micro-enterprises that provide services only.",
+			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}, {"not": {"all": [{"field": "is_micro_enterprise", "op": "eq", "value": true}, {"not": {"any": [{"field": "product_types", "op": "includes", "value": "physical"}, {"field": "product_types", "op": "includes", "value": "digital_content"}, {"field": "product_types", "op": "includes", "value": "subscriptions"}]}}]}}]},
+			"required_elements": [
+				{"key": "service_description", "label": "General description of the service in accessible formats", "legal_ref": "Directive (EU) 2019/882, art. 13(2) and Annex V", "placeholders": ["store.site_url"]},
+				{"key": "how_it_works", "label": "Explanations needed to understand how the service works", "legal_ref": "Directive (EU) 2019/882, Annex V"},
+				{"key": "conformance", "label": "How the service meets the accessibility requirements (standard applied, e.g. EN 301 549) and conformance status", "legal_ref": "Directive (EU) 2019/882, arts. 13(2), 15 and Annex V"},
+				{"key": "exemptions", "label": "Fundamental alteration or disproportionate burden claimed, where relied on", "legal_ref": "Directive (EU) 2019/882, art. 14"},
+				{"key": "feedback_contact", "label": "Contact to report accessibility problems", "legal_ref": "D.Lgs. 82/2022", "placeholders": ["business.email"]},
+				{"key": "enforcement", "label": "Competent authority and complaint procedure", "legal_ref": "D.Lgs. 82/2022; Directive (EU) 2019/882, art. 23"}
+			],
+			"placeholders_used": ["store.site_url", "business.email"],
+			"legal_refs": ["Directive (EU) 2019/882 (European Accessibility Act), art. 13 and Annex V", "D.Lgs. 82/2022", "EN 301 549"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "pricing_discount_policy",
+			"title": {"en": "Prices and discounts", "it": "Prezzi e riduzioni di prezzo"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Price indication rules, including the lowest price of the previous 30 days for every price reduction.",
+			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}, {"field": "product_types", "op": "includes", "value": "physical"}]},
+			"required_elements": [
+				{"key": "prior_price", "label": "Every announced price reduction shows the lowest price applied in the 30 days before it", "legal_ref": "D.Lgs. 206/2005, art. 17-bis; Directive 98/6/EC, art. 6a(1)-(2)"},
+				{"key": "progressive_reductions", "label": "Progressive reductions: the prior price is the one before the first reduction", "legal_ref": "Directive 98/6/EC, art. 6a(5); D.Lgs. 206/2005, art. 17-bis"},
+				{"key": "new_products", "label": "Goods on the market for less than 30 days: the period used", "legal_ref": "Directive 98/6/EC, art. 6a(4); D.Lgs. 206/2005, art. 17-bis"},
+				{"key": "perishables", "label": "Perishable goods exception, where applied", "legal_ref": "Directive 98/6/EC, art. 6a(3); D.Lgs. 206/2005, art. 17-bis"},
+				{"key": "unit_price", "label": "Unit price (per kilogram, litre, ...) where required", "legal_ref": "D.Lgs. 206/2005, arts. 14-17; Directive 98/6/EC, art. 3"},
+				{"key": "personalised_pricing", "label": "Disclosure when a price is personalised by automated decision-making", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(e-bis); Directive 2011/83/EU, art. 6(1)(ea)"}
+			],
+			"placeholders_used": ["store.currency"],
+			"legal_refs": ["D.Lgs. 206/2005, art. 17-bis (introduced by D.Lgs. 26/2023)", "Directive 98/6/EC, art. 6a (as amended by Directive (EU) 2019/2161)", "D.Lgs. 206/2005, art. 49(1)(e-bis)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "review_policy",
+			"title": {"en": "Customer reviews policy", "it": "Politica sulle recensioni"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Whether and how reviews are checked to come from real customers.",
+			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "reviews"}]},
+			"required_elements": [
+				{"key": "verification", "label": "Whether and how the shop ensures reviews come from consumers who used or bought the product", "legal_ref": "Directive 2005/29/EC, art. 7(6); D.Lgs. 206/2005, art. 22 (as amended by D.Lgs. 26/2023)"},
+				{"key": "processing", "label": "How reviews are collected, moderated and published, and reasons for rejection", "legal_ref": "Directive 2005/29/EC, art. 7(6)"},
+				{"key": "all_reviews", "label": "Positive and negative reviews are published alike; no distortion of reviews", "legal_ref": "Directive 2005/29/EC, Annex I, point 23c"},
+				{"key": "incentives", "label": "Incentivised or sponsored reviews and how they are labelled", "legal_ref": "Directive 2005/29/EC, Annex I, points 23b-23c"},
+				{"key": "third_party_platforms", "label": "Third-party review platforms used and the data shared with them", "legal_ref": "Reg. (EU) 2016/679, art. 13(1)(e)"}
+			],
+			"placeholders_used": [],
+			"legal_refs": ["Directive 2005/29/EC, art. 7(6) and Annex I, points 23b-23c", "D.Lgs. 206/2005, arts. 22-23 (as amended by D.Lgs. 26/2023)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "subscription_terms",
+			"title": {"en": "Subscription terms", "it": "Condizioni degli abbonamenti"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Recurring contracts: duration, renewal, billing and cancellation.",
+			"applies_when": {"all": [{"field": "product_types", "op": "includes", "value": "subscriptions"}]},
+			"required_elements": [
+				{"key": "duration_renewal", "label": "Duration, automatic renewal and renewal notice", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(q)"},
+				{"key": "minimum_term", "label": "Minimum duration of the consumer's obligations, where applicable", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(r)"},
+				{"key": "price_billing", "label": "Recurring price, billing frequency and how price changes are made", "legal_ref": "D.Lgs. 206/2005, arts. 33(2)(o), 49(1)(e)"},
+				{"key": "cancellation", "label": "How to cancel, notice periods and effective date", "legal_ref": "D.Lgs. 206/2005, arts. 33(2)(i), 49(1)(q)", "placeholders": ["business.email"]},
+				{"key": "withdrawal", "label": "Right of withdrawal from the subscription", "legal_ref": "D.Lgs. 206/2005, arts. 52, 59", "placeholders": ["links.withdrawal_policy"]},
+				{"key": "free_trials", "label": "Free or discounted trials that convert to paid plans", "legal_ref": "D.Lgs. 206/2005, arts. 20-22"},
+				{"key": "changes", "label": "Changes to the service or the terms during the subscription", "legal_ref": "D.Lgs. 206/2005, art. 33(2)(m)"}
+			],
+			"placeholders_used": ["business.email", "links.withdrawal_policy"],
+			"legal_refs": ["D.Lgs. 206/2005, arts. 33, 49(1)(q)-(r), 52, 59", "Directive 2011/83/EU, art. 6(1)(o)-(p)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "digital_content_terms",
+			"title": {"en": "Digital content terms", "it": "Condizioni per i contenuti digitali"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Supply, conformity, licence and withdrawal for digital content and services.",
+			"applies_when": {"all": [{"field": "product_types", "op": "includes", "value": "digital_content"}]},
+			"required_elements": [
+				{"key": "functionality", "label": "Functionality, compatibility and interoperability, including technical protection measures", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(t)-(u)"},
+				{"key": "supply", "label": "How and when the content is supplied (download, streaming, account)", "legal_ref": "Directive (EU) 2019/770, art. 5"},
+				{"key": "withdrawal_waiver", "label": "Loss of the right of withdrawal: express prior consent and acknowledgement, confirmed on a durable medium", "legal_ref": "D.Lgs. 206/2005, arts. 51(7), 59(1)(o)", "placeholders": ["links.withdrawal_policy"]},
+				{"key": "conformity_updates", "label": "Conformity and updates during the period of supply", "legal_ref": "Directive (EU) 2019/770, arts. 7-8"},
+				{"key": "remedies", "label": "Remedies for failure to supply and for lack of conformity", "legal_ref": "Directive (EU) 2019/770, arts. 13-14"},
+				{"key": "licence", "label": "Licence scope (personal use, number of devices)", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(t); Directive (EU) 2019/770, art. 10"},
+				{"key": "personal_data_as_counter_performance", "label": "Contracts where personal data is provided instead of a price", "legal_ref": "Directive (EU) 2019/770, art. 3(1)"},
+				{"key": "modifications", "label": "Modifications of the content beyond what is needed for conformity", "legal_ref": "Directive (EU) 2019/770, art. 19"}
+			],
+			"placeholders_used": ["links.withdrawal_policy", "business.email"],
+			"legal_refs": ["D.Lgs. 206/2005, arts. 135-octies – 135-vicies ter (D.Lgs. 173/2021)", "Directive (EU) 2019/770", "D.Lgs. 206/2005, art. 59(1)(o)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "b2b_terms",
+			"title": {"en": "Terms of sale for business customers", "it": "Condizioni di vendita per clienti business"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Terms for B2B sales (no consumer protections apply).",
+			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2b"}]},
+			"required_elements": [
+				{"key": "scope", "label": "Business customers only and how business status is verified", "legal_ref": "D.Lgs. 206/2005, art. 3(1)(a)", "placeholders": ["business.legal_name", "business.vat_id"]},
+				{"key": "contract_formation", "label": "Offer, order acceptance and conclusion of the contract", "legal_ref": "Codice civile, arts. 1326, 1336"},
+				{"key": "prices_payment", "label": "Prices net of VAT, payment terms and late-payment interest", "legal_ref": "D.Lgs. 231/2002, arts. 4-5"},
+				{"key": "delivery_risk", "label": "Delivery terms and passing of risk (Incoterms where used)", "legal_ref": "Codice civile, art. 1510"},
+				{"key": "defects", "label": "Warranty for defects: notice within 8 days of discovery, one-year limitation", "legal_ref": "Codice civile, arts. 1490-1495"},
+				{"key": "liability", "label": "Limitation of liability within the limits of the law", "legal_ref": "Codice civile, art. 1229"},
+				{"key": "onerous_clauses", "label": "Onerous clauses specifically approved in writing", "legal_ref": "Codice civile, arts. 1341(2), 1342"},
+				{"key": "law_jurisdiction", "label": "Governing law (and CISG, if excluded) and competent court", "legal_ref": "Reg. (EU) 1215/2012, art. 25; Reg. (EC) 593/2008, art. 3"},
+				{"key": "invoicing", "label": "Electronic invoicing and the tax data required", "legal_ref": "D.P.R. 633/1972, art. 21; D.Lgs. 127/2015", "placeholders": ["business.pec"]}
+			],
+			"placeholders_used": ["business.legal_name", "business.vat_id", "business.pec", "business.address"],
+			"legal_refs": ["Codice civile, arts. 1229, 1341-1342, 1490-1495, 1510", "D.Lgs. 231/2002 (late payments)", "Reg. (EU) 1215/2012, art. 25", "Reg. (EC) 593/2008, art. 3"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "marketplace_seller_terms",
+			"title": {"en": "Marketplace terms for sellers", "it": "Condizioni del marketplace per i venditori"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Terms for third-party sellers on a multivendor marketplace.",
+			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "marketplace_multivendor"}]},
+			"required_elements": [
+				{"key": "p2b_terms", "label": "Plain and intelligible terms, easily available, with 15 days' notice of changes", "legal_ref": "Reg. (EU) 2019/1150, art. 3"},
+				{"key": "suspension_termination", "label": "Grounds and procedure for restricting, suspending or terminating sellers", "legal_ref": "Reg. (EU) 2019/1150, art. 4"},
+				{"key": "ranking", "label": "Main parameters determining ranking", "legal_ref": "Reg. (EU) 2019/1150, art. 5"},
+				{"key": "differentiated_treatment", "label": "Differentiated treatment of the operator's own offers", "legal_ref": "Reg. (EU) 2019/1150, art. 7"},
+				{"key": "data_access", "label": "Access to data provided or generated by sellers and customers", "legal_ref": "Reg. (EU) 2019/1150, art. 9"},
+				{"key": "complaints_mediation", "label": "Internal complaint-handling system and mediators", "legal_ref": "Reg. (EU) 2019/1150, arts. 11-12"},
+				{"key": "trader_traceability", "label": "Information collected from sellers and how it is verified (trader traceability)", "legal_ref": "Reg. (EU) 2022/2065, art. 30"},
+				{"key": "compliance_by_design", "label": "Interface letting sellers provide pre-contractual and product safety information", "legal_ref": "Reg. (EU) 2022/2065, art. 31"},
+				{"key": "seller_status_to_consumers", "label": "Telling consumers whether each seller is a trader and who is responsible for the contract", "legal_ref": "D.Lgs. 206/2005, art. 49-bis; Directive 2011/83/EU, art. 6a"},
+				{"key": "tax_reporting", "label": "Reporting of seller data to tax authorities (DAC7)", "legal_ref": "Directive (EU) 2021/514; D.Lgs. 32/2023"}
+			],
+			"placeholders_used": ["business.legal_name", "business.email"],
+			"legal_refs": ["Reg. (EU) 2019/1150 (platform-to-business)", "Reg. (EU) 2022/2065 (Digital Services Act), arts. 30-32", "D.Lgs. 206/2005, art. 49-bis", "Directive (EU) 2021/514 (DAC7); D.Lgs. 32/2023"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "dsa_notice_action",
+			"title": {"en": "Illegal content notices (DSA)", "it": "Segnalazione di contenuti illegali (DSA)"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Digital Services Act duties for hosting third-party content (marketplace listings).",
+			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "marketplace_multivendor"}]},
+			"required_elements": [
+				{"key": "points_of_contact", "label": "Single points of contact for authorities and for users", "legal_ref": "Reg. (EU) 2022/2065, arts. 11-12", "placeholders": ["business.email"]},
+				{"key": "moderation_terms", "label": "Content moderation policies and tools described in the terms", "legal_ref": "Reg. (EU) 2022/2065, art. 14"},
+				{"key": "notice_mechanism", "label": "Electronic mechanism to notify illegal content, with the required notice elements", "legal_ref": "Reg. (EU) 2022/2065, art. 16"},
+				{"key": "statement_of_reasons", "label": "Statement of reasons when content or accounts are restricted", "legal_ref": "Reg. (EU) 2022/2065, art. 17"},
+				{"key": "criminal_offences", "label": "Notification of suspected serious criminal offences to the authorities", "legal_ref": "Reg. (EU) 2022/2065, art. 18"},
+				{"key": "complaints_odr", "label": "Internal complaints and out-of-court dispute settlement (online platforms that are not micro or small enterprises)", "legal_ref": "Reg. (EU) 2022/2065, arts. 19-21"},
+				{"key": "transparency_reporting", "label": "Transparency reports, or the micro/small-enterprise exemption relied on", "legal_ref": "Reg. (EU) 2022/2065, arts. 15, 24"}
+			],
+			"placeholders_used": ["business.email"],
+			"legal_refs": ["Reg. (EU) 2022/2065 (Digital Services Act), arts. 11-21, 24"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "loyalty_terms",
+			"title": {"en": "Loyalty and referral programme", "it": "Regolamento programma fedeltà e referral"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Points, rewards and referral rules (prize promotions under D.P.R. 430/2001).",
+			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "loyalty_referral"}]},
+			"required_elements": [
+				{"key": "promoter", "label": "Promoter identity", "legal_ref": "D.P.R. 430/2001, art. 11", "placeholders": ["business.legal_name", "business.address", "business.vat_id"]},
+				{"key": "regulation", "label": "Programme regulation: duration, territorial scope, who can join", "legal_ref": "D.P.R. 430/2001, arts. 10-11"},
+				{"key": "earning_rules", "label": "How points or rewards are earned and their value", "legal_ref": "D.P.R. 430/2001, art. 11"},
+				{"key": "redemption", "label": "Redemption rules, rewards catalogue and expiry of points", "legal_ref": "D.P.R. 430/2001, art. 11; D.Lgs. 206/2005, arts. 20-22"},
+				{"key": "guarantee", "label": "Guarantee (cauzione) securing the rewards, where required", "legal_ref": "D.P.R. 430/2001, art. 7"},
+				{"key": "referral_rules", "label": "Referral rewards: conditions and limits", "legal_ref": "D.Lgs. 206/2005, arts. 20-23"},
+				{"key": "changes_termination", "label": "Changes to and termination of the programme", "legal_ref": "D.Lgs. 206/2005, art. 33"},
+				{"key": "profiling", "label": "Data processing and profiling for the programme, with separate consent where needed", "legal_ref": "Reg. (EU) 2016/679, arts. 6, 13, 22", "placeholders": ["links.privacy_policy"]}
+			],
+			"placeholders_used": ["business.legal_name", "business.address", "business.vat_id", "links.privacy_policy"],
+			"legal_refs": ["D.P.R. 430/2001 (prize promotions)", "D.Lgs. 206/2005, arts. 20-23, 33", "Reg. (EU) 2016/679, arts. 6, 13, 22"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "gift_card_terms",
+			"title": {"en": "Gift card terms", "it": "Condizioni delle gift card"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Issue, validity and use of gift cards and vouchers.",
+			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "gift_cards"}]},
+			"required_elements": [
+				{"key": "issuer", "label": "Issuer identity", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(b)", "placeholders": ["business.legal_name"]},
+				{"key": "validity", "label": "Validity period and expiry", "legal_ref": "D.Lgs. 206/2005, arts. 33-34"},
+				{"key": "use_rules", "label": "Where and how it can be used, partial use and balance check", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(a)"},
+				{"key": "refund_loss", "label": "Cash refund, loss and theft rules", "legal_ref": "D.Lgs. 206/2005, art. 33"},
+				{"key": "withdrawal", "label": "Right of withdrawal for gift cards bought online", "legal_ref": "D.Lgs. 206/2005, art. 52", "placeholders": ["links.withdrawal_policy"]},
+				{"key": "voucher_type", "label": "Single-purpose or multi-purpose voucher (VAT treatment)", "legal_ref": "D.P.R. 633/1972, arts. 6-bis–6-quater; Directive (EU) 2016/1065"}
+			],
+			"placeholders_used": ["business.legal_name", "links.withdrawal_policy"],
+			"legal_refs": ["D.Lgs. 206/2005, arts. 33-34, 52", "D.P.R. 633/1972, arts. 6-bis–6-quater (vouchers)", "Directive (EU) 2016/1065"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "contest_rules",
+			"title": {"en": "Contest rules", "it": "Regolamento del concorso a premi"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Prize competitions and draws under D.P.R. 430/2001.",
+			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "contests"}]},
+			"required_elements": [
+				{"key": "promoter", "label": "Promoter identity", "legal_ref": "D.P.R. 430/2001, art. 11", "placeholders": ["business.legal_name", "business.address", "business.vat_id"]},
+				{"key": "ministry_notice", "label": "Regulation sent to the Ministry (MIMIT) at least 15 days before the start", "legal_ref": "D.P.R. 430/2001, art. 10"},
+				{"key": "duration_area", "label": "Duration and territorial scope", "legal_ref": "D.P.R. 430/2001, art. 11"},
+				{"key": "participants", "label": "Who may take part (age, residence) and how", "legal_ref": "D.P.R. 430/2001, art. 11"},
+				{"key": "prizes", "label": "Prizes, their value and how they are awarded (draw before a notary or official)", "legal_ref": "D.P.R. 430/2001, arts. 9, 11"},
+				{"key": "guarantee", "label": "Guarantee (cauzione) covering the value of the prizes", "legal_ref": "D.P.R. 430/2001, art. 7"},
+				{"key": "unclaimed_prizes", "label": "Unclaimed prizes donated to a named non-profit organisation", "legal_ref": "D.P.R. 430/2001, art. 10"},
+				{"key": "privacy", "label": "Processing of participants' data", "legal_ref": "Reg. (EU) 2016/679, art. 13", "placeholders": ["links.privacy_policy"]}
+			],
+			"placeholders_used": ["business.legal_name", "business.address", "business.vat_id", "links.privacy_policy"],
+			"legal_refs": ["D.P.R. 430/2001", "Reg. (EU) 2016/679, art. 13"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "promo_terms",
+			"title": {"en": "Promotions and discount codes", "it": "Promozioni e codici sconto"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Conditions of promotional offers.",
+			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}]},
+			"required_elements": [
+				{"key": "conditions", "label": "Conditions to benefit from promotions: eligibility, minimum spend, exclusions", "legal_ref": "D.Lgs. 70/2003, art. 8(1)(c); Directive 2000/31/EC, art. 6(c)"},
+				{"key": "validity", "label": "Validity period and quantity limits", "legal_ref": "D.Lgs. 70/2003, art. 8; D.Lgs. 206/2005, arts. 21-23"},
+				{"key": "combination", "label": "Whether promotions can be combined", "legal_ref": "D.Lgs. 70/2003, art. 8(1)(c)"},
+				{"key": "price_reductions", "label": "Price reductions show the lowest price of the previous 30 days", "legal_ref": "D.Lgs. 206/2005, art. 17-bis"},
+				{"key": "returns_effect", "label": "Effect of returns or withdrawal on discounts, gifts and bundles", "legal_ref": "D.Lgs. 206/2005, art. 56"},
+				{"key": "gifts_with_purchase", "label": "Gifts with purchase that qualify as prize promotions", "legal_ref": "D.P.R. 430/2001, art. 2"}
+			],
+			"placeholders_used": [],
+			"legal_refs": ["D.Lgs. 70/2003, art. 8", "Directive 2000/31/EC, art. 6", "D.Lgs. 206/2005, arts. 17-bis, 20-23", "D.P.R. 430/2001"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "bnpl_disclosure",
+			"title": {"en": "Buy now, pay later", "it": "Pagamento rateale (buy now, pay later)"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Instalment and deferred-payment offers. The Consumer Credit Directive (EU) 2023/2225 applies from 20 November 2026.",
+			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "bnpl"}]},
+			"required_elements": [
+				{"key": "credit_provider", "label": "Credit provider identity and the shop's role (credit intermediary on an ancillary basis)", "legal_ref": "Directive (EU) 2023/2225"},
+				{"key": "advertising_information", "label": "Standard information when instalments are advertised (cost of credit, APR/TAEG, total amount payable)", "legal_ref": "Directive (EU) 2023/2225; D.Lgs. 385/1993, art. 123"},
+				{"key": "borrowing_warning", "label": "Warning that borrowing money costs money", "legal_ref": "Directive (EU) 2023/2225"},
+				{"key": "costs_late_fees", "label": "Interest, fees and late-payment charges", "legal_ref": "Directive (EU) 2023/2225"},
+				{"key": "creditworthiness", "label": "Creditworthiness assessment carried out by the provider", "legal_ref": "Directive (EU) 2023/2225"},
+				{"key": "credit_withdrawal", "label": "Right of withdrawal from the credit agreement within 14 days", "legal_ref": "Directive (EU) 2023/2225; D.Lgs. 385/1993, art. 125-ter"},
+				{"key": "linked_contracts", "label": "Linked credit agreement: effect of withdrawing from the purchase", "legal_ref": "Directive (EU) 2023/2225; D.Lgs. 385/1993, art. 125-quinquies"}
+			],
+			"placeholders_used": ["store.payment_gateways"],
+			"legal_refs": ["Directive (EU) 2023/2225 (Consumer Credit Directive), applies from 20 November 2026", "D.Lgs. 385/1993 (Testo unico bancario), arts. 121-126", "Directive 2008/48/EC (until 19 November 2026)"],
+			"review_cadence_months": 6,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "age_restricted_policy",
+			"title": {"en": "Age-restricted products", "it": "Prodotti soggetti a limiti di età"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Minimum age and verification for restricted goods.",
+			"applies_when": {"all": [{"field": "product_flags", "op": "includes", "value": "age_restricted"}]},
+			"required_elements": [
+				{"key": "restricted_categories", "label": "Products concerned and the minimum age for each", "legal_ref": "L. 125/2001, art. 14-ter"},
+				{"key": "age_verification", "label": "Age verification at purchase and at delivery", "legal_ref": "L. 125/2001, art. 14-ter"},
+				{"key": "refusal", "label": "Refused orders or deliveries when age cannot be verified, and refunds", "legal_ref": "D.Lgs. 206/2005, art. 56"},
+				{"key": "distance_sale_bans", "label": "Products that may not be sold at a distance (e.g. tobacco and nicotine products where prohibited)", "legal_ref": "Directive 2014/40/EU, art. 18; D.Lgs. 6/2016"},
+				{"key": "data_minimisation", "label": "Minimal personal data collected for age checks", "legal_ref": "Reg. (EU) 2016/679, art. 5(1)(c)"}
+			],
+			"placeholders_used": [],
+			"legal_refs": ["L. 125/2001, art. 14-ter (alcohol and minors)", "Directive 2014/40/EU, art. 18; D.Lgs. 6/2016", "Reg. (EU) 2016/679, art. 5(1)(c)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "product_safety_recalls",
+			"title": {"en": "Product safety and recalls", "it": "Sicurezza dei prodotti e richiami"},
+			"type": "page",
+			"group": "conditional",
+			"description": "General Product Safety Regulation duties for online sales.",
+			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}, {"field": "product_types", "op": "includes", "value": "physical"}]},
+			"required_elements": [
+				{"key": "manufacturer_info", "label": "Manufacturer name, trade name or mark, postal and electronic address on each offer", "legal_ref": "Reg. (EU) 2023/988, art. 19(a)"},
+				{"key": "eu_responsible_person", "label": "EU responsible person when the manufacturer is established outside the EU", "legal_ref": "Reg. (EU) 2023/988, art. 19(b); Reg. (EU) 2019/1020, art. 4"},
+				{"key": "product_identification", "label": "Product identification (picture, type, batch or serial number)", "legal_ref": "Reg. (EU) 2023/988, art. 19(c)"},
+				{"key": "warnings", "label": "Warnings and safety information in the consumer's language", "legal_ref": "Reg. (EU) 2023/988, art. 19(d)"},
+				{"key": "recall_procedure", "label": "How recalls are communicated (recall notice, direct contact with customers)", "legal_ref": "Reg. (EU) 2023/988, arts. 35-36"},
+				{"key": "recall_remedies", "label": "Remedies offered in a recall (repair, replacement, refund)", "legal_ref": "Reg. (EU) 2023/988, art. 37"},
+				{"key": "safety_reports", "label": "How customers can report safety issues", "legal_ref": "Reg. (EU) 2023/988, art. 9", "placeholders": ["business.email"]},
+				{"key": "accident_reporting", "label": "Accidents reported to the authorities through the Safety Business Gateway", "legal_ref": "Reg. (EU) 2023/988, art. 20"}
+			],
+			"placeholders_used": ["business.email"],
+			"legal_refs": ["Reg. (EU) 2023/988 (General Product Safety Regulation), arts. 19, 20, 35-37", "Reg. (EU) 2019/1020, art. 4"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "weee_takeback",
+			"title": {"en": "Electrical equipment take-back (WEEE)", "it": "Ritiro RAEE"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Take-back of waste electrical and electronic equipment.",
+			"applies_when": {"all": [{"field": "product_flags", "op": "includes", "value": "electronics"}]},
+			"required_elements": [
+				{"key": "one_for_one", "label": "Free one-for-one take-back of equivalent used equipment when supplying new equipment, including distance sales", "legal_ref": "D.Lgs. 49/2014, art. 11"},
+				{"key": "zero_for_one", "label": "Free take-back of very small WEEE without purchase, where the distributor is obliged", "legal_ref": "D.Lgs. 49/2014, art. 11(3); D.M. 121/2016"},
+				{"key": "user_information", "label": "Separate collection, the crossed-out wheeled bin symbol and collection points", "legal_ref": "D.Lgs. 49/2014, art. 26; Directive 2012/19/EU, art. 14"},
+				{"key": "producer_registration", "label": "Producer register number, where the shop is a producer or importer", "legal_ref": "D.Lgs. 49/2014, art. 29"},
+				{"key": "how_to_request", "label": "How to request a take-back", "legal_ref": "D.Lgs. 49/2014, art. 11", "placeholders": ["business.email"]}
+			],
+			"placeholders_used": ["business.email"],
+			"legal_refs": ["Directive 2012/19/EU (WEEE)", "D.Lgs. 49/2014, arts. 11, 26, 29", "D.M. 121/2016 (zero-for-one take-back)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "battery_takeback",
+			"title": {"en": "Battery take-back", "it": "Ritiro delle pile e degli accumulatori"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Take-back of waste batteries under the EU Batteries Regulation.",
+			"applies_when": {"all": [{"field": "product_flags", "op": "includes", "value": "batteries"}]},
+			"required_elements": [
+				{"key": "takeback", "label": "Free take-back of waste portable batteries without purchase obligation, including for distance sales", "legal_ref": "Reg. (EU) 2023/1542, art. 62"},
+				{"key": "end_user_information", "label": "Prevention, separate collection, take-back options and the crossed-out bin symbol", "legal_ref": "Reg. (EU) 2023/1542, arts. 13, 74"},
+				{"key": "producer_registration", "label": "Producer register number, where the shop places batteries on the market", "legal_ref": "Reg. (EU) 2023/1542, art. 55"},
+				{"key": "how_to_return", "label": "How to return waste batteries", "legal_ref": "Reg. (EU) 2023/1542, art. 62", "placeholders": ["business.email"]}
+			],
+			"placeholders_used": ["business.email"],
+			"legal_refs": ["Reg. (EU) 2023/1542 (Batteries Regulation), arts. 13, 55, 62, 74"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "packaging_epr",
+			"title": {"en": "Packaging and recycling", "it": "Imballaggi e raccolta differenziata"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Packaging labelling, disposal information and extended producer responsibility.",
+			"applies_when": {"all": [{"field": "product_types", "op": "includes", "value": "physical"}]},
+			"required_elements": [
+				{"key": "labelling", "label": "Environmental labelling of packaging (material identification, disposal instructions)", "legal_ref": "D.Lgs. 152/2006, art. 219(5); Reg. (EU) 2025/40, art. 12"},
+				{"key": "disposal_information", "label": "How customers should dispose of the packaging", "legal_ref": "D.Lgs. 152/2006, art. 219(5)"},
+				{"key": "epr_italy", "label": "Extended producer responsibility in Italy (CONAI membership and environmental contribution)", "legal_ref": "D.Lgs. 152/2006, arts. 221, 224"},
+				{"key": "epr_destinations", "label": "Producer registrations in other destination countries, where required", "legal_ref": "Reg. (EU) 2025/40"},
+				{"key": "ecommerce_packaging", "label": "E-commerce packaging minimisation, where applicable", "legal_ref": "Reg. (EU) 2025/40"}
+			],
+			"placeholders_used": [],
+			"legal_refs": ["D.Lgs. 152/2006, arts. 219, 221, 224", "D.Lgs. 116/2020 (environmental labelling of packaging)", "Reg. (EU) 2025/40 (Packaging and Packaging Waste Regulation), applies from 12 August 2026"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "environmental_claims",
+			"title": {"en": "Environmental claims", "it": "Dichiarazioni ambientali"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Substantiation of green claims. Directive (EU) 2024/825 applies from 27 September 2026.",
+			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "environmental_claims"}]},
+			"required_elements": [
+				{"key": "specific_claims", "label": "Each claim is specific and substantiated; no generic claims without recognised excellent environmental performance", "legal_ref": "Directive 2005/29/EC, Annex I, point 4a (Directive (EU) 2024/825)"},
+				{"key": "labels", "label": "Sustainability labels only from certification schemes or public authorities", "legal_ref": "Directive 2005/29/EC, Annex I, point 2a (Directive (EU) 2024/825)"},
+				{"key": "whole_product", "label": "Claims about the whole product only when they concern the whole product", "legal_ref": "Directive 2005/29/EC, Annex I, point 4b (Directive (EU) 2024/825)"},
+				{"key": "no_offsetting_claims", "label": "No neutral or reduced impact claims based on greenhouse gas offsetting", "legal_ref": "Directive 2005/29/EC, Annex I, point 4c (Directive (EU) 2024/825)"},
+				{"key": "future_performance", "label": "Future environmental performance claims backed by an implementation plan with independent monitoring", "legal_ref": "Directive 2005/29/EC, art. 6(2)(d) (Directive (EU) 2024/825)"},
+				{"key": "evidence", "label": "Evidence supporting each claim available on request", "legal_ref": "D.Lgs. 206/2005, arts. 20-23; Codice di Autodisciplina IAP, art. 12"}
+			],
+			"placeholders_used": [],
+			"legal_refs": ["Directive (EU) 2024/825 (empowering consumers for the green transition), applies from 27 September 2026", "Directive 2005/29/EC, art. 6(2)(d) and Annex I, points 2a, 4a-4c", "D.Lgs. 206/2005, arts. 20-23", "Codice di Autodisciplina della Comunicazione Commerciale (IAP), art. 12"],
+			"review_cadence_months": 6,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "ai_disclosure",
+			"title": {"en": "Use of artificial intelligence", "it": "Uso dell'intelligenza artificiale"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Transparency for AI chatbots and AI-generated content.",
+			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "ai_chatbot"}]},
+			"required_elements": [
+				{"key": "chatbot_disclosure", "label": "Users are told they are interacting with an AI system, unless obvious", "legal_ref": "Reg. (EU) 2024/1689, art. 50(1)"},
+				{"key": "generated_content", "label": "Disclosure of AI-generated or manipulated images, video and audio (deep fakes)", "legal_ref": "Reg. (EU) 2024/1689, art. 50(4)"},
+				{"key": "provider_and_data", "label": "AI provider used, data shared with it and any transfers outside the EEA", "legal_ref": "Reg. (EU) 2016/679, art. 13(1)(e)-(f)"},
+				{"key": "automated_decisions", "label": "Automated decisions with legal or similarly significant effects, if any", "legal_ref": "Reg. (EU) 2016/679, art. 22"}
+			],
+			"placeholders_used": ["links.privacy_policy"],
+			"legal_refs": ["Reg. (EU) 2024/1689 (AI Act), art. 50 (applies from 2 August 2026)", "Reg. (EU) 2016/679, arts. 13, 22", "L. 132/2025 (Italian AI law)"],
+			"review_cadence_months": 6,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "import_duties_notice",
+			"title": {"en": "Customs duties and import taxes", "it": "Dazi doganali e imposte di importazione"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Shipments that cross the EU customs border (non-EU suppliers or markets).",
+			"applies_when": {"any": [{"field": "product_flags", "op": "includes", "value": "non_eu_suppliers"}, {"field": "sells_outside_eu", "op": "true"}]},
+			"required_elements": [
+				{"key": "who_pays", "label": "Who pays duties, import VAT and customs fees (DDP or DAP)", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(e)"},
+				{"key": "estimates", "label": "Charges that cannot be calculated in advance may be payable, with an estimate where possible", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(e)"},
+				{"key": "ioss", "label": "VAT collected at checkout under the Import One-Stop Shop for consignments up to €150, where used", "legal_ref": "Directive 2006/112/EC, arts. 369l-369x (Directive (EU) 2017/2455)"},
+				{"key": "origin", "label": "Shipment origin outside the EU disclosed before the order", "legal_ref": "D.Lgs. 206/2005, arts. 21-22"},
+				{"key": "customs_issues", "label": "Customs delays and refused parcels: who bears the return costs", "legal_ref": "D.Lgs. 206/2005, arts. 49(1)(e), 57"}
+			],
+			"placeholders_used": ["store.selling_countries"],
+			"legal_refs": ["D.Lgs. 206/2005, art. 49(1)(e)", "Directive 2006/112/EC (VAT Directive), Import One-Stop Shop", "Reg. (EU) 952/2013 (Union Customs Code)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "local_pickup_terms",
+			"title": {"en": "In-store pickup", "it": "Ritiro in negozio"},
+			"type": "page",
+			"group": "conditional",
+			"description": "Collection of online orders at a physical location.",
+			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "physical_store_or_pickup"}]},
+			"required_elements": [
+				{"key": "locations_hours", "label": "Pickup locations and opening hours", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(g)", "placeholders": ["store.store_address", "business.support_hours"]},
+				{"key": "collection_window", "label": "Collection deadline and what happens to uncollected orders", "legal_ref": "D.Lgs. 206/2005, art. 61"},
+				{"key": "identification", "label": "Identification or order code required, and collection by a third party", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(g)"},
+				{"key": "risk_transfer", "label": "Risk passes at collection", "legal_ref": "D.Lgs. 206/2005, art. 63"},
+				{"key": "withdrawal", "label": "The right of withdrawal still applies to online orders collected in store", "legal_ref": "D.Lgs. 206/2005, art. 52", "placeholders": ["links.withdrawal_policy"]}
+			],
+			"placeholders_used": ["store.store_address", "business.support_hours", "links.withdrawal_policy"],
+			"legal_refs": ["D.Lgs. 206/2005, arts. 49(1)(g), 52, 61, 63"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "uk_privacy_addendum",
+			"title": {"en": "UK privacy addendum", "it": "Addendum privacy Regno Unito"},
+			"type": "page",
+			"group": "international",
+			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["UK"]}]},
+			"required_elements": [
+				{"key": "uk_representative", "label": "UK representative, where there is no UK establishment", "legal_ref": "UK GDPR, art. 27"},
+				{"key": "legal_bases", "label": "Legal bases relied on under UK law", "legal_ref": "UK GDPR, art. 6; Data Protection Act 2018"},
+				{"key": "transfers", "label": "Transfers from the UK (adequacy regulations, IDTA or UK Addendum)", "legal_ref": "UK GDPR, arts. 44-49"},
+				{"key": "ico_complaint", "label": "Right to complain to the Information Commissioner's Office", "legal_ref": "UK GDPR, art. 77"},
+				{"key": "cookies_pecr", "label": "Cookies and electronic marketing under PECR", "legal_ref": "Privacy and Electronic Communications Regulations 2003, regs. 6, 22"},
+				{"key": "duaa_changes", "label": "Changes introduced by the Data (Use and Access) Act 2025 (complaints handling, recognised legitimate interests)", "legal_ref": "Data (Use and Access) Act 2025"}
+			],
+			"placeholders_used": ["business.legal_name", "business.email", "business.eu_representative"],
+			"legal_refs": ["UK GDPR", "Data Protection Act 2018", "Privacy and Electronic Communications Regulations 2003", "Data (Use and Access) Act 2025"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "uk_consumer_terms_addendum",
+			"title": {"en": "UK consumer terms addendum", "it": "Addendum condizioni consumatori Regno Unito"},
+			"type": "page",
+			"group": "international",
+			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["UK"]}, {"field": "customer_types", "op": "includes", "value": "b2c"}]},
+			"required_elements": [
+				{"key": "statutory_rights", "label": "Statutory rights: short-term right to reject (30 days), repair or replacement, price reduction", "legal_ref": "Consumer Rights Act 2015, ss. 19-24"},
+				{"key": "cancellation", "label": "14-day cancellation right and the model cancellation form", "legal_ref": "Consumer Contracts (Information, Cancellation and Additional Charges) Regulations 2013, regs. 29-38"},
+				{"key": "pre_contract_info", "label": "Pre-contract information for distance contracts", "legal_ref": "Consumer Contracts Regulations 2013, reg. 13 and Sch. 2"},
+				{"key": "price_transparency", "label": "Headline prices include all mandatory fees (no drip pricing)", "legal_ref": "Digital Markets, Competition and Consumers Act 2024"},
+				{"key": "subscriptions", "label": "Subscription contract rules, where applicable", "legal_ref": "Digital Markets, Competition and Consumers Act 2024, Part 4, Chapter 2"},
+				{"key": "disputes", "label": "Complaints, ADR and courts for UK consumers", "legal_ref": "Alternative Dispute Resolution for Consumer Disputes Regulations 2015"}
+			],
+			"placeholders_used": ["business.legal_name", "business.address", "business.email"],
+			"legal_refs": ["Consumer Rights Act 2015", "Consumer Contracts (Information, Cancellation and Additional Charges) Regulations 2013", "Digital Markets, Competition and Consumers Act 2024"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "ch_privacy_addendum",
+			"title": {"en": "Swiss privacy addendum", "it": "Addendum privacy Svizzera"},
+			"type": "page",
+			"group": "international",
+			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["CH"]}]},
+			"required_elements": [
+				{"key": "duty_to_inform", "label": "Information on collection: controller, purposes, recipients", "legal_ref": "Federal Act on Data Protection (FADP), art. 19"},
+				{"key": "swiss_representative", "label": "Swiss representative of a foreign controller, where required", "legal_ref": "FADP, art. 14"},
+				{"key": "transfers", "label": "Countries data is disclosed to and the safeguards used", "legal_ref": "FADP, arts. 16-17, 19(4)"},
+				{"key": "rights", "label": "Right of access and other rights, and the FDPIC", "legal_ref": "FADP, arts. 25-32"}
+			],
+			"placeholders_used": ["business.legal_name", "business.email"],
+			"legal_refs": ["Federal Act on Data Protection (revFADP / nDSG), in force since 1 September 2023", "Data Protection Ordinance (DPO / DSV)"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "us_state_privacy_notice",
+			"title": {"en": "US state privacy notice", "it": "Informativa privacy per gli Stati USA"},
+			"type": "page",
+			"group": "international",
+			"applies_when": {"all": [{"field": "market_regions", "op": "includes", "value": "us"}]},
+			"required_elements": [
+				{"key": "categories_collected", "label": "Categories of personal information collected in the last 12 months and their sources", "legal_ref": "Cal. Civ. Code §1798.110; CCPA Regulations §7011"},
+				{"key": "purposes", "label": "Business or commercial purposes", "legal_ref": "Cal. Civ. Code §1798.110"},
+				{"key": "disclosures_sale_sharing", "label": "Categories disclosed, sold or shared and to whom", "legal_ref": "Cal. Civ. Code §1798.115"},
+				{"key": "retention", "label": "Retention period for each category", "legal_ref": "Cal. Civ. Code §1798.100(a)(3)"},
+				{"key": "consumer_rights", "label": "Rights to know, delete, correct, opt out and limit, and how to exercise them", "legal_ref": "Cal. Civ. Code §§1798.105-1798.121; state privacy laws (VA, CO, CT, TX, OR, ...)"},
+				{"key": "verification_agents", "label": "Request verification and authorised agents", "legal_ref": "CCPA Regulations §§7060-7063"},
+				{"key": "opt_out_signals", "label": "Honouring opt-out preference signals (Global Privacy Control)", "legal_ref": "CCPA Regulations §7025"},
+				{"key": "non_discrimination", "label": "No discrimination for exercising rights; financial incentives", "legal_ref": "Cal. Civ. Code §1798.125"},
+				{"key": "appeals", "label": "How to appeal a refused request, where state law requires it", "legal_ref": "e.g. Va. Code §59.1-578"}
+			],
+			"placeholders_used": ["business.legal_name", "business.email"],
+			"legal_refs": ["California Consumer Privacy Act as amended by the CPRA (Cal. Civ. Code §1798.100 et seq.)", "CCPA Regulations (Cal. Code Regs. tit. 11, §7000 et seq.)", "Other US state comprehensive privacy laws"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "us_notice_at_collection",
+			"title": {"en": "Notice at collection (California)", "it": "Notice at collection (California)"},
+			"type": "page",
+			"group": "international",
+			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["US-CA"]}]},
+			"required_elements": [
+				{"key": "categories", "label": "Categories of personal and sensitive personal information collected", "legal_ref": "CCPA Regulations §7012(e)"},
+				{"key": "purposes", "label": "Purposes for which each category is collected and used", "legal_ref": "CCPA Regulations §7012(e)"},
+				{"key": "sold_shared", "label": "Whether each category is sold or shared, with the opt-out link", "legal_ref": "CCPA Regulations §7012(e)", "placeholders": ["links.us_do_not_sell_share"]},
+				{"key": "retention", "label": "Retention period for each category", "legal_ref": "Cal. Civ. Code §1798.100(a)(3)"},
+				{"key": "privacy_policy_link", "label": "Link to the full privacy policy", "legal_ref": "CCPA Regulations §7012(e)", "placeholders": ["links.us_state_privacy_notice"]}
+			],
+			"placeholders_used": ["links.us_do_not_sell_share", "links.us_state_privacy_notice"],
+			"legal_refs": ["Cal. Civ. Code §1798.100", "CCPA Regulations §7012"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "us_do_not_sell_share",
+			"title": {"en": "Do Not Sell or Share My Personal Information", "it": "Do Not Sell or Share My Personal Information"},
+			"type": "page",
+			"group": "international",
+			"applies_when": {"all": [{"field": "market_regions", "op": "includes", "value": "us"}]},
+			"required_elements": [
+				{"key": "opt_out_method", "label": "Method to opt out of sale and sharing (form or toggle) without an account", "legal_ref": "Cal. Civ. Code §§1798.120, 1798.135; CCPA Regulations §7026"},
+				{"key": "gpc", "label": "Global Privacy Control and other opt-out preference signals honoured", "legal_ref": "CCPA Regulations §7025"},
+				{"key": "targeted_advertising", "label": "Opt-out of targeted advertising under other state laws", "legal_ref": "State comprehensive privacy laws"},
+				{"key": "limit_sensitive", "label": "Right to limit use of sensitive personal information, where applicable", "legal_ref": "Cal. Civ. Code §1798.121"}
+			],
+			"placeholders_used": [],
+			"legal_refs": ["Cal. Civ. Code §§1798.120, 1798.121, 1798.135", "CCPA Regulations §§7025-7026"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "us_auto_renewal_disclosure",
+			"title": {"en": "Automatic renewal terms (US)", "it": "Rinnovo automatico (USA)"},
+			"type": "page",
+			"group": "international",
+			"applies_when": {"all": [{"field": "market_regions", "op": "includes", "value": "us"}, {"field": "product_types", "op": "includes", "value": "subscriptions"}]},
+			"required_elements": [
+				{"key": "clear_terms", "label": "Clear and conspicuous renewal terms before the purchase", "legal_ref": "ROSCA, 15 U.S.C. §8403; Cal. Bus. & Prof. Code §17602"},
+				{"key": "affirmative_consent", "label": "Affirmative consent to the automatic renewal", "legal_ref": "Cal. Bus. & Prof. Code §17602(a)(2)"},
+				{"key": "acknowledgment", "label": "Acknowledgment with terms and cancellation information after purchase", "legal_ref": "Cal. Bus. & Prof. Code §17602(a)(3)"},
+				{"key": "online_cancellation", "label": "Online cancellation available in the same medium", "legal_ref": "Cal. Bus. & Prof. Code §17602(d)"},
+				{"key": "trials_reminders", "label": "Free-trial conversion notices and renewal reminders", "legal_ref": "Cal. Bus. & Prof. Code §17602"}
+			],
+			"placeholders_used": ["business.email"],
+			"legal_refs": ["Restore Online Shoppers' Confidence Act (15 U.S.C. §§8401-8405)", "California Automatic Renewal Law (Cal. Bus. & Prof. Code §§17600-17606)", "Other state automatic renewal laws"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "us_prop65",
+			"title": {"en": "California Proposition 65 warning", "it": "Avvertenza Proposition 65 (California)"},
+			"type": "page",
+			"group": "international",
+			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["US-CA"]}, {"field": "product_types", "op": "includes", "value": "physical"}]},
+			"required_elements": [
+				{"key": "warning_content", "label": "Warning content for products that expose consumers to listed chemicals", "legal_ref": "27 CCR §25603"},
+				{"key": "online_placement", "label": "Warning displayed on the product page or before purchase", "legal_ref": "27 CCR §25602(b)"},
+				{"key": "products_concerned", "label": "Products concerned and the listed chemicals", "legal_ref": "Cal. Health & Safety Code §25249.6"}
+			],
+			"placeholders_used": [],
+			"legal_refs": ["Cal. Health & Safety Code §25249.6 (Proposition 65)", "Cal. Code Regs. tit. 27, §25600 et seq."],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "ca_privacy_addendum",
+			"title": {"en": "Canada privacy addendum", "it": "Addendum privacy Canada"},
+			"type": "page",
+			"group": "international",
+			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["CA"]}]},
+			"required_elements": [
+				{"key": "privacy_officer", "label": "Person accountable for privacy and their contact details", "legal_ref": "PIPEDA, Sch. 1, principle 4.1; Quebec Law 25"},
+				{"key": "purposes_consent", "label": "Purposes identified and meaningful consent", "legal_ref": "PIPEDA, Sch. 1, principles 4.2-4.3"},
+				{"key": "cross_border", "label": "Processing and storage outside Canada", "legal_ref": "OPC Guidelines for processing personal data across borders; Quebec Act respecting the protection of personal information in the private sector, s. 17"},
+				{"key": "access_correction", "label": "Access and correction rights and complaints to the OPC (or CAI in Quebec)", "legal_ref": "PIPEDA, Sch. 1, principle 4.9"},
+				{"key": "profiling_technology", "label": "Technologies that identify, locate or profile individuals (Quebec)", "legal_ref": "Quebec Act respecting the protection of personal information in the private sector, s. 8.1"}
+			],
+			"placeholders_used": ["business.legal_name", "business.email", "business.dpo_name", "business.dpo_email"],
+			"legal_refs": ["Personal Information Protection and Electronic Documents Act (PIPEDA)", "Quebec Law 25", "Canada's Anti-Spam Legislation (CASL)"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "br_lgpd_addendum",
+			"title": {"en": "Brazil privacy addendum (LGPD)", "it": "Addendum privacy Brasile (LGPD)"},
+			"type": "page",
+			"group": "international",
+			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["BR"]}]},
+			"required_elements": [
+				{"key": "processing_information", "label": "Purpose, form, duration, controller identity and shared use of data", "legal_ref": "LGPD (Lei 13.709/2018), art. 9"},
+				{"key": "encarregado", "label": "Identity and contact of the data protection officer (encarregado)", "legal_ref": "LGPD, art. 41"},
+				{"key": "rights", "label": "Data subject rights and how to exercise them", "legal_ref": "LGPD, art. 18"},
+				{"key": "transfers", "label": "International transfers and safeguards", "legal_ref": "LGPD, art. 33"},
+				{"key": "anpd", "label": "Petition to the national authority (ANPD)", "legal_ref": "LGPD, art. 18(1)"}
+			],
+			"placeholders_used": ["business.legal_name", "business.dpo_name", "business.dpo_email"],
+			"legal_refs": ["Lei Geral de Proteção de Dados (Lei 13.709/2018)"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "jp_tokushoho",
+			"title": {"en": "Specified Commercial Transactions Act notice (Japan)", "it": "Informativa Tokushoho (Giappone)"},
+			"type": "page",
+			"group": "international",
+			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["JP"]}]},
+			"required_elements": [
+				{"key": "seller_details", "label": "Seller name, address, telephone number and responsible person", "legal_ref": "Act on Specified Commercial Transactions, art. 11", "placeholders": ["business.legal_name", "business.address", "business.phone", "business.owner_name"]},
+				{"key": "price_charges", "label": "Price, shipping fees and other charges", "legal_ref": "Act on Specified Commercial Transactions, art. 11"},
+				{"key": "payment", "label": "Payment timing and methods", "legal_ref": "Act on Specified Commercial Transactions, art. 11"},
+				{"key": "delivery_timing", "label": "Delivery timing", "legal_ref": "Act on Specified Commercial Transactions, art. 11"},
+				{"key": "returns", "label": "Return and cancellation conditions", "legal_ref": "Act on Specified Commercial Transactions, arts. 11, 15-3"},
+				{"key": "final_confirmation", "label": "Final confirmation screen requirements", "legal_ref": "Act on Specified Commercial Transactions, art. 12-6"}
+			],
+			"placeholders_used": ["business.legal_name", "business.address", "business.phone", "business.owner_name"],
+			"legal_refs": ["Act on Specified Commercial Transactions (Tokushoho)", "Act on the Protection of Personal Information (APPI)"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "au_consumer_guarantee",
+			"title": {"en": "Australian Consumer Law guarantees", "it": "Garanzie Australian Consumer Law"},
+			"type": "page",
+			"group": "international",
+			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["AU"]}]},
+			"required_elements": [
+				{"key": "mandatory_text", "label": "Mandatory consumer guarantee text in warranties against defects", "legal_ref": "Competition and Consumer Regulations 2010, reg. 90"},
+				{"key": "guarantees", "label": "Consumer guarantees that cannot be excluded", "legal_ref": "Australian Consumer Law, ss. 54-64"},
+				{"key": "remedies", "label": "Remedies for major and minor failures", "legal_ref": "Australian Consumer Law, ss. 259-263"},
+				{"key": "component_pricing", "label": "Single total price including mandatory charges", "legal_ref": "Australian Consumer Law, s. 48"},
+				{"key": "unfair_terms", "label": "No unfair contract terms in standard form contracts", "legal_ref": "Australian Consumer Law, ss. 23-28"}
+			],
+			"placeholders_used": ["business.legal_name", "business.email"],
+			"legal_refs": ["Competition and Consumer Act 2010, Sch. 2 (Australian Consumer Law)", "Competition and Consumer Regulations 2010, reg. 90"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "frag_checkout_terms_consent",
+			"title": {"en": "Checkout: terms acceptance", "it": "Checkout: accettazione delle condizioni"},
+			"type": "fragment",
+			"group": "fragment",
+			"description": "Text next to the terms checkbox at checkout.",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "terms_link", "label": "Link to the terms of sale, available for storage and reproduction", "legal_ref": "D.Lgs. 70/2003, art. 12(3)", "placeholders": ["links.terms_of_sale"]},
+				{"key": "withdrawal_link", "label": "Link to the withdrawal information", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(h)", "placeholders": ["links.withdrawal_policy"]},
+				{"key": "privacy_link", "label": "Link to the privacy policy (information, not consent)", "legal_ref": "Reg. (EU) 2016/679, art. 13", "placeholders": ["links.privacy_policy"]},
+				{"key": "no_bundled_consent", "label": "No marketing consent bundled into the terms checkbox", "legal_ref": "Reg. (EU) 2016/679, arts. 4(11), 7(2)"}
+			],
+			"placeholders_used": ["links.terms_of_sale", "links.withdrawal_policy", "links.privacy_policy"],
+			"legal_refs": ["D.Lgs. 70/2003, art. 12", "D.Lgs. 206/2005, arts. 49, 51", "Reg. (EU) 2016/679, arts. 7, 13"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "frag_order_button_label",
+			"title": {"en": "Order button label", "it": "Etichetta del pulsante d'ordine"},
+			"type": "fragment",
+			"group": "fragment",
+			"description": "Label of the final order button.",
+			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}]},
+			"required_elements": [
+				{"key": "payment_obligation_wording", "label": "Wording stating that the order implies an obligation to pay (\"ordine con obbligo di pagare\" or equivalent)", "legal_ref": "D.Lgs. 206/2005, art. 51(2); Directive 2011/83/EU, art. 8(2)"},
+				{"key": "info_before_button", "label": "Main characteristics, total price and duration shown directly before the button", "legal_ref": "D.Lgs. 206/2005, art. 51(2)"}
+			],
+			"placeholders_used": [],
+			"legal_refs": ["D.Lgs. 206/2005, art. 51(2)", "Directive 2011/83/EU, art. 8(2)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "frag_account_privacy_notice",
+			"title": {"en": "Account registration notice", "it": "Informativa breve registrazione account"},
+			"type": "fragment",
+			"group": "fragment",
+			"description": "Short privacy notice on the registration form.",
+			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "accounts"}]},
+			"required_elements": [
+				{"key": "controller_purpose", "label": "Controller and purpose of the account data", "legal_ref": "Reg. (EU) 2016/679, art. 13(1)(a), (c)", "placeholders": ["business.legal_name"]},
+				{"key": "mandatory_fields", "label": "Which fields are mandatory and the consequence of not providing them", "legal_ref": "Reg. (EU) 2016/679, art. 13(2)(e)"},
+				{"key": "account_deletion", "label": "How to delete the account", "legal_ref": "Reg. (EU) 2016/679, art. 17"},
+				{"key": "privacy_link", "label": "Link to the full privacy policy", "legal_ref": "Reg. (EU) 2016/679, art. 13", "placeholders": ["links.privacy_policy"]}
+			],
+			"placeholders_used": ["business.legal_name", "links.privacy_policy"],
+			"legal_refs": ["Reg. (EU) 2016/679, arts. 13, 17"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "frag_contact_form_notice",
+			"title": {"en": "Contact form notice", "it": "Informativa breve modulo di contatto"},
+			"type": "fragment",
+			"group": "fragment",
+			"description": "Short privacy notice under contact forms.",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "controller_purpose", "label": "Controller and purpose (answering the request)", "legal_ref": "Reg. (EU) 2016/679, art. 13(1)(a), (c)", "placeholders": ["business.legal_name"]},
+				{"key": "legal_basis", "label": "Legal basis (pre-contractual steps or legitimate interest)", "legal_ref": "Reg. (EU) 2016/679, art. 6(1)(b), (f)"},
+				{"key": "retention", "label": "How long messages are kept", "legal_ref": "Reg. (EU) 2016/679, art. 13(2)(a)"},
+				{"key": "privacy_link", "label": "Link to the full privacy policy", "legal_ref": "Reg. (EU) 2016/679, art. 13", "placeholders": ["links.privacy_policy"]}
+			],
+			"placeholders_used": ["business.legal_name", "links.privacy_policy"],
+			"legal_refs": ["Reg. (EU) 2016/679, arts. 6, 13"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "frag_newsletter_consent",
+			"title": {"en": "Newsletter consent", "it": "Consenso newsletter"},
+			"type": "fragment",
+			"group": "fragment",
+			"description": "Opt-in checkbox text for e-mail marketing.",
+			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "newsletter"}]},
+			"required_elements": [
+				{"key": "specific_consent", "label": "Separate, unticked checkbox for e-mail marketing", "legal_ref": "Reg. (EU) 2016/679, arts. 4(11), 7; D.Lgs. 196/2003, art. 130(1)-(2)"},
+				{"key": "content", "label": "What will be sent (and how often, if known)", "legal_ref": "Reg. (EU) 2016/679, art. 13(1)(c)"},
+				{"key": "withdrawal", "label": "Unsubscribe at any time", "legal_ref": "Reg. (EU) 2016/679, art. 7(3)"},
+				{"key": "profiling_consent", "label": "Separate consent for profiling or personalised marketing, where used", "legal_ref": "Reg. (EU) 2016/679, art. 6(1)(a); D.Lgs. 196/2003, art. 130"},
+				{"key": "soft_opt_in", "label": "Soft opt-in for existing customers: similar products, opt-out offered at collection", "legal_ref": "D.Lgs. 196/2003, art. 130(4); Directive 2002/58/EC, art. 13(2)"},
+				{"key": "privacy_link", "label": "Link to the privacy policy", "legal_ref": "Reg. (EU) 2016/679, art. 13", "placeholders": ["links.privacy_policy"]}
+			],
+			"placeholders_used": ["links.privacy_policy"],
+			"legal_refs": ["Reg. (EU) 2016/679, arts. 4(11), 6(1)(a), 7, 13", "D.Lgs. 196/2003, art. 130", "Directive 2002/58/EC, art. 13"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "frag_cookie_banner_text",
+			"title": {"en": "Cookie banner text", "it": "Testo del banner cookie"},
+			"type": "fragment",
+			"group": "fragment",
+			"description": "First-layer text of the consent banner (paste it into the consent plugin).",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "purposes_summary", "label": "Technical cookies are used; other cookies and trackers only with consent, with their purposes", "legal_ref": "Garante privacy, guidelines of 10 June 2021"},
+				{"key": "accept_reject", "label": "\"Accept all\" and an equally prominent way to refuse (X or \"Reject\"), keeping only technical cookies", "legal_ref": "Garante privacy, guidelines of 10 June 2021; Reg. (EU) 2016/679, art. 7"},
+				{"key": "granular_choices", "label": "Link to granular choices by purpose and provider", "legal_ref": "Garante privacy, guidelines of 10 June 2021"},
+				{"key": "policy_link", "label": "Link to the cookie policy", "legal_ref": "Garante privacy, guidelines of 10 June 2021", "placeholders": ["links.cookie_policy"]},
+				{"key": "no_implied_consent", "label": "Scrolling or continued browsing is not consent; no cookie wall", "legal_ref": "Garante privacy, guidelines of 10 June 2021"},
+				{"key": "repeat_interval", "label": "After a refusal, the banner is not shown again for six months unless conditions change", "legal_ref": "Garante privacy, guidelines of 10 June 2021"}
+			],
+			"placeholders_used": ["links.cookie_policy"],
+			"legal_refs": ["Garante privacy, Guidelines on cookies and other tracking tools, 10 June 2021", "D.Lgs. 196/2003, art. 122", "Reg. (EU) 2016/679, art. 7"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "frag_email_unsubscribe_footer",
+			"title": {"en": "Marketing e-mail footer", "it": "Piè di pagina e-mail promozionali"},
+			"type": "fragment",
+			"group": "fragment",
+			"description": "Footer of marketing and cart-reminder e-mails.",
+			"applies_when": {"any": [{"field": "features", "op": "includes", "value": "newsletter"}, {"field": "features", "op": "includes", "value": "abandoned_cart"}]},
+			"required_elements": [
+				{"key": "unsubscribe", "label": "Easy, free unsubscribe in every message", "legal_ref": "Reg. (EU) 2016/679, art. 7(3); D.Lgs. 196/2003, art. 130(4)"},
+				{"key": "sender_identity", "label": "Sender identity and contact details", "legal_ref": "D.Lgs. 70/2003, art. 8(1)(b)", "placeholders": ["business.legal_name", "business.address"]},
+				{"key": "commercial_identification", "label": "Message identifiable as a commercial communication", "legal_ref": "D.Lgs. 70/2003, arts. 8(1)(a), 9"},
+				{"key": "privacy_link", "label": "Link to the privacy policy", "legal_ref": "Reg. (EU) 2016/679, art. 13", "placeholders": ["links.privacy_policy"]}
+			],
+			"placeholders_used": ["business.legal_name", "business.address", "links.privacy_policy"],
+			"legal_refs": ["D.Lgs. 70/2003, arts. 8-9", "D.Lgs. 196/2003, art. 130", "Reg. (EU) 2016/679, art. 7(3)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "frag_abandoned_cart_notice",
+			"title": {"en": "Abandoned-cart notice", "it": "Informativa carrello abbandonato"},
+			"type": "fragment",
+			"group": "fragment",
+			"description": "Notice next to the checkout e-mail field when cart reminders are sent.",
+			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "abandoned_cart"}]},
+			"required_elements": [
+				{"key": "notice_before_capture", "label": "Notice, before the e-mail address is captured, that cart reminders may be sent", "legal_ref": "Reg. (EU) 2016/679, arts. 12-13"},
+				{"key": "legal_basis", "label": "Legal basis (consent or soft opt-in)", "legal_ref": "Reg. (EU) 2016/679, art. 6(1); D.Lgs. 196/2003, art. 130"},
+				{"key": "opt_out", "label": "How to object or opt out", "legal_ref": "Reg. (EU) 2016/679, arts. 7(3), 21"},
+				{"key": "privacy_link", "label": "Link to the privacy policy", "legal_ref": "Reg. (EU) 2016/679, art. 13", "placeholders": ["links.privacy_policy"]}
+			],
+			"placeholders_used": ["links.privacy_policy"],
+			"legal_refs": ["Reg. (EU) 2016/679, arts. 6, 13, 21", "D.Lgs. 196/2003, art. 130"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "frag_ca_casl_consent",
+			"title": {"en": "Canada (CASL) e-mail consent", "it": "Consenso e-mail per il Canada (CASL)"},
+			"type": "fragment",
+			"group": "fragment",
+			"description": "Express consent wording for commercial e-mails to Canadian recipients.",
+			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "newsletter"}, {"field": "markets", "op": "in", "value": ["CA"]}]},
+			"required_elements": [
+				{"key": "purpose", "label": "Purpose for which consent is sought", "legal_ref": "CASL (S.C. 2010, c. 23), s. 10(1)(a)"},
+				{"key": "sender_identity", "label": "Sender name, mailing address and a contact method", "legal_ref": "CASL, s. 10(1)(b); Electronic Commerce Protection Regulations (CRTC), s. 4", "placeholders": ["business.legal_name", "business.address", "business.email"]},
+				{"key": "withdrawal_statement", "label": "Statement that consent can be withdrawn", "legal_ref": "Electronic Commerce Protection Regulations (CRTC), s. 4"},
+				{"key": "no_preticked", "label": "Express opt-in: no pre-checked box", "legal_ref": "CRTC Compliance and Enforcement Information Bulletin 2012-548"}
+			],
+			"placeholders_used": ["business.legal_name", "business.address", "business.email"],
+			"legal_refs": ["Canada's Anti-Spam Legislation (S.C. 2010, c. 23)", "Electronic Commerce Protection Regulations (CRTC 2012-183)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "frag_withdrawal_button_label",
+			"title": {"en": "Withdrawal function button label", "it": "Etichetta del pulsante di recesso"},
+			"type": "fragment",
+			"group": "fragment",
+			"description": "Label of the online withdrawal function. Italian default: \"recedi dal contratto qui\".",
+			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}]},
+			"required_elements": [
+				{"key": "label_wording", "label": "Label \"recedi dal contratto qui\" or other equally unambiguous wording", "legal_ref": "D.Lgs. 206/2005, art. 54-bis (D.Lgs. 209/2025); Directive 2011/83/EU, art. 11a"},
+				{"key": "prominence", "label": "Prominently displayed and easily accessible on the online interface throughout the withdrawal period", "legal_ref": "D.Lgs. 206/2005, art. 54-bis"}
+			],
+			"placeholders_used": [],
+			"legal_refs": ["D.Lgs. 206/2005, art. 54-bis (D.Lgs. 209/2025): Italian default label \"recedi dal contratto qui\"", "Directive 2011/83/EU, art. 11a (Directive (EU) 2023/2673)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "frag_withdrawal_confirm_label",
+			"title": {"en": "Withdrawal confirmation button label", "it": "Etichetta del pulsante di conferma del recesso"},
+			"type": "fragment",
+			"group": "fragment",
+			"description": "Label of the button confirming the withdrawal statement. Italian default: \"Conferma recesso\".",
+			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}]},
+			"required_elements": [
+				{"key": "label_wording", "label": "Label \"Conferma recesso\" or other equally unambiguous wording", "legal_ref": "D.Lgs. 206/2005, art. 54-bis (D.Lgs. 209/2025); Directive 2011/83/EU, art. 11a"},
+				{"key": "data_requested", "label": "Data the consumer provides or confirms (name, contract identification, contact for the acknowledgement)", "legal_ref": "D.Lgs. 206/2005, art. 54-bis"}
+			],
+			"placeholders_used": [],
+			"legal_refs": ["D.Lgs. 206/2005, art. 54-bis (D.Lgs. 209/2025): Italian default label \"Conferma recesso\"", "Directive 2011/83/EU, art. 11a (Directive (EU) 2023/2673)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "frag_withdrawal_receipt_email",
+			"title": {"en": "Withdrawal acknowledgement e-mail", "it": "E-mail di conferma del recesso"},
+			"type": "fragment",
+			"group": "fragment",
+			"description": "Acknowledgement of receipt of a withdrawal made through the online function.",
+			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}]},
+			"required_elements": [
+				{"key": "acknowledgement", "label": "Acknowledgement of receipt sent without undue delay", "legal_ref": "D.Lgs. 206/2005, art. 54-bis; Directive 2011/83/EU, art. 11a"},
+				{"key": "content_datetime", "label": "Content of the withdrawal statement and the date and time it was submitted", "legal_ref": "D.Lgs. 206/2005, art. 54-bis"},
+				{"key": "durable_medium", "label": "Sent on a durable medium (e-mail)", "legal_ref": "D.Lgs. 206/2005, art. 54-bis"},
+				{"key": "next_steps", "label": "Return instructions and refund timeline", "legal_ref": "D.Lgs. 206/2005, arts. 56-57", "placeholders": ["links.withdrawal_policy"]}
+			],
+			"placeholders_used": ["business.legal_name", "links.withdrawal_policy"],
+			"legal_refs": ["D.Lgs. 206/2005, art. 54-bis (D.Lgs. 209/2025)", "Directive 2011/83/EU, art. 11a (Directive (EU) 2023/2673)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "frag_order_email_legal_snippet",
+			"title": {"en": "Order confirmation e-mail: legal block", "it": "E-mail di conferma ordine: blocco legale"},
+			"type": "fragment",
+			"group": "fragment",
+			"description": "Legal information included in the order confirmation e-mail.",
+			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}]},
+			"required_elements": [
+				{"key": "contract_confirmation", "label": "Confirmation of the contract on a durable medium, with the pre-contractual information", "legal_ref": "D.Lgs. 206/2005, art. 51(7)"},
+				{"key": "terms_in_force", "label": "Terms of sale in force at the time of the order (version and link or attachment)", "legal_ref": "D.Lgs. 206/2005, art. 51(7); D.Lgs. 70/2003, art. 12(3)", "placeholders": ["links.terms_of_sale"]},
+				{"key": "withdrawal_information", "label": "Withdrawal information and the model withdrawal form", "legal_ref": "D.Lgs. 206/2005, arts. 49(1)(h), 51(7)", "placeholders": ["links.withdrawal_policy", "links.withdrawal_form"]},
+				{"key": "digital_consent", "label": "For digital content: confirmation of the consent and acknowledgement given", "legal_ref": "D.Lgs. 206/2005, arts. 51(7), 59(1)(o)"},
+				{"key": "order_acknowledgement", "label": "Order acknowledgement summarising the main terms, product characteristics, price and delivery", "legal_ref": "D.Lgs. 70/2003, art. 13(2)"},
+				{"key": "seller_identity", "label": "Seller identity and VAT number", "legal_ref": "D.Lgs. 206/2005, art. 49(1)(b)", "placeholders": ["business.legal_name", "business.vat_id"]}
+			],
+			"placeholders_used": ["business.legal_name", "business.vat_id", "links.terms_of_sale", "links.withdrawal_policy", "links.withdrawal_form"],
+			"legal_refs": ["D.Lgs. 206/2005, art. 51(7)", "D.Lgs. 70/2003, art. 13"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "frag_digital_content_waiver",
+			"title": {"en": "Digital content: withdrawal waiver", "it": "Contenuti digitali: rinuncia al recesso"},
+			"type": "fragment",
+			"group": "fragment",
+			"description": "Checkbox text before buying digital content supplied immediately.",
+			"applies_when": {"all": [{"field": "product_types", "op": "includes", "value": "digital_content"}]},
+			"required_elements": [
+				{"key": "express_consent", "label": "Express prior consent to supply starting during the withdrawal period", "legal_ref": "D.Lgs. 206/2005, art. 59(1)(o)"},
+				{"key": "acknowledgement", "label": "Acknowledgement that the right of withdrawal is thereby lost", "legal_ref": "D.Lgs. 206/2005, art. 59(1)(o)"},
+				{"key": "confirmation", "label": "Consent and acknowledgement confirmed on a durable medium", "legal_ref": "D.Lgs. 206/2005, art. 51(7)"}
+			],
+			"placeholders_used": ["links.withdrawal_policy"],
+			"legal_refs": ["D.Lgs. 206/2005, arts. 51(7), 59(1)(o)", "Directive 2011/83/EU, art. 16(m)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "frag_age_gate",
+			"title": {"en": "Age gate", "it": "Verifica dell'età"},
+			"type": "fragment",
+			"group": "fragment",
+			"description": "Age check shown before age-restricted products.",
+			"applies_when": {"all": [{"field": "product_flags", "op": "includes", "value": "age_restricted"}]},
+			"required_elements": [
+				{"key": "age_threshold", "label": "Minimum age and the products concerned", "legal_ref": "L. 125/2001, art. 14-ter"},
+				{"key": "verification_method", "label": "How age is verified (self-declaration plus checks at delivery)", "legal_ref": "L. 125/2001, art. 14-ter"},
+				{"key": "under_age_message", "label": "Message shown to users under the minimum age", "legal_ref": "L. 125/2001, art. 14-ter"},
+				{"key": "privacy_note", "label": "Minimal data collected for the age check", "legal_ref": "Reg. (EU) 2016/679, art. 5(1)(c)", "placeholders": ["links.privacy_policy"]}
+			],
+			"placeholders_used": ["links.privacy_policy"],
+			"legal_refs": ["L. 125/2001, art. 14-ter", "Reg. (EU) 2016/679, art. 5(1)(c)"],
+			"review_cadence_months": 12,
+			"checklist_status": "complete"
+		},
+		{
+			"id": "int_ropa",
+			"title": {"en": "Record of processing activities", "it": "Registro delle attività di trattamento"},
+			"type": "internal",
+			"group": "internal",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "controller", "label": "Name and contact details of the controller, representative and DPO", "legal_ref": "Reg. (EU) 2016/679, art. 30(1)(a)", "placeholders": ["business.legal_name", "business.email", "business.dpo_name", "business.dpo_email"]},
+				{"key": "purposes", "label": "Purposes of each processing", "legal_ref": "Reg. (EU) 2016/679, art. 30(1)(b)"},
+				{"key": "categories", "label": "Categories of data subjects and of personal data", "legal_ref": "Reg. (EU) 2016/679, art. 30(1)(c)"},
+				{"key": "recipients", "label": "Categories of recipients", "legal_ref": "Reg. (EU) 2016/679, art. 30(1)(d)"},
+				{"key": "transfers", "label": "Transfers to third countries and safeguards", "legal_ref": "Reg. (EU) 2016/679, art. 30(1)(e)"},
+				{"key": "retention", "label": "Time limits for erasure", "legal_ref": "Reg. (EU) 2016/679, art. 30(1)(f)"},
+				{"key": "security", "label": "General description of security measures", "legal_ref": "Reg. (EU) 2016/679, art. 30(1)(g)"}
+			],
+			"placeholders_used": ["business.legal_name", "business.email", "business.dpo_name", "business.dpo_email"],
+			"legal_refs": ["Reg. (EU) 2016/679, art. 30"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "int_retention_schedule",
+			"title": {"en": "Retention schedule", "it": "Piano di conservazione dei dati"},
+			"type": "internal",
+			"group": "internal",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "categories_periods", "label": "Retention period for each data category (orders, accounts, marketing, logs)", "legal_ref": "Reg. (EU) 2016/679, art. 5(1)(e)"},
+				{"key": "statutory_periods", "label": "Statutory periods (e.g. ten years for accounting records)", "legal_ref": "Codice civile, art. 2220; D.P.R. 600/1973, art. 22"},
+				{"key": "deletion_procedure", "label": "Deletion or anonymisation procedure and owner", "legal_ref": "Reg. (EU) 2016/679, arts. 5(1)(e), 17"}
+			],
+			"placeholders_used": [],
+			"legal_refs": ["Reg. (EU) 2016/679, art. 5(1)(e)", "Codice civile, art. 2220"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "int_processor_register",
+			"title": {"en": "Processors and sub-processors register", "it": "Registro dei responsabili del trattamento"},
+			"type": "internal",
+			"group": "internal",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "processors", "label": "Each processor, the service provided and the data processed", "legal_ref": "Reg. (EU) 2016/679, art. 28"},
+				{"key": "agreements", "label": "Data processing agreement in place for each processor", "legal_ref": "Reg. (EU) 2016/679, art. 28(3)"},
+				{"key": "sub_processors", "label": "Sub-processors and how changes are notified", "legal_ref": "Reg. (EU) 2016/679, art. 28(2), (4)"},
+				{"key": "transfers", "label": "Transfer mechanism per processor (adequacy, SCCs, EU-US Data Privacy Framework)", "legal_ref": "Reg. (EU) 2016/679, arts. 44-46"}
+			],
+			"placeholders_used": ["store.payment_gateways"],
+			"legal_refs": ["Reg. (EU) 2016/679, arts. 28, 44-46"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "int_toms",
+			"title": {"en": "Technical and organisational measures", "it": "Misure tecniche e organizzative"},
+			"type": "internal",
+			"group": "internal",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "access_control", "label": "Access control, strong authentication and least privilege for admin users", "legal_ref": "Reg. (EU) 2016/679, art. 32(1)(b)"},
+				{"key": "encryption", "label": "Encryption in transit and at rest; pseudonymisation", "legal_ref": "Reg. (EU) 2016/679, art. 32(1)(a)"},
+				{"key": "backups", "label": "Backups and restore tests", "legal_ref": "Reg. (EU) 2016/679, art. 32(1)(c)"},
+				{"key": "updates", "label": "Patching of WordPress, plugins and server", "legal_ref": "Reg. (EU) 2016/679, art. 32(1)(b)"},
+				{"key": "testing", "label": "Regular testing and evaluation of the measures", "legal_ref": "Reg. (EU) 2016/679, art. 32(1)(d)"},
+				{"key": "training", "label": "Staff instructions and training", "legal_ref": "Reg. (EU) 2016/679, arts. 29, 32(4)"}
+			],
+			"placeholders_used": [],
+			"legal_refs": ["Reg. (EU) 2016/679, art. 32"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "int_lia",
+			"title": {"en": "Legitimate interest assessment", "it": "Valutazione del legittimo interesse"},
+			"type": "internal",
+			"group": "internal",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "purpose_test", "label": "Purpose test: the legitimate interest pursued", "legal_ref": "Reg. (EU) 2016/679, art. 6(1)(f); EDPB Guidelines 1/2024"},
+				{"key": "necessity_test", "label": "Necessity test: no less intrusive way", "legal_ref": "EDPB Guidelines 1/2024"},
+				{"key": "balancing_test", "label": "Balancing test: reasonable expectations and impact on data subjects", "legal_ref": "Reg. (EU) 2016/679, recital 47; EDPB Guidelines 1/2024"},
+				{"key": "safeguards_outcome", "label": "Safeguards and outcome", "legal_ref": "EDPB Guidelines 1/2024"}
+			],
+			"placeholders_used": [],
+			"legal_refs": ["Reg. (EU) 2016/679, art. 6(1)(f)", "EDPB Guidelines 1/2024 on legitimate interest"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "int_dpia",
+			"title": {"en": "Data protection impact assessment", "it": "Valutazione d'impatto sulla protezione dei dati"},
+			"type": "internal",
+			"group": "internal",
+			"applies_when": {"any": [{"field": "features", "op": "includes", "value": "ai_chatbot"}, {"field": "features", "op": "includes", "value": "loyalty_referral"}, {"field": "features", "op": "includes", "value": "marketplace_multivendor"}]},
+			"required_elements": [
+				{"key": "description", "label": "Systematic description of the processing and its purposes", "legal_ref": "Reg. (EU) 2016/679, art. 35(7)(a)"},
+				{"key": "necessity", "label": "Necessity and proportionality", "legal_ref": "Reg. (EU) 2016/679, art. 35(7)(b)"},
+				{"key": "risks", "label": "Risks to the rights and freedoms of data subjects", "legal_ref": "Reg. (EU) 2016/679, art. 35(7)(c)"},
+				{"key": "measures", "label": "Measures to address the risks", "legal_ref": "Reg. (EU) 2016/679, art. 35(7)(d)"},
+				{"key": "prior_consultation", "label": "Prior consultation with the Garante, if high residual risk", "legal_ref": "Reg. (EU) 2016/679, art. 36"}
+			],
+			"placeholders_used": [],
+			"legal_refs": ["Reg. (EU) 2016/679, arts. 35-36", "Garante privacy, list of processing requiring a DPIA (provv. 467/2018)"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "int_breach_procedure",
+			"title": {"en": "Data breach procedure", "it": "Procedura di gestione dei data breach"},
+			"type": "internal",
+			"group": "internal",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "detection", "label": "Detection, escalation and roles", "legal_ref": "Reg. (EU) 2016/679, art. 33"},
+				{"key": "assessment", "label": "Risk assessment of the breach", "legal_ref": "Reg. (EU) 2016/679, arts. 33-34; EDPB Guidelines 9/2022"},
+				{"key": "notification", "label": "Notification to the Garante within 72 hours, where required", "legal_ref": "Reg. (EU) 2016/679, art. 33(1)"},
+				{"key": "communication", "label": "Communication to data subjects for high-risk breaches", "legal_ref": "Reg. (EU) 2016/679, art. 34"},
+				{"key": "documentation", "label": "Documentation in the breach log", "legal_ref": "Reg. (EU) 2016/679, art. 33(5)"}
+			],
+			"placeholders_used": ["business.dpo_name", "business.dpo_email"],
+			"legal_refs": ["Reg. (EU) 2016/679, arts. 33-34", "EDPB Guidelines 9/2022 on personal data breach notification"],
+			"review_cadence_months": 12,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "int_breach_log",
+			"title": {"en": "Data breach log", "it": "Registro dei data breach"},
+			"type": "internal",
+			"group": "internal",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "facts", "label": "Facts of each breach", "legal_ref": "Reg. (EU) 2016/679, art. 33(5)"},
+				{"key": "effects", "label": "Effects and data subjects concerned", "legal_ref": "Reg. (EU) 2016/679, art. 33(5)"},
+				{"key": "remedial_action", "label": "Remedial action taken and notifications made", "legal_ref": "Reg. (EU) 2016/679, art. 33(5)"}
+			],
+			"placeholders_used": [],
+			"legal_refs": ["Reg. (EU) 2016/679, art. 33(5)"],
+			"review_cadence_months": 3,
+			"checklist_status": "draft"
+		},
+		{
+			"id": "int_dsr_log",
+			"title": {"en": "Data subject requests log", "it": "Registro delle richieste degli interessati"},
+			"type": "internal",
+			"group": "internal",
+			"applies_when": {"always": true},
+			"required_elements": [
+				{"key": "request_details", "label": "Request date, type and identity verification", "legal_ref": "Reg. (EU) 2016/679, arts. 12(6), 15-22"},
+				{"key": "deadline", "label": "Reply within one month (extension up to two further months, with reasons)", "legal_ref": "Reg. (EU) 2016/679, art. 12(3)"},
+				{"key": "outcome", "label": "Outcome and reasons for any refusal", "legal_ref": "Reg. (EU) 2016/679, art. 12(4)"}
+			],
+			"placeholders_used": [],
+			"legal_refs": ["Reg. (EU) 2016/679, arts. 12, 15-22"],
+			"review_cadence_months": 3,
+			"checklist_status": "draft"
+		}
+	]
+}

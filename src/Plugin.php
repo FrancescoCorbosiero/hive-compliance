@@ -7,9 +7,14 @@
 
 namespace Hive\Compliance;
 
+use Hive\Compliance\Catalog\Applicability;
+use Hive\Compliance\Catalog\Catalog;
+use Hive\Compliance\Catalog\RuleEngine;
 use Hive\Compliance\Document\PostType;
 use Hive\Compliance\Document\Repository;
 use Hive\Compliance\I18n\Languages;
+use Hive\Compliance\Integrations\Detector;
+use Hive\Compliance\Profile\Profile;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -104,6 +109,44 @@ final class Plugin {
 	 */
 	public function repository(): Repository {
 		return $this->service( Repository::class, static fn() => new Repository() );
+	}
+
+	/**
+	 * Document catalog.
+	 */
+	public function catalog(): Catalog {
+		return $this->service(
+			Catalog::class,
+			static fn() => new Catalog( HIVE_COMPLIANCE_DIR . 'catalog/catalog.json', HIVE_COMPLIANCE_DIR . 'catalog/catalog.schema.json' )
+		);
+	}
+
+	/**
+	 * Applicability rule engine.
+	 */
+	public function rules(): RuleEngine {
+		return $this->service( RuleEngine::class, static fn() => new RuleEngine() );
+	}
+
+	/**
+	 * Integration detector.
+	 */
+	public function detector(): Detector {
+		return $this->service( Detector::class, static fn() => new Detector() );
+	}
+
+	/**
+	 * Store profile.
+	 */
+	public function profile(): Profile {
+		return $this->service( Profile::class, fn() => new Profile( $this->detector() ) );
+	}
+
+	/**
+	 * Which documents apply to this shop.
+	 */
+	public function applicability(): Applicability {
+		return $this->service( Applicability::class, fn() => new Applicability( $this->catalog(), $this->rules(), $this->profile() ) );
 	}
 
 	/**
