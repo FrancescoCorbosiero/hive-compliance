@@ -1,0 +1,18 @@
+/* Shown to users who manage compliance documents only. */
+.hive-missing {
+	background: #fcf0c3;
+	color: #5c4400;
+	border-radius: 2px;
+	padding: 0 0.25em;
+	font-family: Menlo, Consolas, monospace;
+	font-size: 0.85em;
+}
+
+.hive-document-notice {
+	border-left: 4px solid #dba617;
+	background: #fcf9e8;
+	color: #1e1e1e;
+	margin: 0 0 1em;
+	padding: 0.75em 1em;
+	font-size: 0.9em;
+}
