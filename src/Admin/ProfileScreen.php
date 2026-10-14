@@ -187,19 +187,19 @@ final class ProfileScreen extends Screen {
 		echo '<h2>' . esc_html__( 'Markets you sell to', 'hive-compliance' ) . '</h2>';
 		$this->source_note( $detected['markets'] ?? null, $markets );
 
-		echo '<h3>' . esc_html__( 'European Union', 'hive-compliance' ) . '</h3><div class="hive-checkgrid">';
+		echo '<h3>' . esc_html__( 'European Union', 'hive-compliance' ) . '</h3>' . $this->select_all( 'hive-markets-eu' ) . '<div class="hive-checkgrid" id="hive-markets-eu">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in select_all().
 		foreach ( Markets::EU as $code ) {
 			$this->checkbox( 'markets_eu[]', $code, Markets::country_name( $code ), in_array( $code, $markets, true ) );
 		}
 		echo '</div>';
 
-		echo '<h3>' . esc_html__( 'Other markets', 'hive-compliance' ) . '</h3><div class="hive-checkgrid">';
+		echo '<h3>' . esc_html__( 'Other markets', 'hive-compliance' ) . '</h3>' . $this->select_all( 'hive-markets-other' ) . '<div class="hive-checkgrid" id="hive-markets-other">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in select_all().
 		foreach ( Markets::OTHER as $code ) {
 			$this->checkbox( 'markets_other[]', $code, Markets::label( $code ), in_array( $code, $markets, true ) );
 		}
 		echo '</div>';
 
-		echo '<h3>' . esc_html__( 'United States (by state)', 'hive-compliance' ) . '</h3><div class="hive-checkgrid hive-checkgrid--small">';
+		echo '<h3>' . esc_html__( 'United States (by state)', 'hive-compliance' ) . '</h3>' . $this->select_all( 'hive-markets-us' ) . '<div class="hive-checkgrid hive-checkgrid--small" id="hive-markets-us">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in select_all().
 		foreach ( Markets::US_STATES as $state ) {
 			$this->checkbox( 'markets_us[]', 'US-' . $state, $state, in_array( 'US-' . $state, $markets, true ) );
 		}
@@ -263,7 +263,10 @@ final class ProfileScreen extends Screen {
 		if ( isset( $detected[ $field ] ) && ! $sources ) {
 			$this->source_note( $detected[ $field ] );
 		}
-		echo '<div class="hive-checklist-options">';
+		if ( count( $labels ) > 3 ) {
+			echo $this->select_all( 'hive-options-' . $field ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in select_all().
+		}
+		echo '<div class="hive-checklist-options" id="hive-options-' . esc_attr( $field ) . '">';
 		foreach ( $labels as $value => $label ) {
 			$this->checkbox( $field . '[]', $value, $label, in_array( $value, (array) $values[ $field ], true ), $sources[ $value ] ?? '' );
 		}

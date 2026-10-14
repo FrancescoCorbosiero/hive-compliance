@@ -65,6 +65,7 @@ final class Menu {
 		}
 		wp_enqueue_style( 'hive-compliance-admin', HIVE_COMPLIANCE_URL . 'assets/css/admin.css', array(), HIVE_COMPLIANCE_VERSION );
 		wp_enqueue_style( 'hive-compliance-front', HIVE_COMPLIANCE_URL . 'assets/css/front.css', array(), HIVE_COMPLIANCE_VERSION );
+		wp_enqueue_script( 'hive-compliance-select-all', HIVE_COMPLIANCE_URL . 'assets/js/select-all.js', array( 'wp-i18n' ), HIVE_COMPLIANCE_VERSION, true );
 		foreach ( $this->screens as $screen ) {
 			$slug = '' === $screen->slug() ? 'hive-compliance' : 'hive-compliance-' . $screen->slug();
 			if ( $slug === $page ) {

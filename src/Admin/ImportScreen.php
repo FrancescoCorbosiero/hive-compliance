@@ -238,9 +238,14 @@ final class ImportScreen extends Screen {
 
 		$this->form_open( self::ACTION_APPLY );
 		printf( '<input type="hidden" name="session" value="%s">', esc_attr( $token ) );
+		if ( count( $groups[ BlockReport::CHANGED ] ) > 1 ) {
+			echo $this->select_all( 'hive-import-reports' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in select_all().
+		}
+		echo '<div id="hive-import-reports">';
 		foreach ( array_merge( $groups[ BlockReport::CHANGED ], $groups[ BlockReport::INVALID ] ) as $report ) {
 			$this->render_report( $report );
 		}
+		echo '</div>';
 
 		if ( $groups[ BlockReport::UNCHANGED ] ) {
 			/* translators: %d: number of unchanged documents. */
@@ -251,6 +256,9 @@ final class ImportScreen extends Screen {
 			echo '</ul></details>';
 		}
 
+		if ( count( $groups[ BlockReport::CHANGED ] ) > 1 ) {
+			echo $this->select_all( 'hive-import-reports' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in select_all().
+		}
 		if ( $groups[ BlockReport::CHANGED ] ) {
 			echo '<p><label><input type="checkbox" name="publish_on_apply" value="1"> ' . esc_html__( 'Publish on apply (otherwise each document keeps its current status)', 'hive-compliance' ) . '</label></p>';
 			submit_button( __( 'Apply accepted documents', 'hive-compliance' ), 'primary', 'submit', false );

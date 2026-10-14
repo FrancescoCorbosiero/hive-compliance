@@ -139,7 +139,7 @@ final class BusinessScreen extends Screen {
 			echo '</select>';
 		} elseif ( 'country' === $field['type'] ) {
 			printf( '<select id="%1$s" name="%2$s"><option value="">%3$s</option>', esc_attr( $id ), esc_attr( $name ), esc_html__( '— Select —', 'hive-compliance' ) );
-			foreach ( $this->countries() as $code => $label ) {
+			foreach ( self::countries() as $code => $label ) {
 				printf( '<option value="%1$s"%2$s>%3$s</option>', esc_attr( $code ), selected( $value, $code, false ), esc_html( $label ) );
 			}
 			echo '</select>';
@@ -230,7 +230,7 @@ final class BusinessScreen extends Screen {
 	 *
 	 * @return array<string, string>
 	 */
-	private function countries(): array {
+	public static function countries(): array {
 		if ( function_exists( 'WC' ) && WC()->countries ) {
 			return array_map( static fn( $name ) => html_entity_decode( (string) $name, ENT_QUOTES, 'UTF-8' ), WC()->countries->get_countries() );
 		}

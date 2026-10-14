@@ -106,6 +106,23 @@ abstract class Screen {
 	}
 
 	/**
+	 * "Select all · Select none" for the checkboxes inside an element, with a live count.
+	 * Hidden until assets/js/select-all.js runs, so it never shows without JavaScript.
+	 *
+	 * @param string $container_id ID of the element holding the checkboxes.
+	 * @param string $activates    Optional ID of a radio button to select when the boxes change.
+	 */
+	protected function select_all( string $container_id, string $activates = '' ): string {
+		return sprintf(
+			'<p class="hive-select-all" data-hive-select="%1$s"%2$s hidden><button type="button" class="button-link" data-hive-select-action="all">%3$s</button> · <button type="button" class="button-link" data-hive-select-action="none">%4$s</button> <span class="hive-meta hive-select-count" aria-live="polite"></span></p>',
+			esc_attr( $container_id ),
+			'' !== $activates ? ' data-hive-activates="' . esc_attr( $activates ) . '"' : '',
+			esc_html__( 'Select all', 'hive-compliance' ),
+			esc_html__( 'Select none', 'hive-compliance' )
+		);
+	}
+
+	/**
 	 * Page header.
 	 *
 	 * @param string $title    Title.

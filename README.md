@@ -64,6 +64,14 @@ The plugin does not write legal text. It provides:
        - profile markets with no shipping zone;
        - a VAT number, PEC or e-mail address in the widgets, menus or header/footer template parts that differs from Business Data. This is a simple text scan of every active widget area, every menu, and the template parts named header or footer.
      - The **Full catalog** view lists every entry. **Generate skeletons for empty documents** covers newly enabled languages and newly applicable documents.
+   - **Placeholders:** every `{{placeholder}}` in one table per namespace (`business`, `store`, `links`, `custom`, plus any added through the filter). For each one it shows:
+     - a **Copy** button for the token;
+     - the current value, per language;
+     - a status: set, missing, invalid (with the validation message), or unknown (used in a document but defined nowhere);
+     - the documents that use it, linked to the editor;
+     - where the value comes from, with a link to that setting.
+
+     Business values, custom values and page links can be changed right there; the business values go through the same checks as on Business Data. Store facts are read-only and link to the WordPress or WooCommerce screen that sets them. Search and a "Need attention" filter narrow the list, and the dashboard has a **Placeholders** card listing the ones that need action.
    - **Documents:** the editor.
      - CodeMirror for Markdown, with a live preview through the real render pipeline and the content checks.
      - A sidebar with the required-elements checklist, placeholder picker, changelog (linked to WordPress revisions), page binding, language switcher and status.
@@ -124,7 +132,7 @@ Go to **Hive Compliance → Import** and upload the returned `.md` file, or past
 | **Error** (cannot be applied) | <ul><li>Broken or mismatched delimiters, an unknown document ID or language, or a duplicate block for the same document and language.</li><li>Malformed front matter.</li><li>A placeholder that is in the site version but missing from the import.</li><li>An unknown placeholder namespace, or a malformed `{{…}}`.</li><li>Any HTML tag, `<script>`, `javascript:` or `on*=` attribute.</li><li>Catalog lint errors, such as a link to the discontinued EU ODR platform.</li></ul> |
 | **Warning** (applied after you tick *I reviewed the warnings*) | <ul><li>A `base_hash` conflict: the document changed on the site after the export. A three-way note shows the site changes (export → site) and the import changes (site → import).</li><li>Literal URLs other than `{{links.*}}`.</li><li>An empty `changelog_note` on a changed document.</li><li>`TODO(data):` markers, which are listed.</li><li>Required elements without a heading.</li><li>An unknown key in a known namespace.</li><li>Shortcodes that are not allow-listed.</li></ul> |
 
-The review screen shows each changed document with its badges, a side-by-side diff and an accept checkbox. Unchanged documents are collapsed into a list. Documents absent from the bundle are not touched, and the context section is ignored.
+The review screen shows each changed document with its badges, a side-by-side diff and an accept checkbox. With more than one document, **Select all** (above the list and next to the Apply button) ticks every document that can be applied; documents with errors have no checkbox and stay out. Unchanged documents are collapsed into a list. Documents absent from the bundle are not touched, and the context section is ignored.
 
 If you re-import an untouched export, the review shows zero changes. The export and the parser are byte-stable, and a test enforces this.
 

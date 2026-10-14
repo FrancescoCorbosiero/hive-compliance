@@ -358,7 +358,10 @@ final class EditorScreen extends Screen {
 		if ( ! $keys ) {
 			echo '<p class="hive-meta">' . esc_html__( 'No required elements listed.', 'hive-compliance' ) . '</p>';
 		}
-		echo '<ul class="hive-checklist">';
+		if ( count( $keys ) > 1 ) {
+			echo $this->select_all( 'hive-checklist' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in select_all().
+		}
+		echo '<ul class="hive-checklist" id="hive-checklist">';
 		foreach ( $entry->required_elements as $element ) {
 			$heading = ContentLinter::has_heading( $document->markdown, $element['key'] );
 			printf(
@@ -467,6 +470,7 @@ final class EditorScreen extends Screen {
 	private function render_placeholder_box( string $lang ): void {
 		echo '<div class="postbox hive-box"><h2 class="hndle">' . esc_html__( 'Placeholders', 'hive-compliance' ) . '</h2><div class="inside hive-placeholders">';
 		echo '<p class="hive-meta">' . esc_html__( 'Click to insert. Values are filled in when the page is shown; they are never written into the text.', 'hive-compliance' ) . '</p>';
+		printf( '<p><a href="%1$s">%2$s</a></p>', esc_url( Request::page_url( 'placeholders', array( 'lang' => $lang ) ) ), esc_html__( 'All placeholders, their values and where to set them →', 'hive-compliance' ) );
 		$resolver = $this->plugin->resolver();
 		foreach ( $this->plugin->placeholders()->providers() as $prefix => $provider ) {
 			echo '<details><summary>' . esc_html( $provider->label() ) . ' <code>' . esc_html( $prefix ) . '.*</code></summary><ul>';
