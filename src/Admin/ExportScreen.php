@@ -90,13 +90,14 @@ final class ExportScreen extends Screen {
 		echo '<h2>' . esc_html__( 'Documents', 'hive-compliance' ) . '</h2><fieldset>';
 		$this->radio( 'mode', Selection::MODE_APPLICABLE, __( 'All applicable documents', 'hive-compliance' ), true );
 		$this->radio( 'mode', Selection::MODE_GROUPS, __( 'By group:', 'hive-compliance' ), false );
-		echo '<div class="hive-checkgrid hive-indent">';
+		echo '<div class="hive-indent">' . $this->select_all( 'hive-export-groups', 'hive-mode-' . Selection::MODE_GROUPS ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in select_all().
+		echo '<div class="hive-checkgrid hive-indent" id="hive-export-groups" data-hive-activates="hive-mode-' . esc_attr( Selection::MODE_GROUPS ) . '">';
 		foreach ( Entry::GROUPS as $group ) {
 			printf( '<label class="hive-check"><input type="checkbox" name="groups[]" value="%1$s"> %2$s</label>', esc_attr( $group ), esc_html( ucfirst( $group ) ) );
 		}
 		echo '</div>';
 		$this->radio( 'mode', Selection::MODE_DOCUMENTS, __( 'Individual documents:', 'hive-compliance' ), false );
-		echo '<details class="hive-indent"><summary>' . esc_html__( 'Choose documents', 'hive-compliance' ) . '</summary><div class="hive-checkgrid">';
+		echo '<details class="hive-indent"><summary>' . esc_html__( 'Choose documents', 'hive-compliance' ) . '</summary>' . $this->select_all( 'hive-export-docs', 'hive-mode-' . Selection::MODE_DOCUMENTS ) . '<div class="hive-checkgrid" id="hive-export-docs" data-hive-activates="hive-mode-' . esc_attr( Selection::MODE_DOCUMENTS ) . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in select_all().
 		foreach ( $this->plugin->catalog()->entries() as $entry ) {
 			printf(
 				'<label class="hive-check"><input type="checkbox" name="docs[]" value="%1$s"> %2$s%3$s</label>',
@@ -107,7 +108,11 @@ final class ExportScreen extends Screen {
 		}
 		echo '</div></details></fieldset>';
 
-		echo '<h2>' . esc_html__( 'Languages', 'hive-compliance' ) . '</h2><div class="hive-checkgrid">';
+		echo '<h2>' . esc_html__( 'Languages', 'hive-compliance' ) . '</h2>';
+		if ( count( $languages->enabled() ) > 2 ) {
+			echo $this->select_all( 'hive-export-langs' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in select_all().
+		}
+		echo '<div class="hive-checkgrid" id="hive-export-langs">';
 		foreach ( $languages->enabled() as $code ) {
 			printf( '<label class="hive-check"><input type="checkbox" name="langs[]" value="%1$s" checked> %2$s</label>', esc_attr( $code ), esc_html( $code . ' — ' . $languages->label( $code ) ) );
 		}
@@ -134,7 +139,7 @@ final class ExportScreen extends Screen {
 	 * @param bool   $checked Checked.
 	 */
 	private function radio( string $name, string $value, string $label, bool $checked ): void {
-		printf( '<p><label><input type="radio" name="%1$s" value="%2$s"%3$s> %4$s</label></p>', esc_attr( $name ), esc_attr( $value ), checked( $checked, true, false ), esc_html( $label ) );
+		printf( '<p><label><input type="radio" id="hive-%1$s-%2$s" name="%1$s" value="%2$s"%3$s> %4$s</label></p>', esc_attr( $name ), esc_attr( $value ), checked( $checked, true, false ), esc_html( $label ) );
 	}
 
 	/**

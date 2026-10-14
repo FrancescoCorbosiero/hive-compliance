@@ -144,6 +144,26 @@ class AdminTest extends Hive_TestCase {
 		$this->assertStringNotContainsString( 'Pre-filled from:', $this->render_screen( 'profile', array( 'step' => 'seller' ) ), 'Saved answers are the merchant\'s own.' );
 	}
 
+	public function test_checkbox_lists_offer_select_all() {
+		$this->plugin()->settings()->update( array( 'enabled_languages' => array( 'it', 'en', 'de' ) ) );
+		$export = $this->render_screen( 'export' );
+		$this->assertStringContainsString( 'data-hive-select="hive-export-docs" data-hive-activates="hive-mode-documents"', $export );
+		$this->assertStringContainsString( 'id="hive-mode-documents"', $export, 'The radio the control selects.' );
+		$this->assertStringContainsString( 'data-hive-select="hive-export-groups"', $export );
+		$this->assertStringContainsString( 'data-hive-select="hive-export-langs"', $export );
+
+		$markets = $this->render_screen( 'profile', array( 'step' => 'markets' ) );
+		foreach ( array( 'hive-markets-eu', 'hive-markets-other', 'hive-markets-us' ) as $id ) {
+			$this->assertStringContainsString( 'data-hive-select="' . $id . '"', $markets );
+			$this->assertStringContainsString( 'id="' . $id . '"', $markets );
+		}
+		$this->assertStringContainsString( 'data-hive-select="hive-options-features"', $this->render_screen( 'profile', array( 'step' => 'features' ) ) );
+		$this->assertStringContainsString( 'data-hive-select="hive-enabled-languages"', $this->render_screen( 'settings' ) );
+		$this->assertStringContainsString( 'data-hive-select="hive-checklist"', $this->render_screen( 'documents', array( 'doc' => 'terms_of_sale', 'lang' => 'it' ) ) );
+
+		$this->assertStringContainsString( ' hidden>', $export, 'Hidden until the script runs.' );
+	}
+
 	public function test_rest_preview_requires_the_capability_and_renders() {
 		$request = new WP_REST_Request( 'POST', '/hive-compliance/v1/preview' );
 		$request->set_body_params(

@@ -94,7 +94,7 @@ final class SettingsScreen extends Screen {
 			foreach ( $languages->available() as $code => $label ) {
 				printf( '<option value="%1$s"%2$s>%3$s</option>', esc_attr( $code ), selected( $settings['default_language'], $code, false ), esc_html( $code . ' — ' . $label ) );
 			}
-			echo '</select></p><fieldset class="hive-checkgrid"><legend class="screen-reader-text">' . esc_html__( 'Enabled languages', 'hive-compliance' ) . '</legend>';
+			echo '</select></p>' . $this->select_all( 'hive-enabled-languages' ) . '<fieldset class="hive-checkgrid" id="hive-enabled-languages"><legend class="screen-reader-text">' . esc_html__( 'Enabled languages', 'hive-compliance' ) . '</legend>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in select_all().
 			foreach ( $languages->available() as $code => $label ) {
 				printf( '<label class="hive-check"><input type="checkbox" name="enabled_languages[]" value="%1$s"%2$s> %3$s</label>', esc_attr( $code ), checked( in_array( $code, (array) $settings['enabled_languages'], true ), true, false ), esc_html( $code . ' — ' . $label ) );
 			}

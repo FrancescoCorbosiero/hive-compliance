@@ -312,6 +312,29 @@ class ImportTest extends Hive_TestCase {
 		$this->assertSame( BlockReport::CHANGED, $report->status() );
 	}
 
+	public function test_review_offers_select_all_when_several_documents_can_be_accepted() {
+		require_once ABSPATH . 'wp-admin/includes/admin.php';
+		set_current_screen( 'hive-compliance_page_hive-compliance-import' );
+		$screen = new ImportScreen( $this->plugin() );
+		$render = static function ( string $bundle ) use ( $screen ): string {
+			$_GET = array( 'session' => ImportSession::create( $bundle, ImportSession::KIND_BUNDLE ) );
+			ob_start();
+			$screen->render();
+			$_GET = array();
+			return (string) ob_get_clean();
+		};
+
+		$one  = str_replace( "{{business.email}}\n<!-- hive:end id=\"dispute_resolution\" -->", "{{business.email}} Aggiornato.\n<!-- hive:end id=\"dispute_resolution\" -->", $this->export() );
+		$html = $render( $one );
+		$this->assertStringNotContainsString( 'data-hive-select="hive-import-reports"', $html, 'One document: nothing to select in bulk.' );
+
+		$two  = str_replace( "P.IVA {{business.vat_id}}.\n<!-- hive:end id=\"terms_of_sale\" -->", "P.IVA {{business.vat_id}}. Aggiornato.\n<!-- hive:end id=\"terms_of_sale\" -->", $one );
+		$html = $render( $two );
+		$this->assertSame( 2, substr_count( $html, 'data-hive-select="hive-import-reports"' ), 'Above the documents and next to Apply.' );
+		$this->assertStringContainsString( '<div id="hive-import-reports">', $html );
+		$this->assertSame( 2, substr_count( $html, 'name="accept[]"' ) );
+	}
+
 	public function test_review_and_restore_screens_render() {
 		require_once ABSPATH . 'wp-admin/includes/admin.php';
 		set_current_screen( 'hive-compliance_page_hive-compliance-import' );

@@ -383,3 +383,12 @@
 .hive-ph-new-key {
 	width: 14em;
 }
+
+/* Select all / none */
+.hive-select-all {
+	margin: 4px 0 8px;
+}
+
+.hive-select-all .button-link {
+	text-decoration: underline;
+}

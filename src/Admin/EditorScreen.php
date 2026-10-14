@@ -358,7 +358,10 @@ final class EditorScreen extends Screen {
 		if ( ! $keys ) {
 			echo '<p class="hive-meta">' . esc_html__( 'No required elements listed.', 'hive-compliance' ) . '</p>';
 		}
-		echo '<ul class="hive-checklist">';
+		if ( count( $keys ) > 1 ) {
+			echo $this->select_all( 'hive-checklist' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in select_all().
+		}
+		echo '<ul class="hive-checklist" id="hive-checklist">';
 		foreach ( $entry->required_elements as $element ) {
 			$heading = ContentLinter::has_heading( $document->markdown, $element['key'] );
 			printf(
