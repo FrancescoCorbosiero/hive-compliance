@@ -374,6 +374,37 @@ final class EditorScreen extends Screen {
 	}
 
 	/**
+	 * Offer to make the bound page the WooCommerce terms page or the WordPress privacy page.
+	 *
+	 * @param Entry  $entry   Entry.
+	 * @param string $lang    Language.
+	 * @param int    $page_id Bound page.
+	 */
+	private function render_site_page_offer( Entry $entry, string $lang, int $page_id ): void {
+		$site_pages = $this->plugin->site_pages();
+		$role       = $site_pages->role( $entry->id );
+		if ( null === $role ) {
+			return;
+		}
+		$current = $site_pages->current( $entry->id );
+		if ( $current === $page_id ) {
+			echo '<p class="hive-ok">' . esc_html( $role['current_label'] ) . '</p>';
+			return;
+		}
+		if ( ! $site_pages->can_set( $entry->id ) ) {
+			return;
+		}
+		$this->form_open( BindingActions::ACTION_SITE_PAGE );
+		printf( '<input type="hidden" name="doc" value="%s"><input type="hidden" name="lang" value="%s">', esc_attr( $entry->id ), esc_attr( $lang ) );
+		submit_button( $role['label'], 'secondary small', 'submit', false );
+		if ( $current && get_post( $current ) ) {
+			/* translators: %s: title of the page currently set. */
+			echo '<br><span class="hive-meta">' . esc_html( sprintf( __( 'Currently: %s', 'hive-compliance' ), get_the_title( $current ) ) ) . '</span>';
+		}
+		echo '</form>';
+	}
+
+	/**
 	 * Page binding box (page documents only): separate forms, outside the main form.
 	 *
 	 * @param Entry  $entry Entry.
@@ -398,6 +429,7 @@ final class EditorScreen extends Screen {
 			if ( $problems ) {
 				echo '<p class="hive-finding hive-finding--warning">' . esc_html__( 'The page contains more than the document block. Keep the block only.', 'hive-compliance' ) . '</p>';
 			}
+			$this->render_site_page_offer( $entry, $lang, $page_id );
 			$this->form_open( BindingActions::ACTION_UNBIND );
 			printf( '<input type="hidden" name="doc" value="%s"><input type="hidden" name="lang" value="%s">', esc_attr( $entry->id ), esc_attr( $lang ) );
 			submit_button( __( 'Remove binding', 'hive-compliance' ), 'link-delete small', 'submit', false );

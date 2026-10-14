@@ -39,6 +39,7 @@
 				},
 				"type": { "enum": [ "page", "fragment", "internal" ] },
 				"group": { "enum": [ "core", "conditional", "international", "fragment", "internal" ] },
+				"link_group": { "description": "Footer link list of a page document ([hive_legal_links], hive/legal-links).", "enum": [ "legal", "assistance" ] },
 				"description": { "type": "string" },
 				"applies_when": { "$ref": "#/$defs/rule" },
 				"required_elements": {

@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "hive/legal-links",
+	"version": "0.1.0",
+	"title": "Legal links",
+	"category": "widgets",
+	"icon": "list-view",
+	"description": "Links to the published legal pages bound in Hive Compliance, titled with the document titles. Unbound or draft documents are skipped.",
+	"keywords": [ "footer", "legal", "privacy", "terms", "links" ],
+	"textdomain": "hive-compliance",
+	"attributes": {
+		"group": { "type": "string", "default": "legal" },
+		"lang": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"html": false,
+		"typography": { "fontSize": true, "lineHeight": true },
+		"color": { "text": true, "background": true, "link": true },
+		"spacing": { "margin": true, "padding": true }
+	},
+	"editorScript": "file:./index.js"
+}

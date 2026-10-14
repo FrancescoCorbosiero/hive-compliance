@@ -252,6 +252,9 @@ final class Catalog {
 		if ( $document->type !== $expected_type ) {
 			$errors[] = $where . sprintf( ': group "%s" requires type "%s"', $document->group, $expected_type );
 		}
+		if ( isset( $document->link_group ) && Entry::TYPE_PAGE !== $document->type ) {
+			$errors[] = $where . ': only page documents have a link_group';
+		}
 
 		$keys = array();
 		foreach ( $document->required_elements as $element ) {

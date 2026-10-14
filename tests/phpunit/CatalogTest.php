@@ -28,7 +28,7 @@ class CatalogTest extends Hive_TestCase {
 		$catalog = $this->catalog();
 		$this->assertSame( array(), $catalog->errors() );
 		$this->assertTrue( $catalog->is_valid() );
-		$this->assertSame( '1.1.0', $catalog->version() );
+		$this->assertSame( '1.2.0', $catalog->version() );
 	}
 
 	public function test_catalog_contains_exactly_the_spec_ids_in_their_groups() {
@@ -124,6 +124,18 @@ class CatalogTest extends Hive_TestCase {
 		$element = $this->plugin()->catalog()->get( 'terms_of_sale' )->required_elements[0];
 		$this->assertSame( 'Identità del venditore, indirizzo geografico e recapiti', Entry::element_label( $element, 'it-IT' ) );
 		$this->assertSame( 'Seller identity, geographical address and contact details', Entry::element_label( $element, 'de' ), 'Falls back to English.' );
+	}
+
+	public function test_every_page_belongs_to_a_link_group() {
+		foreach ( $this->plugin()->catalog()->entries() as $entry ) {
+			if ( $entry->is_page() ) {
+				$this->assertContains( $entry->link_group, array( 'legal', 'assistance' ), $entry->id );
+			} else {
+				$this->assertSame( '', $entry->link_group, $entry->id );
+			}
+		}
+		$this->assertSame( 'legal', $this->plugin()->catalog()->get( 'privacy_policy' )->link_group );
+		$this->assertSame( 'assistance', $this->plugin()->catalog()->get( 'shipping_policy' )->link_group );
 	}
 
 	public function test_a_plain_string_label_is_still_accepted() {

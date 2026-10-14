@@ -44,16 +44,25 @@ final class StoreChecks {
 	private Detector $detector;
 
 	/**
+	 * Scan of widgets, menus and template parts.
+	 *
+	 * @var IdentityScan
+	 */
+	private IdentityScan $identity;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param StoreFacts $facts    Store facts.
-	 * @param Profile    $profile  Store profile.
-	 * @param Detector   $detector Integration detector.
+	 * @param StoreFacts   $facts    Store facts.
+	 * @param Profile      $profile  Store profile.
+	 * @param Detector     $detector Integration detector.
+	 * @param IdentityScan $identity Header/footer identity scan.
 	 */
-	public function __construct( StoreFacts $facts, Profile $profile, Detector $detector ) {
+	public function __construct( StoreFacts $facts, Profile $profile, Detector $detector, IdentityScan $identity ) {
 		$this->facts    = $facts;
 		$this->profile  = $profile;
 		$this->detector = $detector;
+		$this->identity = $identity;
 	}
 
 	/**
@@ -66,7 +75,28 @@ final class StoreChecks {
 			$this->selling_everywhere(),
 			$this->payment_surcharges(),
 			$this->bnpl_feature(),
-			$this->markets_without_shipping()
+			$this->markets_without_shipping(),
+			$this->identity_mismatches()
+		);
+	}
+
+	/**
+	 * Widgets, menus or header/footer template parts show business details that differ from
+	 * Business Data.
+	 *
+	 * @return array<int, array{id: string, message: string, details: string[]}>
+	 */
+	private function identity_mismatches(): array {
+		$found = $this->identity->mismatches();
+		if ( ! $found ) {
+			return array();
+		}
+		return array(
+			self::warning(
+				'identity_mismatch',
+				__( 'The site header or footer shows business details that differ from Business Data. Correct them, or replace the text with the Business identity block or [hive_business].', 'hive-compliance' ),
+				$found
+			),
 		);
 	}
 

@@ -10,6 +10,7 @@ namespace Hive\Compliance\Admin;
 use Hive\Compliance\I18n\Languages;
 use Hive\Compliance\Render\PageManager;
 use Hive\Compliance\Render\ShellGuard;
+use Hive\Compliance\Render\SitePages;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -21,6 +22,8 @@ final class BindingActions {
 	const ACTION_BIND   = 'hive_compliance_bind_page';
 	const ACTION_UNBIND = 'hive_compliance_unbind_page';
 
+	const ACTION_SITE_PAGE = 'hive_compliance_set_site_page';
+
 	/**
 	 * Page manager.
 	 *
@@ -29,12 +32,21 @@ final class BindingActions {
 	private PageManager $pages;
 
 	/**
+	 * Site page settings.
+	 *
+	 * @var SitePages
+	 */
+	private SitePages $site_pages;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param PageManager $pages Page manager.
+	 * @param PageManager $pages      Page manager.
+	 * @param SitePages   $site_pages Site page settings.
 	 */
-	public function __construct( PageManager $pages ) {
-		$this->pages = $pages;
+	public function __construct( PageManager $pages, SitePages $site_pages ) {
+		$this->pages      = $pages;
+		$this->site_pages = $site_pages;
 	}
 
 	/**
@@ -43,6 +55,28 @@ final class BindingActions {
 	public function register(): void {
 		add_action( 'admin_post_' . self::ACTION_BIND, array( $this, 'bind' ) );
 		add_action( 'admin_post_' . self::ACTION_UNBIND, array( $this, 'unbind' ) );
+		add_action( 'admin_post_' . self::ACTION_SITE_PAGE, array( $this, 'set_site_page' ) );
+	}
+
+	/**
+	 * Makes the bound page the WooCommerce terms page or the WordPress privacy policy page.
+	 * Needs the plugin capability plus the one that owns the setting.
+	 */
+	public function set_site_page(): void {
+		Request::require_capability();
+		check_admin_referer( self::ACTION_SITE_PAGE );
+
+		$doc_id = sanitize_key( wp_unslash( $_POST['doc'] ?? '' ) );
+		$lang   = Languages::normalize_code( sanitize_text_field( wp_unslash( $_POST['lang'] ?? '' ) ) );
+		if ( ! $this->site_pages->can_set( $doc_id ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to change this setting.', 'hive-compliance' ), '', array( 'response' => 403 ) );
+		}
+		if ( $this->site_pages->set( $doc_id, $lang ) ) {
+			Notices::add( 'success', __( 'Site setting updated.', 'hive-compliance' ) );
+		} else {
+			Notices::add( 'error', __( 'Nothing changed: the document has no bound page.', 'hive-compliance' ) );
+		}
+		Request::redirect( Request::editor_url( $doc_id, $lang ) );
 	}
 
 	/**

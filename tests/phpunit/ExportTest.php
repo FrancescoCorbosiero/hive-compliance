@@ -139,7 +139,7 @@ MD;
 		$this->assertStringContainsString( '- {{business.vat_id}}: 01234567897', $context );
 		$this->assertStringContainsString( '### Store facts (auto-detected)', $context );
 		$this->assertStringContainsString( '### Detected integrations', $context );
-		$this->assertStringContainsString( '- catalog_version: 1.1.0', $context );
+		$this->assertStringContainsString( '- catalog_version: 1.2.0', $context );
 		$this->assertStringContainsString( '- exported_at: 2026-10-13T10:00:00Z', $context );
 		$this->assertStringNotContainsString( '<!-- hive:end', $context, 'Values cannot fake delimiters.' );
 		$this->assertSame( 1, substr_count( $bundle, '<!-- hive:end id="terms_of_sale" -->' ) / 2, 'One end delimiter per language.' );
