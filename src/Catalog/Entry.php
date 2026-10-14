@@ -37,6 +37,7 @@ final class Entry {
 	 * @param string                           $checklist_status      complete|draft.
 	 * @param string                           $description           Short description.
 	 * @param array<int, array<string, mixed>> $lint                  Content lint rules {id, pattern, severity, message}.
+	 * @param string                           $link_group            Footer link list of a page: legal|assistance ('' = none).
 	 */
 	public function __construct(
 		public readonly string $id,
@@ -50,7 +51,8 @@ final class Entry {
 		public readonly int $review_cadence_months,
 		public readonly string $checklist_status,
 		public readonly string $description = '',
-		public readonly array $lint = array()
+		public readonly array $lint = array(),
+		public readonly string $link_group = ''
 	) {}
 
 	/**
@@ -84,7 +86,8 @@ final class Entry {
 			(int) $data['review_cadence_months'],
 			(string) $data['checklist_status'],
 			(string) ( $data['description'] ?? '' ),
-			array_values( (array) ( $data['lint'] ?? array() ) )
+			array_values( (array) ( $data['lint'] ?? array() ) ),
+			(string) ( $data['link_group'] ?? '' )
 		);
 	}
 

@@ -61,12 +61,16 @@ The plugin does not write legal text. It provides:
        - WooCommerce selling to all countries while the shipping zones cover fewer;
        - payment surcharges set in Pay for Payment, which art. 62 Codice del Consumo prohibits for consumers (discounts are allowed);
        - an active Klarna or Scalapay while the profile's "Buy now, pay later" feature is off;
-       - profile markets with no shipping zone.
+       - profile markets with no shipping zone;
+       - a VAT number, PEC or e-mail address in the widgets, menus or header/footer template parts that differs from Business Data. This is a simple text scan of every active widget area, every menu, and the template parts named header or footer.
      - The **Full catalog** view lists every entry. **Generate skeletons for empty documents** covers newly enabled languages and newly applicable documents.
    - **Documents:** the editor.
      - CodeMirror for Markdown, with a live preview through the real render pipeline and the content checks.
      - A sidebar with the required-elements checklist, placeholder picker, changelog (linked to WordPress revisions), page binding, language switcher and status.
 5. For each public document, click **Create draft page** in the editor sidebar, or assign an existing page. Publish the page when the document is ready.
+   - Once the terms of sale are bound, the sidebar offers to make that page the WooCommerce terms and conditions page.
+   - Once the privacy policy is bound, it offers to make that page the WordPress privacy policy page.
+   - Each offer needs the capability that owns the setting (`manage_woocommerce` or `manage_privacy_options`) in addition to `manage_hive_compliance`.
 
 Deleting the plugin keeps all data, unless **Settings → Remove all documents, revisions and settings when the plugin is deleted** is on. Bound pages are ordinary pages and are never deleted.
 
@@ -157,6 +161,8 @@ Importing a `.json` file never applies anything on its own:
 | --- | --- |
 | Page | The **Hive document** block (`hive/document`), or `[hive_document id="terms_of_sale" lang="it"]`. `lang` is optional. Without it, the current language is used, falling back to the default language. |
 | Fragment | `[hive_fragment id="frag_newsletter_consent"]`, or `hive_fragment( 'frag_newsletter_consent' )` in PHP. A fragment that renders as a single paragraph is unwrapped, so it works as a label or button text. |
+| Business identity (footer) | The **Business identity** block (`hive/business-identity`), or `[hive_business]`. It prints "trade name — legal name, legal form, address, P.IVA …, REA …, PEC …, E-mail …, Tel. …" from Business Data. An empty field is left out together with its label. Limit the fields with `fields="trade_name,vat_id"` or `exclude="phone"` (checkboxes in the block). Labels follow `lang` or the current language. `[hive_business field="vat_id"]` prints a single value. |
+| Legal links (footer) | The **Legal links** block (`hive/legal-links`), or `[hive_legal_links group="legal"]` / `group="assistance"`; without a group, every page document. It lists links to the bound pages, in catalog order, titled with the document titles. A document is skipped unless both the page and the document are published. Each page entry's `link_group` in the catalog decides its list. |
 
 - **Pages are thin shells.** A bound page should contain only the block. If a bound page holds anything else, the block editor, the classic editor and the dashboard warn about it.
 - **Visibility.**
@@ -198,6 +204,7 @@ The placeholder picker in the editor lists every key with its current value.
 - `id`, titles per language, `type` and `group`;
 - the applicability rule `applies_when`;
 - `required_elements`, each with `key`, `label` (per language, like `title`: `{"en": …, "it": …}`), `legal_ref` and optional `placeholders`;
+- for page documents, `link_group` (`legal` or `assistance`), which decides the footer link list they appear in;
 - `placeholders_used` and `legal_refs`;
 - `review_cadence_months` and `checklist_status`;
 - optional `lint` rules.
@@ -231,6 +238,8 @@ The hook names are constants of `Hive\Compliance\Hooks` (`src/Hooks.php`), each 
 | `hive_compliance_rendered_html` | filter | `string $html, Document $document, array $context` | Final HTML of a document or fragment. |
 | `hive_compliance_allowed_shortcodes` | filter | `string[] $tags` | Shortcodes that may run inside documents. |
 | `hive_compliance_document_visible` | filter | `bool $visible, Document $document, Entry $entry` | Hide a public document from some visitors. Internal documents never reach this filter. |
+| `hive_compliance_business_identity` | filter | `array<string, string> $parts, string[] $fields, string $lang` | Parts of the identity line, keyed by field: change labels or order, or drop parts. |
+| `hive_compliance_legal_links` | filter | `array $links ({id, title, url}), string $group, string $lang` | Reorder or relabel the legal links, or remove some. |
 | `hive_compliance_document_saved` | action | `Document $document, ?Document $previous, string $source` | The content of a document changed (`manual` or `import`). |
 | `hive_compliance_editor_before_form` | action | `Entry $entry, Document $document` | Output above the editor form, such as extra buttons. |
 | `hive_compliance_catalog_path` | filter | `string $path` | Use another catalog file. |

@@ -23,6 +23,7 @@ use Hive\Compliance\Business\BusinessData;
 use Hive\Compliance\Catalog\Applicability;
 use Hive\Compliance\Catalog\Catalog;
 use Hive\Compliance\Catalog\RuleEngine;
+use Hive\Compliance\Checks\IdentityScan;
 use Hive\Compliance\Checks\StoreChecks;
 use Hive\Compliance\Document\PostType;
 use Hive\Compliance\Document\Repository;
@@ -38,11 +39,15 @@ use Hive\Compliance\Placeholders\StoreProvider;
 use Hive\Compliance\Profile\Profile;
 use Hive\Compliance\Profile\StoreFacts;
 use Hive\Compliance\Render\Block;
+use Hive\Compliance\Render\BusinessIdentity;
 use Hive\Compliance\Render\PageBindings;
+use Hive\Compliance\Render\LegalLinks;
 use Hive\Compliance\Render\PageManager;
 use Hive\Compliance\Render\Renderer;
 use Hive\Compliance\Render\ShellGuard;
 use Hive\Compliance\Render\Shortcodes;
+use Hive\Compliance\Render\SiteElements;
+use Hive\Compliance\Render\SitePages;
 use Hive\Compliance\Rest\Controller;
 use Hive\Compliance\Skeleton\Generator;
 
@@ -110,7 +115,7 @@ final class Plugin {
 
 		if ( is_admin() ) {
 			( new Notices() )->register();
-			( new BindingActions( $this->page_manager() ) )->register();
+			( new BindingActions( $this->page_manager(), $this->site_pages() ) )->register();
 			( new SkeletonActions( $this ) )->register();
 			( new Menu( $this->screens() ) )->register();
 		}
@@ -152,6 +157,7 @@ final class Plugin {
 		$this->post_type()->register();
 		( new Shortcodes( $this->renderer() ) )->register();
 		( new Block( $this->renderer(), $this->catalog(), $this->languages() ) )->register();
+		( new SiteElements( $this->business_identity(), $this->legal_links(), $this->languages() ) )->register();
 	}
 
 	/**
@@ -238,7 +244,7 @@ final class Plugin {
 	 * Compliance checks on the store setup.
 	 */
 	public function store_checks(): StoreChecks {
-		return $this->service( StoreChecks::class, fn() => new StoreChecks( $this->store_facts(), $this->profile(), $this->detector() ) );
+		return $this->service( StoreChecks::class, fn() => new StoreChecks( $this->store_facts(), $this->profile(), $this->detector(), new IdentityScan( $this->business() ) ) );
 	}
 
 	/**
@@ -298,6 +304,27 @@ final class Plugin {
 	 */
 	public function page_manager(): PageManager {
 		return $this->service( PageManager::class, fn() => new PageManager( $this->bindings(), $this->catalog(), $this->languages() ) );
+	}
+
+	/**
+	 * Legal identity line from Business Data.
+	 */
+	public function business_identity(): BusinessIdentity {
+		return $this->service( BusinessIdentity::class, fn() => new BusinessIdentity( $this->business(), $this->languages() ) );
+	}
+
+	/**
+	 * Footer lists of legal links.
+	 */
+	public function legal_links(): LegalLinks {
+		return $this->service( LegalLinks::class, fn() => new LegalLinks( $this->catalog(), $this->repository(), $this->bindings(), $this->languages() ) );
+	}
+
+	/**
+	 * WooCommerce terms page and WordPress privacy page settings.
+	 */
+	public function site_pages(): SitePages {
+		return $this->service( SitePages::class, fn() => new SitePages( $this->bindings() ) );
 	}
 
 	/**

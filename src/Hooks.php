@@ -47,6 +47,19 @@ final class Hooks {
 	const ALLOWED_SHORTCODES = 'hive_compliance_allowed_shortcodes';
 
 	/**
+	 * Filter: labelled parts of the business identity line ([hive_business], hive/business-identity),
+	 * keyed by field in output order. Change labels, order, or drop parts.
+	 * Args: array<string, string> $parts, string[] $fields, string $lang.
+	 */
+	const BUSINESS_IDENTITY = 'hive_compliance_business_identity';
+
+	/**
+	 * Filter: links of [hive_legal_links] and hive/legal-links. Reorder them or change their labels.
+	 * Args: array<int, array{id: string, title: string, url: string}> $links, string $group (legal|assistance|''), string $lang.
+	 */
+	const LEGAL_LINKS = 'hive_compliance_legal_links';
+
+	/**
 	 * Filter: whether a public (non-internal) document may be shown to the current visitor.
 	 * Internal documents never reach this filter.
 	 * Args: bool $visible, Document $document, Catalog\Entry $entry.

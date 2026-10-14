@@ -1,6 +1,6 @@
 {
 	"$schema": "./catalog.schema.json",
-	"catalog_version": "1.1.0",
+	"catalog_version": "1.2.0",
 	"baseline": "IT/EU",
 	"updated": "2026-10-13",
 	"documents": [
@@ -9,6 +9,7 @@
 			"title": {"en": "Legal notice", "it": "Note legali"},
 			"type": "page",
 			"group": "core",
+			"link_group": "legal",
 			"description": "Business identity (Impressum, mentions légales, note legali).",
 			"applies_when": {"always": true},
 			"required_elements": [
@@ -33,6 +34,7 @@
 			"title": {"en": "Privacy policy", "it": "Informativa sulla privacy"},
 			"type": "page",
 			"group": "core",
+			"link_group": "legal",
 			"description": "Information to data subjects under GDPR arts. 13-14.",
 			"applies_when": {"always": true},
 			"required_elements": [
@@ -61,6 +63,7 @@
 			"title": {"en": "Cookie policy", "it": "Cookie policy"},
 			"type": "page",
 			"group": "core",
+			"link_group": "legal",
 			"description": "Cookies and other tracking tools. Embed the consent plugin's own cookie list through its shortcode.",
 			"applies_when": {"always": true},
 			"required_elements": [
@@ -85,6 +88,7 @@
 			"title": {"en": "Terms and conditions of sale", "it": "Termini e condizioni di vendita"},
 			"type": "page",
 			"group": "core",
+			"link_group": "legal",
 			"description": "General terms of distance sale to consumers.",
 			"applies_when": {"always": true},
 			"required_elements": [
@@ -117,6 +121,7 @@
 			"title": {"en": "Right of withdrawal", "it": "Diritto di recesso"},
 			"type": "page",
 			"group": "core",
+			"link_group": "assistance",
 			"description": "Withdrawal information for distance contracts with consumers, including the online withdrawal function.",
 			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}]},
 			"required_elements": [
@@ -139,6 +144,7 @@
 			"title": {"en": "Model withdrawal form", "it": "Modulo di recesso tipo"},
 			"type": "page",
 			"group": "core",
+			"link_group": "assistance",
 			"description": "The model withdrawal form of Annex I, part B.",
 			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}]},
 			"required_elements": [
@@ -158,6 +164,7 @@
 			"title": {"en": "Refund policy", "it": "Politica di rimborso"},
 			"type": "page",
 			"group": "core",
+			"link_group": "assistance",
 			"description": "When and how payments are refunded.",
 			"applies_when": {"always": true},
 			"required_elements": [
@@ -179,6 +186,7 @@
 			"title": {"en": "Shipping policy", "it": "Spedizioni e consegne"},
 			"type": "page",
 			"group": "core",
+			"link_group": "assistance",
 			"description": "Delivery areas, times, costs and risk.",
 			"applies_when": {"always": true},
 			"required_elements": [
@@ -201,6 +209,7 @@
 			"title": {"en": "Legal guarantee of conformity", "it": "Garanzia legale di conformità"},
 			"type": "page",
 			"group": "core",
+			"link_group": "assistance",
 			"description": "The statutory guarantee, including the EU harmonised legal-guarantee notice.",
 			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}]},
 			"required_elements": [
@@ -224,6 +233,7 @@
 			"title": {"en": "Payment methods", "it": "Metodi di pagamento"},
 			"type": "page",
 			"group": "core",
+			"link_group": "assistance",
 			"description": "Accepted payment methods, charging and security.",
 			"applies_when": {"always": true},
 			"required_elements": [
@@ -244,6 +254,7 @@
 			"title": {"en": "Complaints and dispute resolution", "it": "Reclami e risoluzione delle controversie"},
 			"type": "page",
 			"group": "core",
+			"link_group": "legal",
 			"description": "Complaint handling and ADR bodies. The EU ODR platform was discontinued on 20 July 2025: links to it are errors.",
 			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}]},
 			"required_elements": [
@@ -267,6 +278,7 @@
 			"title": {"en": "Contact and customer support", "it": "Contatti e assistenza clienti"},
 			"type": "page",
 			"group": "core",
+			"link_group": "assistance",
 			"description": "How customers reach the shop.",
 			"applies_when": {"always": true},
 			"required_elements": [
@@ -285,6 +297,7 @@
 			"title": {"en": "Commercial guarantee", "it": "Garanzia convenzionale"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "assistance",
 			"description": "Seller or producer guarantee offered in addition to the legal guarantee. Shown for electronics and refurbished goods; add it from the full catalog whenever a guarantee is offered.",
 			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}, {"any": [{"field": "product_flags", "op": "includes", "value": "electronics"}, {"field": "product_flags", "op": "includes", "value": "refurbished"}]}]},
 			"required_elements": [
@@ -306,6 +319,7 @@
 			"title": {"en": "Authenticity guarantee", "it": "Garanzia di autenticità"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "assistance",
 			"description": "Authenticity promise for resold branded goods. Shown for used goods; add it from the full catalog when reselling new branded goods.",
 			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}, {"field": "product_flags", "op": "includes", "value": "used_goods"}]},
 			"required_elements": [
@@ -326,6 +340,7 @@
 			"title": {"en": "Used and refurbished goods", "it": "Prodotti usati e ricondizionati"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "assistance",
 			"description": "Condition grading and guarantee rules for second-hand and refurbished goods.",
 			"applies_when": {"any": [{"field": "product_flags", "op": "includes", "value": "used_goods"}, {"field": "product_flags", "op": "includes", "value": "refurbished"}]},
 			"required_elements": [
@@ -345,6 +360,7 @@
 			"title": {"en": "Accessibility statement", "it": "Dichiarazione di accessibilità"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "legal",
 			"description": "European Accessibility Act information on the e-commerce service. Not applicable to micro-enterprises that provide services only.",
 			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}, {"not": {"all": [{"field": "is_micro_enterprise", "op": "eq", "value": true}, {"not": {"any": [{"field": "product_types", "op": "includes", "value": "physical"}, {"field": "product_types", "op": "includes", "value": "digital_content"}, {"field": "product_types", "op": "includes", "value": "subscriptions"}]}}]}}]},
 			"required_elements": [
@@ -365,6 +381,7 @@
 			"title": {"en": "Prices and discounts", "it": "Prezzi e riduzioni di prezzo"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "legal",
 			"description": "Price indication rules, including the lowest price of the previous 30 days for every price reduction.",
 			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}, {"field": "product_types", "op": "includes", "value": "physical"}]},
 			"required_elements": [
@@ -385,6 +402,7 @@
 			"title": {"en": "Customer reviews policy", "it": "Politica sulle recensioni"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "legal",
 			"description": "Whether and how reviews are checked to come from real customers.",
 			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "reviews"}]},
 			"required_elements": [
@@ -404,6 +422,7 @@
 			"title": {"en": "Subscription terms", "it": "Condizioni degli abbonamenti"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "assistance",
 			"description": "Recurring contracts: duration, renewal, billing and cancellation.",
 			"applies_when": {"all": [{"field": "product_types", "op": "includes", "value": "subscriptions"}]},
 			"required_elements": [
@@ -425,6 +444,7 @@
 			"title": {"en": "Digital content terms", "it": "Condizioni per i contenuti digitali"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "legal",
 			"description": "Supply, conformity, licence and withdrawal for digital content and services.",
 			"applies_when": {"all": [{"field": "product_types", "op": "includes", "value": "digital_content"}]},
 			"required_elements": [
@@ -447,6 +467,7 @@
 			"title": {"en": "Terms of sale for business customers", "it": "Condizioni di vendita per clienti business"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "legal",
 			"description": "Terms for B2B sales (no consumer protections apply).",
 			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2b"}]},
 			"required_elements": [
@@ -470,6 +491,7 @@
 			"title": {"en": "Marketplace terms for sellers", "it": "Condizioni del marketplace per i venditori"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "legal",
 			"description": "Terms for third-party sellers on a multivendor marketplace.",
 			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "marketplace_multivendor"}]},
 			"required_elements": [
@@ -494,6 +516,7 @@
 			"title": {"en": "Illegal content notices (DSA)", "it": "Segnalazione di contenuti illegali (DSA)"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "legal",
 			"description": "Digital Services Act duties for hosting third-party content (marketplace listings).",
 			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "marketplace_multivendor"}]},
 			"required_elements": [
@@ -515,6 +538,7 @@
 			"title": {"en": "Loyalty and referral programme", "it": "Regolamento programma fedeltà e referral"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "assistance",
 			"description": "Points, rewards and referral rules (prize promotions under D.P.R. 430/2001).",
 			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "loyalty_referral"}]},
 			"required_elements": [
@@ -537,6 +561,7 @@
 			"title": {"en": "Gift card terms", "it": "Condizioni delle gift card"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "assistance",
 			"description": "Issue, validity and use of gift cards and vouchers.",
 			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "gift_cards"}]},
 			"required_elements": [
@@ -557,6 +582,7 @@
 			"title": {"en": "Contest rules", "it": "Regolamento del concorso a premi"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "legal",
 			"description": "Prize competitions and draws under D.P.R. 430/2001.",
 			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "contests"}]},
 			"required_elements": [
@@ -579,6 +605,7 @@
 			"title": {"en": "Promotions and discount codes", "it": "Promozioni e codici sconto"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "assistance",
 			"description": "Conditions of promotional offers.",
 			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}]},
 			"required_elements": [
@@ -599,6 +626,7 @@
 			"title": {"en": "Buy now, pay later", "it": "Pagamento rateale (buy now, pay later)"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "assistance",
 			"description": "Instalment and deferred-payment offers. The Consumer Credit Directive (EU) 2023/2225 applies from 20 November 2026.",
 			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "bnpl"}]},
 			"required_elements": [
@@ -620,6 +648,7 @@
 			"title": {"en": "Age-restricted products", "it": "Prodotti soggetti a limiti di età"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "legal",
 			"description": "Minimum age and verification for restricted goods.",
 			"applies_when": {"all": [{"field": "product_flags", "op": "includes", "value": "age_restricted"}]},
 			"required_elements": [
@@ -639,6 +668,7 @@
 			"title": {"en": "Product safety and recalls", "it": "Sicurezza dei prodotti e richiami"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "assistance",
 			"description": "General Product Safety Regulation duties for online sales.",
 			"applies_when": {"all": [{"field": "customer_types", "op": "includes", "value": "b2c"}, {"field": "product_types", "op": "includes", "value": "physical"}]},
 			"required_elements": [
@@ -661,6 +691,7 @@
 			"title": {"en": "Electrical equipment take-back (WEEE)", "it": "Ritiro RAEE"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "assistance",
 			"description": "Take-back of waste electrical and electronic equipment.",
 			"applies_when": {"all": [{"field": "product_flags", "op": "includes", "value": "electronics"}]},
 			"required_elements": [
@@ -680,6 +711,7 @@
 			"title": {"en": "Battery take-back", "it": "Ritiro delle pile e degli accumulatori"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "assistance",
 			"description": "Take-back of waste batteries under the EU Batteries Regulation.",
 			"applies_when": {"all": [{"field": "product_flags", "op": "includes", "value": "batteries"}]},
 			"required_elements": [
@@ -698,6 +730,7 @@
 			"title": {"en": "Packaging and recycling", "it": "Imballaggi e raccolta differenziata"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "legal",
 			"description": "Packaging labelling, disposal information and extended producer responsibility.",
 			"applies_when": {"all": [{"field": "product_types", "op": "includes", "value": "physical"}]},
 			"required_elements": [
@@ -717,6 +750,7 @@
 			"title": {"en": "Environmental claims", "it": "Dichiarazioni ambientali"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "legal",
 			"description": "Substantiation of green claims. Directive (EU) 2024/825 applies from 27 September 2026.",
 			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "environmental_claims"}]},
 			"required_elements": [
@@ -737,6 +771,7 @@
 			"title": {"en": "Use of artificial intelligence", "it": "Uso dell'intelligenza artificiale"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "legal",
 			"description": "Transparency for AI chatbots and AI-generated content.",
 			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "ai_chatbot"}]},
 			"required_elements": [
@@ -755,6 +790,7 @@
 			"title": {"en": "Customs duties and import taxes", "it": "Dazi doganali e imposte di importazione"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "assistance",
 			"description": "Shipments that cross the EU customs border (non-EU suppliers or markets).",
 			"applies_when": {"any": [{"field": "product_flags", "op": "includes", "value": "non_eu_suppliers"}, {"field": "sells_outside_eu", "op": "true"}]},
 			"required_elements": [
@@ -774,6 +810,7 @@
 			"title": {"en": "In-store pickup", "it": "Ritiro in negozio"},
 			"type": "page",
 			"group": "conditional",
+			"link_group": "assistance",
 			"description": "Collection of online orders at a physical location.",
 			"applies_when": {"all": [{"field": "features", "op": "includes", "value": "physical_store_or_pickup"}]},
 			"required_elements": [
@@ -793,6 +830,7 @@
 			"title": {"en": "UK privacy addendum", "it": "Addendum privacy Regno Unito"},
 			"type": "page",
 			"group": "international",
+			"link_group": "legal",
 			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["UK"]}]},
 			"required_elements": [
 				{"key": "uk_representative", "label": {"en": "UK representative, where there is no UK establishment", "it": "Rappresentante nel Regno Unito, in assenza di uno stabilimento nel Regno Unito"}, "legal_ref": "UK GDPR, art. 27"},
@@ -812,6 +850,7 @@
 			"title": {"en": "UK consumer terms addendum", "it": "Addendum condizioni consumatori Regno Unito"},
 			"type": "page",
 			"group": "international",
+			"link_group": "legal",
 			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["UK"]}, {"field": "customer_types", "op": "includes", "value": "b2c"}]},
 			"required_elements": [
 				{"key": "statutory_rights", "label": {"en": "Statutory rights: short-term right to reject (30 days), repair or replacement, price reduction", "it": "Diritti di legge: diritto di rifiuto a breve termine (30 giorni), riparazione o sostituzione, riduzione del prezzo"}, "legal_ref": "Consumer Rights Act 2015, ss. 19-24"},
@@ -831,6 +870,7 @@
 			"title": {"en": "Swiss privacy addendum", "it": "Addendum privacy Svizzera"},
 			"type": "page",
 			"group": "international",
+			"link_group": "legal",
 			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["CH"]}]},
 			"required_elements": [
 				{"key": "duty_to_inform", "label": {"en": "Information on collection: controller, purposes, recipients", "it": "Informazioni sulla raccolta: titolare, finalità, destinatari"}, "legal_ref": "Federal Act on Data Protection (FADP), art. 19"},
@@ -848,6 +888,7 @@
 			"title": {"en": "US state privacy notice", "it": "Informativa privacy per gli Stati USA"},
 			"type": "page",
 			"group": "international",
+			"link_group": "legal",
 			"applies_when": {"all": [{"field": "market_regions", "op": "includes", "value": "us"}]},
 			"required_elements": [
 				{"key": "categories_collected", "label": {"en": "Categories of personal information collected in the last 12 months and their sources", "it": "Categorie di informazioni personali raccolte negli ultimi 12 mesi e loro fonti"}, "legal_ref": "Cal. Civ. Code §1798.110; CCPA Regulations §7011"},
@@ -870,6 +911,7 @@
 			"title": {"en": "Notice at collection (California)", "it": "Notice at collection (California)"},
 			"type": "page",
 			"group": "international",
+			"link_group": "legal",
 			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["US-CA"]}]},
 			"required_elements": [
 				{"key": "categories", "label": {"en": "Categories of personal and sensitive personal information collected", "it": "Categorie di informazioni personali e personali sensibili raccolte"}, "legal_ref": "CCPA Regulations §7012(e)"},
@@ -888,6 +930,7 @@
 			"title": {"en": "Do Not Sell or Share My Personal Information", "it": "Do Not Sell or Share My Personal Information"},
 			"type": "page",
 			"group": "international",
+			"link_group": "legal",
 			"applies_when": {"all": [{"field": "market_regions", "op": "includes", "value": "us"}]},
 			"required_elements": [
 				{"key": "opt_out_method", "label": {"en": "Method to opt out of sale and sharing (form or toggle) without an account", "it": "Metodo per opporsi alla vendita e alla condivisione (modulo o interruttore) senza account"}, "legal_ref": "Cal. Civ. Code §§1798.120, 1798.135; CCPA Regulations §7026"},
@@ -905,6 +948,7 @@
 			"title": {"en": "Automatic renewal terms (US)", "it": "Rinnovo automatico (USA)"},
 			"type": "page",
 			"group": "international",
+			"link_group": "legal",
 			"applies_when": {"all": [{"field": "market_regions", "op": "includes", "value": "us"}, {"field": "product_types", "op": "includes", "value": "subscriptions"}]},
 			"required_elements": [
 				{"key": "clear_terms", "label": {"en": "Clear and conspicuous renewal terms before the purchase", "it": "Condizioni di rinnovo chiare ed evidenti prima dell'acquisto"}, "legal_ref": "ROSCA, 15 U.S.C. §8403; Cal. Bus. & Prof. Code §17602"},
@@ -923,6 +967,7 @@
 			"title": {"en": "California Proposition 65 warning", "it": "Avvertenza Proposition 65 (California)"},
 			"type": "page",
 			"group": "international",
+			"link_group": "legal",
 			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["US-CA"]}, {"field": "product_types", "op": "includes", "value": "physical"}]},
 			"required_elements": [
 				{"key": "warning_content", "label": {"en": "Warning content for products that expose consumers to listed chemicals", "it": "Contenuto dell'avvertenza per i prodotti che espongono i consumatori a sostanze chimiche elencate"}, "legal_ref": "27 CCR §25603"},
@@ -939,6 +984,7 @@
 			"title": {"en": "Canada privacy addendum", "it": "Addendum privacy Canada"},
 			"type": "page",
 			"group": "international",
+			"link_group": "legal",
 			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["CA"]}]},
 			"required_elements": [
 				{"key": "privacy_officer", "label": {"en": "Person accountable for privacy and their contact details", "it": "Persona responsabile della privacy e suoi dati di contatto"}, "legal_ref": "PIPEDA, Sch. 1, principle 4.1; Quebec Law 25"},
@@ -957,6 +1003,7 @@
 			"title": {"en": "Brazil privacy addendum (LGPD)", "it": "Addendum privacy Brasile (LGPD)"},
 			"type": "page",
 			"group": "international",
+			"link_group": "legal",
 			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["BR"]}]},
 			"required_elements": [
 				{"key": "processing_information", "label": {"en": "Purpose, form, duration, controller identity and shared use of data", "it": "Finalità, modalità, durata, identità del titolare e uso condiviso dei dati"}, "legal_ref": "LGPD (Lei 13.709/2018), art. 9"},
@@ -975,6 +1022,7 @@
 			"title": {"en": "Specified Commercial Transactions Act notice (Japan)", "it": "Informativa Tokushoho (Giappone)"},
 			"type": "page",
 			"group": "international",
+			"link_group": "legal",
 			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["JP"]}]},
 			"required_elements": [
 				{"key": "seller_details", "label": {"en": "Seller name, address, telephone number and responsible person", "it": "Nome del venditore, indirizzo, numero di telefono e responsabile"}, "legal_ref": "Act on Specified Commercial Transactions, art. 11", "placeholders": ["business.legal_name", "business.address", "business.phone", "business.owner_name"]},
@@ -994,6 +1042,7 @@
 			"title": {"en": "Australian Consumer Law guarantees", "it": "Garanzie Australian Consumer Law"},
 			"type": "page",
 			"group": "international",
+			"link_group": "legal",
 			"applies_when": {"all": [{"field": "markets", "op": "in", "value": ["AU"]}]},
 			"required_elements": [
 				{"key": "mandatory_text", "label": {"en": "Mandatory consumer guarantee text in warranties against defects", "it": "Testo obbligatorio sulla garanzia del consumatore nelle garanzie contro i difetti"}, "legal_ref": "Competition and Consumer Regulations 2010, reg. 90"},

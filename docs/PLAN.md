@@ -25,6 +25,8 @@ src/                           PSR-4 Hive\Compliance\ → src/
   Business/     BusinessData.php  Validator.php (P.IVA, codice fiscale, EU VAT, REA, e-mail, E.164, URL)  Check.php
   Placeholders/ Syntax.php  Registry.php  Resolver.php  Resolution.php  Provider.php (+ Business, Store, Links, Custom providers)
   Render/       Renderer.php  MarkdownRenderer.php  Shortcodes.php  Block.php  PageBindings.php  PageManager.php  ShellGuard.php
+                SiteElements.php (footer shortcodes and blocks)  BusinessIdentity.php  LegalLinks.php  SitePages.php
+  Checks/       StoreChecks.php (dashboard "Store checks")  IdentityScan.php (widgets, menus, template parts)
   I18n/         Languages.php (WPML / Polylang / own list)
   Integrations/ Detector.php (slug → service, role, transfer outside the EU)
   Lint/         ContentLinter.php (rules shared by the editor and the importer)  Finding.php
@@ -36,7 +38,7 @@ src/                           PSR-4 Hive\Compliance\ → src/
   Admin/        Menu.php  Screen.php  Request.php  Notices.php  Overview.php  DocumentsTable.php (WP_List_Table)
                 DashboardScreen.php  EditorScreen.php  BusinessScreen.php  ProfileScreen.php  ExportScreen.php
                 ImportScreen.php  SettingsScreen.php  PrintScreen.php  BindingActions.php  SkeletonActions.php
-blocks/document/  block.json  index.js  index.asset.php (hand-written; no build step)
+blocks/document/ business-identity/ legal-links/   block.json  index.js  index.asset.php (hand-written; no build step)
 assets/css/  admin.css  print.css  front.css
 assets/js/   editor.js  page-guard.js  repeater.js
 tests/       bootstrap.php, TestCase.php, phpunit/*Test.php, fixtures/import/*.md (one failing fixture per rule)

@@ -1,0 +1,28 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "hive/business-identity",
+	"version": "0.1.0",
+	"title": "Business identity",
+	"category": "widgets",
+	"icon": "id",
+	"description": "The legal identity line from Hive Compliance → Business Data: trade name, legal name, address, VAT number, REA, PEC, e-mail, phone. Empty fields are skipped.",
+	"keywords": [ "footer", "vat", "partita iva", "legal", "company" ],
+	"textdomain": "hive-compliance",
+	"attributes": {
+		"fields": {
+			"type": "array",
+			"items": { "type": "string" },
+			"default": [ "trade_name", "legal_name", "legal_form", "address", "vat_id", "rea", "pec", "email", "phone" ]
+		},
+		"lang": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ],
+		"typography": { "fontSize": true, "lineHeight": true },
+		"color": { "text": true, "background": true, "link": true },
+		"spacing": { "margin": true, "padding": true }
+	},
+	"editorScript": "file:./index.js"
+}
