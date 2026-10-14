@@ -47,7 +47,7 @@ final class BundleExporter {
 	public function export( Selection $selection, ?int $now = null ): string {
 		$blocks = $this->blocks( $selection );
 		$parts  = array(
-			BundleFormat::HEADER,
+			BundleFormat::HEADER . $this->coverage_line( $selection ),
 			$this->context( $now ?? time() ),
 		);
 		foreach ( $blocks as $block ) {
@@ -57,6 +57,22 @@ final class BundleExporter {
 
 		/** This filter is documented in src/Hooks.php */
 		return (string) apply_filters( Hooks::EXPORT_BUNDLE, $bundle, $blocks, $selection->to_query() );
+	}
+
+	/**
+	 * Header line for a partial bundle: how many of the applicable documents it contains.
+	 * Empty when every applicable document is included.
+	 *
+	 * @param Selection $selection Selection.
+	 */
+	private function coverage_line( Selection $selection ): string {
+		$applicable = array_keys( $this->plugin->applicability()->applicable() );
+		$selected   = array_map( static fn( Entry $entry ) => $entry->id, $selection->entries( $this->plugin->catalog(), $this->plugin->applicability() ) );
+		$included   = count( array_intersect( $applicable, $selected ) );
+		if ( $included >= count( $applicable ) ) {
+			return '';
+		}
+		return "\n" . sprintf( 'This bundle contains %1$d of %2$d applicable documents. Documents not included stay unchanged.', $included, count( $applicable ) );
 	}
 
 	/**
@@ -82,7 +98,7 @@ final class BundleExporter {
 						'last_reviewed'     => $document->last_reviewed,
 						'effective_date'    => $document->effective_date,
 						'changelog_note'    => '',
-						'required_elements' => $this->required_elements( $entry ),
+						'required_elements' => $this->required_elements( $entry, $lang ),
 					),
 					'body'         => $document->markdown,
 				);
@@ -92,14 +108,15 @@ final class BundleExporter {
 	}
 
 	/**
-	 * "key: label [legal ref]" strings.
+	 * "key: label [legal ref]" strings, with labels in the document's language.
 	 *
-	 * @param Entry $entry Entry.
+	 * @param Entry  $entry Entry.
+	 * @param string $lang  Document language.
 	 * @return string[]
 	 */
-	private function required_elements( Entry $entry ): array {
+	private function required_elements( Entry $entry, string $lang ): array {
 		return array_map(
-			static fn( array $element ) => $element['key'] . ': ' . $element['label'] . ( '' !== $element['legal_ref'] ? ' [' . $element['legal_ref'] . ']' : '' ),
+			static fn( array $element ) => $element['key'] . ': ' . Entry::element_label( $element, $lang ) . ( '' !== $element['legal_ref'] ? ' [' . $element['legal_ref'] . ']' : '' ),
 			$entry->required_elements
 		);
 	}
@@ -187,7 +204,30 @@ final class BundleExporter {
 		$detected     = $plugin->detector()->detect();
 		$integrations = array();
 		foreach ( $detected['known'] as $integration ) {
-			$integrations[ $integration['service'] ] = sprintf( 'role: %s; personal data transfer outside the EU: %s; source: %s', $integration['role'], $integration['transfer'], $integration['name'] );
+			$parts = array( 'role: ' . $integration['role'] );
+			if ( ! empty( $integration['data'] ) ) {
+				$parts[] = 'data sent: ' . $integration['data'];
+			}
+			if ( ! empty( $integration['recipient'] ) ) {
+				$parts[] = 'recipient: ' . $integration['recipient'];
+			}
+			$parts[] = 'personal data transfer outside the EU: ' . $integration['transfer'];
+			if ( ! empty( $integration['note'] ) ) {
+				$parts[] = 'note: ' . $integration['note'];
+			}
+			$parts[] = 'source: ' . $integration['name'];
+
+			$integrations[ $integration['service'] ] = implode( '; ', $parts );
+		}
+		foreach ( (array) $plugin->settings()->get( 'custom_integrations' ) as $custom ) {
+			$name                  = isset( $integrations[ $custom['name'] ] ) ? $custom['name'] . ' (custom)' : $custom['name'];
+			$integrations[ $name ] = sprintf(
+				'role: %1$s; data sent: %2$s; recipient: %3$s; personal data transfer outside the EU: %4$s; source: custom integration (Settings)',
+				'' !== $custom['role'] ? $custom['role'] : '(not stated)',
+				'' !== $custom['data'] ? $custom['data'] : '(not stated)',
+				'' !== $custom['recipient'] ? $custom['recipient'] : '(not stated)',
+				$custom['transfer']
+			);
 		}
 		$unknown = array();
 		foreach ( $detected['unknown'] as $plugin_info ) {

@@ -19,6 +19,11 @@ final class Settings {
 	const OPTION = 'hive_settings';
 
 	/**
+	 * Columns of a custom integration (in-house plugins and services nothing can detect).
+	 */
+	const INTEGRATION_FIELDS = array( 'name', 'role', 'data', 'recipient', 'transfer' );
+
+	/**
 	 * Default values.
 	 *
 	 * @return array<string, mixed>
@@ -31,6 +36,7 @@ final class Settings {
 			'enabled_languages'        => array( $language ),
 			'remove_data_on_uninstall' => false,
 			'max_import_kb'            => 2048,
+			'custom_integrations'      => array(),
 		);
 	}
 
@@ -102,6 +108,31 @@ final class Settings {
 			'enabled_languages'        => $enabled,
 			'remove_data_on_uninstall' => ! empty( $input['remove_data_on_uninstall'] ),
 			'max_import_kb'            => max( 64, min( 20480, $max_kb ) ),
+			'custom_integrations'      => self::sanitize_integrations( $input['custom_integrations'] ?? array() ),
 		);
+	}
+
+	/**
+	 * Custom integrations: rows with a name, transfer "yes" or "no", at most 50.
+	 *
+	 * @param mixed $rows Raw rows.
+	 * @return array<int, array<string, string>>
+	 */
+	public static function sanitize_integrations( $rows ): array {
+		$out = array();
+		foreach ( is_array( $rows ) ? $rows : array() as $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
+			}
+			$clean = array();
+			foreach ( self::INTEGRATION_FIELDS as $field ) {
+				$clean[ $field ] = sanitize_text_field( (string) ( $row[ $field ] ?? '' ) );
+			}
+			$clean['transfer'] = 'yes' === $clean['transfer'] ? 'yes' : 'no';
+			if ( '' !== $clean['name'] ) {
+				$out[] = $clean;
+			}
+		}
+		return array_slice( $out, 0, 50 );
 	}
 }

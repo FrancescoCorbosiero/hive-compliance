@@ -54,13 +54,18 @@ class LinterTest extends Hive_TestCase {
 		$this->assertSame( array( 'number of the ADR body', 'return address' ), $findings['todo_data']->details );
 	}
 
-	public function test_required_headings_by_anchor_or_label() {
+	public function test_required_headings_are_matched_by_anchor_only() {
 		$entry    = $this->plugin()->catalog()->get( 'withdrawal_form' );
-		$markdown = "## Destinatario {#addressee}\n\n## Statement of withdrawal from the contract for the goods or services\n";
+		$markdown = "## A chi inviare il modulo {#addressee}\n\n## Dichiarazione di recesso dal contratto per i beni o servizi\n";
 		$findings = $this->lint( $markdown, 'withdrawal_form' );
 		$missing  = $findings['missing_heading']->details;
-		$this->assertCount( count( $entry->required_elements ) - 2, $missing );
-		$this->assertStringContainsString( '{#order_details}', implode( ' ', $missing ) );
+		$this->assertCount( count( $entry->required_elements ) - 1, $missing, 'Rewritten text with the anchor counts; the exact label without the anchor does not.' );
+		$this->assertContains( 'Dichiarazione di recesso dal contratto per i beni o servizi {#statement}', $missing, 'Listed with the Italian label.' );
+	}
+
+	public function test_fragments_have_no_heading_check() {
+		$findings = $this->lint( 'Accetto le [condizioni di vendita]({{links.terms_of_sale}}).', 'frag_checkout_terms_consent' );
+		$this->assertArrayNotHasKey( 'missing_heading', $findings );
 	}
 
 	public function test_catalog_rule_flags_odr_links() {

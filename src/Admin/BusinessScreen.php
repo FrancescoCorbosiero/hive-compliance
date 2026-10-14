@@ -80,7 +80,8 @@ final class BusinessScreen extends Screen {
 		$business = $this->plugin->business();
 		$data     = $business->get();
 		$checks   = $business->checks( (string) ( $this->plugin->profile()->get()['seller_country'] ?? '' ) );
-		$missing  = array_filter( BusinessData::REQUIRED, static fn( $key ) => '' === trim( (string) $data[ $key ] ) );
+		$required = BusinessData::required( $data );
+		$missing  = array_filter( $required, static fn( $key ) => '' === trim( (string) $data[ $key ] ) );
 
 		echo '<div class="wrap hive-wrap">';
 		$this->header( $this->title(), __( 'Facts about the business, used by the {{business.*}} placeholders. They are exported to the LLM as context and never imported back.', 'hive-compliance' ) );
@@ -91,7 +92,7 @@ final class BusinessScreen extends Screen {
 			echo '<h2>' . esc_html( $group_label ) . '</h2><table class="form-table" role="presentation"><tbody>';
 			foreach ( $fields as $key => $field ) {
 				if ( $field['group'] === $group ) {
-					$this->field_row( $key, $field, (string) $data[ $key ], $checks[ $key ] ?? null, in_array( $key, $missing, true ) );
+					$this->field_row( $key, $field, (string) $data[ $key ], $checks[ $key ] ?? null, in_array( $key, $missing, true ), in_array( $key, $required, true ) );
 				}
 			}
 			echo '</tbody></table>';
@@ -116,19 +117,26 @@ final class BusinessScreen extends Screen {
 	 * @param array<string, string> $field   Field definition.
 	 * @param string                $value   Current value.
 	 * @param Check|null            $check   Validation result.
-	 * @param bool                  $missing Whether a required field is empty.
+	 * @param bool                  $missing  Whether a required field is empty.
+	 * @param bool                  $required Whether the field is required.
 	 */
-	private function field_row( string $key, array $field, string $value, ?Check $check, bool $missing ): void {
+	private function field_row( string $key, array $field, string $value, ?Check $check, bool $missing, bool $required ): void {
 		$id   = 'hive-business-' . $key;
 		$name = 'business[' . $key . ']';
 		echo '<tr><th scope="row"><label for="' . esc_attr( $id ) . '">' . esc_html( $field['label'] ) . '</label>';
-		if ( in_array( $key, BusinessData::REQUIRED, true ) ) {
+		if ( $required ) {
 			echo ' <span class="hive-required">*</span>';
 		}
 		echo '</th><td>';
 
 		if ( 'textarea' === $field['type'] ) {
 			printf( '<textarea id="%1$s" name="%2$s" rows="3" class="large-text">%3$s</textarea>', esc_attr( $id ), esc_attr( $name ), esc_textarea( $value ) );
+		} elseif ( 'legal_form' === $field['type'] ) {
+			printf( '<select id="%1$s" name="%2$s"><option value="">%3$s</option>', esc_attr( $id ), esc_attr( $name ), esc_html__( '— Select —', 'hive-compliance' ) );
+			foreach ( BusinessData::legal_forms() as $form => $label ) {
+				printf( '<option value="%1$s"%2$s>%3$s</option>', esc_attr( $form ), selected( $value, $form, false ), esc_html( $label ) );
+			}
+			echo '</select>';
 		} elseif ( 'country' === $field['type'] ) {
 			printf( '<select id="%1$s" name="%2$s"><option value="">%3$s</option>', esc_attr( $id ), esc_attr( $name ), esc_html__( '— Select —', 'hive-compliance' ) );
 			foreach ( $this->countries() as $code => $label ) {
@@ -144,7 +152,7 @@ final class BusinessScreen extends Screen {
 		if ( null !== $check && Check::OK !== $check->severity ) {
 			printf( '<p class="hive-field-message hive-field-message--%1$s">%2$s</p>', esc_attr( $check->severity ), esc_html( $check->message ) );
 		} elseif ( $missing ) {
-			echo '<p class="hive-field-message hive-field-message--error">' . esc_html__( 'Required for the legal notice.', 'hive-compliance' ) . '</p>';
+			echo '<p class="hive-field-message hive-field-message--error">' . esc_html( in_array( $key, BusinessData::REQUIRED, true ) ? __( 'Required for the legal notice.', 'hive-compliance' ) : __( 'Required for an impresa individuale.', 'hive-compliance' ) ) . '</p>';
 		}
 		echo '</td></tr>';
 	}

@@ -22,6 +22,11 @@ final class BusinessData {
 	const REQUIRED = array( 'legal_name', 'address', 'country', 'email', 'vat_id' );
 
 	/**
+	 * Legal form that also needs the owner's name and personal codice fiscale.
+	 */
+	const SOLE_TRADER = 'impresa_individuale';
+
+	/**
 	 * Social networks offered in the repeater (any other slug is allowed too).
 	 */
 	const NETWORKS = array( 'instagram', 'facebook', 'tiktok', 'youtube', 'linkedin', 'x', 'pinterest', 'threads', 'whatsapp', 'telegram' );
@@ -35,7 +40,8 @@ final class BusinessData {
 		$fields = array(
 			'legal_name'        => array( 'identity', __( 'Legal name', 'hive-compliance' ), 'text' ),
 			'trade_name'        => array( 'identity', __( 'Trade name (shop name)', 'hive-compliance' ), 'text' ),
-			'legal_form'        => array( 'identity', __( 'Legal form (e.g. S.r.l., sole trader)', 'hive-compliance' ), 'text' ),
+			'legal_form'        => array( 'identity', __( 'Legal form', 'hive-compliance' ), 'legal_form' ),
+			'legal_form_other'  => array( 'identity', __( 'Legal form, if other', 'hive-compliance' ), 'text' ),
 			'owner_name'        => array( 'identity', __( 'Owner or legal representative', 'hive-compliance' ), 'text' ),
 			'vat_id'            => array( 'registration', __( 'VAT number', 'hive-compliance' ), 'vat' ),
 			'tax_code'          => array( 'registration', __( 'Tax code (codice fiscale)', 'hive-compliance' ), 'tax_code' ),
@@ -62,6 +68,55 @@ final class BusinessData {
 			);
 		}
 		return $out;
+	}
+
+	/**
+	 * Italian legal forms: key => label in the dropdown.
+	 *
+	 * @return array<string, string>
+	 */
+	public static function legal_forms(): array {
+		return array(
+			self::SOLE_TRADER => __( 'Impresa individuale (sole trader)', 'hive-compliance' ),
+			'snc'             => __( 'S.n.c. – società in nome collettivo', 'hive-compliance' ),
+			'sas'             => __( 'S.a.s. – società in accomandita semplice', 'hive-compliance' ),
+			'srl'             => __( 'S.r.l. – società a responsabilità limitata', 'hive-compliance' ),
+			'srls'            => __( 'S.r.l.s. – S.r.l. semplificata', 'hive-compliance' ),
+			'spa'             => __( 'S.p.A. – società per azioni', 'hive-compliance' ),
+			'other'           => __( 'Other (specify below)', 'hive-compliance' ),
+		);
+	}
+
+	/**
+	 * The legal form as written in documents ({{business.legal_form}}).
+	 */
+	public function legal_form_text(): string {
+		$names = array(
+			self::SOLE_TRADER => 'impresa individuale',
+			'snc'             => 'S.n.c.',
+			'sas'             => 'S.a.s.',
+			'srl'             => 'S.r.l.',
+			'srls'            => 'S.r.l.s.',
+			'spa'             => 'S.p.A.',
+		);
+		$form  = $this->value( 'legal_form' );
+		return $names[ $form ] ?? ( 'other' === $form ? $this->value( 'legal_form_other' ) : '' );
+	}
+
+	/**
+	 * Required fields for the given data: the legal-notice basics, plus the owner's name and
+	 * codice fiscale for an impresa individuale.
+	 *
+	 * @param array<string, mixed> $data Business data.
+	 * @return string[]
+	 */
+	public static function required( array $data ): array {
+		$required = self::REQUIRED;
+		if ( self::SOLE_TRADER === ( $data['legal_form'] ?? '' ) ) {
+			$required[] = 'owner_name';
+			$required[] = 'tax_code';
+		}
+		return $required;
 	}
 
 	/**
@@ -175,13 +230,13 @@ final class BusinessData {
 		$fields = self::fields();
 		$data   = $this->get();
 		$issues = array();
-		foreach ( self::REQUIRED as $key ) {
+		foreach ( self::required( $data ) as $key ) {
 			if ( '' === trim( (string) $data[ $key ] ) ) {
 				$issues[ $key ] = array(
 					'field'    => $key,
 					'label'    => $fields[ $key ]['label'],
 					'severity' => Check::ERROR,
-					'message'  => __( 'Missing.', 'hive-compliance' ),
+					'message'  => in_array( $key, self::REQUIRED, true ) ? __( 'Missing.', 'hive-compliance' ) : __( 'Missing: required for an impresa individuale.', 'hive-compliance' ),
 				);
 			}
 		}
@@ -217,19 +272,29 @@ final class BusinessData {
 			$raw = 'textarea' === $field['type'] ? sanitize_textarea_field( $raw ) : sanitize_text_field( $raw );
 
 			$check = match ( $field['type'] ) {
-				'vat'      => Validator::vat_id( $raw, $context ),
-				'tax_code' => Validator::tax_code( $raw, $context ),
-				'rea'      => Validator::rea( $raw, $context ),
-				'email'    => Validator::email( $raw ),
-				'phone'    => Validator::phone( $raw, $context ),
-				'country'  => Check::ok( $country ),
-				default    => Check::ok( trim( $raw ) ),
+				'vat'        => Validator::vat_id( $raw, $context ),
+				'tax_code'   => Validator::tax_code( $raw, $context ),
+				'rea'        => Validator::rea( $raw, $context ),
+				'email'      => 'pec' === $key ? Validator::pec( $raw ) : Validator::email( $raw ),
+				'phone'      => Validator::phone( $raw, $context ),
+				'country'    => Check::ok( $country ),
+				'legal_form' => Validator::legal_form( $raw ),
+				default      => Check::ok( trim( $raw ) ),
 			};
 
 			$data[ $key ] = $check->value;
 			if ( Check::OK !== $check->severity ) {
 				$checks[ $key ] = $check;
 			}
+		}
+
+		// Free text saved before the dropdown existed is kept as "other".
+		if ( 'other' === $data['legal_form'] && '' === $data['legal_form_other'] && ! isset( Validator::LEGAL_FORMS[ strtolower( trim( (string) ( $input['legal_form'] ?? '' ) ) ) ] ) ) {
+			$data['legal_form_other'] = trim( sanitize_text_field( (string) ( $input['legal_form'] ?? '' ) ) );
+		}
+		$personal = 16 === strlen( $data['tax_code'] ) && Validator::is_valid_codice_fiscale( $data['tax_code'] );
+		if ( self::SOLE_TRADER === $data['legal_form'] && '' !== $data['tax_code'] && ! $personal ) {
+			$checks['tax_code'] = Check::error( $data['tax_code'], __( 'For an impresa individuale, enter the owner\'s personal codice fiscale (16 characters).', 'hive-compliance' ) );
 		}
 
 		foreach ( (array) ( $input['social'] ?? array() ) as $index => $row ) {

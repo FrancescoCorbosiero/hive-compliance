@@ -102,6 +102,24 @@ final class Validator {
 	const KEEP_TRUNK_ZERO = array( 'IT', 'SM', 'VA' );
 
 	/**
+	 * Legal forms and the spellings they are recognised by (lowercase, dots and spaces removed).
+	 */
+	const LEGAL_FORMS = array(
+		'impresa_individuale' => array( 'impresaindividuale', 'dittaindividuale', 'ditta', 'soletrader' ),
+		'snc'                 => array( 'snc' ),
+		'sas'                 => array( 'sas' ),
+		'srl'                 => array( 'srl' ),
+		'srls'                => array( 'srls' ),
+		'spa'                 => array( 'spa' ),
+		'other'               => array(),
+	);
+
+	/**
+	 * Webmail domains (first label) that are not PEC providers.
+	 */
+	const WEBMAIL = array( 'gmail', 'googlemail', 'yahoo', 'hotmail', 'outlook', 'libero', 'icloud' );
+
+	/**
 	 * Italian partita IVA: 11 digits with the official check digit
 	 * (odd positions summed; even positions doubled, minus 9 when above 9; check = (10 - sum mod 10) mod 10).
 	 *
@@ -267,6 +285,44 @@ final class Validator {
 		return preg_match( '/^\+[1-9]\d{6,14}$/', $digits )
 			? Check::ok( $digits )
 			: Check::error( $raw, __( 'This is not a valid phone number.', 'hive-compliance' ) );
+	}
+
+	/**
+	 * Legal form: one of the LEGAL_FORMS keys. Known spellings ("S.r.l.") are recognised;
+	 * any other text becomes "other".
+	 *
+	 * @param string $value Raw input.
+	 */
+	public static function legal_form( string $value ): Check {
+		$value = strtolower( trim( $value ) );
+		if ( '' === $value || isset( self::LEGAL_FORMS[ $value ] ) ) {
+			return Check::ok( $value );
+		}
+		$compact = (string) preg_replace( '/[\s.\-_]+/', '', $value );
+		foreach ( self::LEGAL_FORMS as $key => $spellings ) {
+			if ( in_array( $compact, $spellings, true ) ) {
+				return Check::ok( $key );
+			}
+		}
+		return Check::ok( 'other' );
+	}
+
+	/**
+	 * Certified e-mail (PEC): a valid address; a common webmail domain gets a warning, since
+	 * PEC mailboxes come from accredited providers. Never blocks.
+	 *
+	 * @param string $value Raw input.
+	 */
+	public static function pec( string $value ): Check {
+		$check = self::email( $value );
+		if ( Check::OK !== $check->severity || '' === $check->value ) {
+			return $check;
+		}
+		$domain = substr( (string) strrchr( $check->value, '@' ), 1 );
+		if ( preg_match( '/^(' . implode( '|', self::WEBMAIL ) . ')\.[a-z]{2,}(\.[a-z]{2,})?$/', $domain ) ) {
+			return Check::warning( $check->value, __( 'This looks like an ordinary webmail address, not a PEC mailbox. PEC addresses come from accredited providers (e.g. pec.it, legalmail.it).', 'hive-compliance' ) );
+		}
+		return $check;
 	}
 
 	/**

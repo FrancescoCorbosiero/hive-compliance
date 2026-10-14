@@ -360,12 +360,12 @@ final class EditorScreen extends Screen {
 		}
 		echo '<ul class="hive-checklist">';
 		foreach ( $entry->required_elements as $element ) {
-			$heading = ContentLinter::has_heading( $document->markdown, $element['key'], $element['label'] );
+			$heading = ContentLinter::has_heading( $document->markdown, $element['key'] );
 			printf(
 				'<li><label><input type="checkbox" name="checklist[]" value="%1$s" form="hive-document-form"%2$s> %3$s</label> %4$s<br><span class="hive-meta">%5$s</span></li>',
 				esc_attr( $element['key'] ),
 				checked( ! empty( $document->checklist[ $element['key'] ] ), true, false ),
-				esc_html( $element['label'] ),
+				esc_html( Entry::element_label( $element, $document->lang ) ),
 				$heading ? $this->badge( __( 'heading found', 'hive-compliance' ), 'ok' ) : $this->badge( __( 'no heading', 'hive-compliance' ), 'muted' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Badge is escaped.
 				esc_html( '' !== $element['legal_ref'] ? $element['legal_ref'] : '—' )
 			);

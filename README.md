@@ -40,11 +40,15 @@ The plugin does not write legal text. It provides:
 
 1. Put the plugin in `wp-content/plugins/hive-compliance` (or upload it as a zip) and activate it. The plugin does not need `vendor/`, which holds development tools only.
 2. Activation grants the `manage_hive_compliance` capability to administrators. Every screen, form and REST route checks this capability, so you can give it to another role (for example a shop manager) with any role editor.
-3. On the first admin page load after the first activation, the plugin creates a draft **skeleton** for every applicable document in the default language. A skeleton contains headings and placeholders only, no prose. Reactivating the plugin never regenerates skeletons.
+3. On the first admin page load after the first activation, the plugin creates a draft **skeleton** for every applicable document in the default language. Reactivating the plugin never regenerates skeletons. A skeleton has no prose:
+   - Pages and internal documents get one heading per required element, in the document's language, with its `{#key}` anchor, followed by that element's placeholders.
+   - Fragments get only their placeholders, on one line. Fragments without placeholders, such as button labels, have no skeleton.
 4. Work through the **Hive Compliance** menu:
-   - **Settings:** default language, enabled languages, largest import file, and uninstall behaviour.
+   - **Settings:** default language, enabled languages, largest import file, uninstall behaviour, and **custom integrations**. Custom integrations cover in-house plugins and services that cannot be detected (name, role, data sent, recipient, transfer outside the EU). They appear in the export context next to the detected integrations.
    - **Business Data:** identity, registration, address, contacts, privacy roles, social links and custom values.
      - Values are checked inline: the Italian partita IVA check digit, the codice fiscale, EU VAT formats, e-mail, and phone numbers (normalised to E.164).
+     - The legal form is a list of Italian forms (impresa individuale, S.n.c., S.a.s., S.r.l., S.r.l.s., S.p.A., other). An impresa individuale also needs the owner's name and personal codice fiscale (16 characters, with a valid check character).
+     - A PEC on a common webmail domain (Gmail, Yahoo, Hotmail, Outlook, Libero, iCloud) gets a warning.
      - Saving is never blocked. The dashboard lists whatever is still invalid or missing.
    - **Store Profile:** a wizard with seller, markets, customers, products, product flags and features.
      - Before the first save, answers are pre-filled from WooCommerce and the active plugins, with their source shown.
@@ -53,6 +57,11 @@ The plugin does not write legal text. It provides:
    - **Dashboard:** the applicable documents.
      - Columns: language coverage, status, version, review dates, checklist progress, bound page and missing placeholders.
      - Cards above the table: business-data issues, public documents without a page, reviews due, and bound pages that are live while their document is unpublished or that hold extra content.
+     - A **Store checks** card warns about:
+       - WooCommerce selling to all countries while the shipping zones cover fewer;
+       - payment surcharges set in Pay for Payment, which art. 62 Codice del Consumo prohibits for consumers (discounts are allowed);
+       - an active Klarna or Scalapay while the profile's "Buy now, pay later" feature is off;
+       - profile markets with no shipping zone.
      - The **Full catalog** view lists every entry. **Generate skeletons for empty documents** covers newly enabled languages and newly applicable documents.
    - **Documents:** the editor.
      - CodeMirror for Markdown, with a live preview through the real render pipeline and the content checks.
@@ -73,12 +82,12 @@ Go to **Hive Compliance → Export**. Choose:
 
 Then click **Download LLM bundle (.md)**. The file has three parts:
 
-1. **Instructions for the model**, written verbatim at the top. In short: keep every delimiter and placeholder, use no HTML, write `TODO(data): …` where data is missing, set a `changelog_note` for every change, cover every required element, and return the complete bundle.
+1. **Instructions for the model**, written verbatim at the top. In short: keep every delimiter and placeholder, use no HTML, write `TODO(data): …` where data is missing, set a `changelog_note` for every change, cover every required element, and return the complete bundle. Heading text may be rewritten in the document's language as long as its `{#key}` anchor is kept. When the bundle leaves out some applicable documents, the header adds: "This bundle contains N of M applicable documents. Documents not included stay unchanged."
 2. **Read-only context** between `<!-- hive:context begin -->` and `<!-- hive:context end -->`:
    - the store profile;
    - the business data with current values (facts for reasoning, never imported);
    - the auto-detected store facts;
-   - the detected integrations (active plugins mapped to services, their role, and whether data likely leaves the EU);
+   - the detected integrations (active plugins mapped to services, their role, what data they receive and from whom where known, and whether data likely leaves the EU), plus the custom integrations from Settings. WP Mail SMTP is reported with the mailer it is configured to use;
    - the catalog version and the export time.
 3. **One block per document and language**:
 
@@ -176,7 +185,7 @@ Placeholders use the syntax `{{namespace.key}}`. They are resolved when the page
 | Namespace | Source |
 | --- | --- |
 | `business.*` | The Business Data screen: `legal_name`, `vat_id`, `rea`, `address`, `email`, `pec`, `phone`, `dpo_email`, and so on. Social links are `business.social_<network>`. |
-| `store.*` | Read-only, auto-detected: `site_url`, `site_name`, `store_address`, `store_country`, `currency`, `selling_countries`, `shipping_countries`, `shipping_zones`, `payment_gateways`, `guest_checkout`, `reviews_enabled`, `account_registration`. |
+| `store.*` | Read-only, auto-detected: `site_url`, `site_name`, `store_address`, `store_country`, `currency`, `selling_countries`, `shipping_countries`, `shipping_zones`, `payment_gateways`, `guest_checkout`, `reviews_enabled`, `account_registration`. Selling locations are named in words ("all countries", "all countries except …") or as a list of countries. Shipping countries come from the shipping zones that have an enabled method. Payment methods are listed once each by title. |
 | `links.<doc_id>` | The URL of the published page bound to that document, in the language being rendered or else in the default language. |
 | `custom.*` | Your own keys and values, entered on the Business Data screen. |
 
@@ -188,7 +197,7 @@ The placeholder picker in the editor lists every key with its current value.
 
 - `id`, titles per language, `type` and `group`;
 - the applicability rule `applies_when`;
-- `required_elements`, each with `key`, `label`, `legal_ref` and optional `placeholders`;
+- `required_elements`, each with `key`, `label` (per language, like `title`: `{"en": …, "it": …}`), `legal_ref` and optional `placeholders`;
 - `placeholders_used` and `legal_refs`;
 - `review_cadence_months` and `checklist_status`;
 - optional `lint` rules.
@@ -205,7 +214,8 @@ The catalog is data, so an update is a JSON change with no code change.
 4. Run the catalog tests: `vendor/bin/phpunit --filter 'Catalog|Schema|Skeleton'` (see [Development](#development)).
 5. Expect these effects on existing documents:
    - **A new entry** appears on the dashboard wherever its rule applies. **Generate skeletons for empty documents** creates its draft.
-   - **A new required element** shows a "missing heading" warning on existing documents until one of their headings carries the `{#key}` anchor or the exact label. The next bundle lists the element under `required_elements`, so the model can write it.
+   - **A new required element** shows a "missing heading" warning on existing documents until one of their headings carries its `{#key}` anchor. Headings are matched by anchor only, so their text can be rewritten in any language. The next bundle lists the element under `required_elements`, in the document's language, so the model can write it.
+   - **Give every label in Italian and English** at least. A missing language falls back to English.
    - **Never rename or remove an `id` or element `key` that is in use.** Documents are stored by ID, the importer rejects unknown IDs, and headings are matched by key. To retire an entry, make its rule never match: `"applies_when": {"not": {"always": true}}`.
    - **A lint rule** has the shape `{"id", "pattern", "severity", "message"}`. The pattern is a case-insensitive PCRE without delimiters. An `error` blocks the import; a `warning` shows in the editor and in the review.
 

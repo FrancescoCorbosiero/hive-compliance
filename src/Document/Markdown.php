@@ -85,19 +85,4 @@ final class Markdown {
 			'line'   => $line,
 		);
 	}
-
-	/**
-	 * Compares two heading texts loosely (case, whitespace and trailing punctuation insensitive).
-	 *
-	 * @param string $a First heading.
-	 * @param string $b Second heading.
-	 */
-	public static function same_heading( string $a, string $b ): bool {
-		$clean = static function ( string $text ): string {
-			$text = mb_strtolower( trim( $text ), 'UTF-8' );
-			$text = (string) preg_replace( '/[\s]+/u', ' ', $text );
-			return rtrim( $text, ' .:;' );
-		};
-		return $clean( $a ) === $clean( $b );
-	}
 }

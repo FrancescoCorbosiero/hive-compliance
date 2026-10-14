@@ -23,6 +23,7 @@ use Hive\Compliance\Business\BusinessData;
 use Hive\Compliance\Catalog\Applicability;
 use Hive\Compliance\Catalog\Catalog;
 use Hive\Compliance\Catalog\RuleEngine;
+use Hive\Compliance\Checks\StoreChecks;
 use Hive\Compliance\Document\PostType;
 use Hive\Compliance\Document\Repository;
 use Hive\Compliance\I18n\Languages;
@@ -231,6 +232,13 @@ final class Plugin {
 	 */
 	public function store_facts(): StoreFacts {
 		return $this->service( StoreFacts::class, static fn() => new StoreFacts() );
+	}
+
+	/**
+	 * Compliance checks on the store setup.
+	 */
+	public function store_checks(): StoreChecks {
+		return $this->service( StoreChecks::class, fn() => new StoreChecks( $this->store_facts(), $this->profile(), $this->detector() ) );
 	}
 
 	/**

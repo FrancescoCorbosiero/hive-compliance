@@ -62,7 +62,7 @@ final class Overview {
 	 * Cards above the table.
 	 *
 	 * @param array<string, array<string, mixed>> $rows Rows of applicable entries.
-	 * @return array{business: array<string, array<string, string>>, unbound: Entry[], overdue: Entry[], live_drafts: Entry[], dirty_pages: Entry[], catalog_errors: string[]}
+	 * @return array{business: array<string, array<string, string>>, unbound: Entry[], overdue: Entry[], live_drafts: Entry[], dirty_pages: Entry[], catalog_errors: string[], store_checks: array<int, array{id: string, message: string, details: string[]}>}
 	 */
 	public function cards( array $rows ): array {
 		$cards = array(
@@ -72,6 +72,7 @@ final class Overview {
 			'live_drafts'    => array(),
 			'dirty_pages'    => array(),
 			'catalog_errors' => $this->plugin->catalog()->errors(),
+			'store_checks'   => $this->plugin->store_checks()->warnings(),
 		);
 		foreach ( $rows as $row ) {
 			$entry = $row['entry'];

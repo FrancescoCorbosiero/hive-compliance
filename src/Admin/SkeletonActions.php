@@ -55,7 +55,7 @@ final class SkeletonActions {
 	 * @param Document $document Document.
 	 */
 	public function editor_button( Entry $entry, Document $document ): void {
-		if ( ! $document->is_empty() ) {
+		if ( ! $document->is_empty() || '' === $this->plugin->skeletons()->skeleton( $entry, $document->lang ) ) {
 			return;
 		}
 		printf( '<form method="post" action="%s" class="hive-skeleton-form">', esc_url( admin_url( 'admin-post.php' ) ) );

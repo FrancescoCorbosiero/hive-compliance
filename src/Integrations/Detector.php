@@ -25,9 +25,48 @@ final class Detector {
 	private ?array $detected = null;
 
 	/**
-	 * Known plugin slugs.
+	 * Automattic's tax and shipping-label services.
+	 */
+	const AUTOMATTIC_SERVICES = array(
+		'data'      => 'order and customer addresses, for tax calculation and shipping labels',
+		'recipient' => 'Automattic',
+	);
+
+	/**
+	 * Snippet plugins can hold anything, tracking code included.
+	 */
+	const REVIEW_SNIPPETS = array(
+		'note' => 'may contain tracking code — review manually',
+	);
+
+	/**
+	 * WP Mail SMTP mailers: provider and likely transfer outside the EU.
+	 */
+	const MAILERS = array(
+		'mail'         => array( 'the web server (PHP mail)', 'unlikely' ),
+		'gmail'        => array( 'Google (Gmail / Google Workspace)', 'likely' ),
+		'outlook'      => array( 'Microsoft (Outlook / Microsoft 365)', 'likely' ),
+		'sendgrid'     => array( 'SendGrid (Twilio)', 'likely' ),
+		'sendinblue'   => array( 'Brevo', 'possible' ),
+		'brevo'        => array( 'Brevo', 'possible' ),
+		'mailgun'      => array( 'Mailgun', 'likely' ),
+		'postmark'     => array( 'Postmark', 'likely' ),
+		'sparkpost'    => array( 'SparkPost', 'likely' ),
+		'amazonses'    => array( 'Amazon SES', 'likely' ),
+		'zoho'         => array( 'Zoho Mail', 'possible' ),
+		'smtpcom'      => array( 'SMTP.com', 'likely' ),
+		'elasticemail' => array( 'Elastic Email', 'likely' ),
+		'mailjet'      => array( 'Mailjet', 'possible' ),
+		'mailersend'   => array( 'MailerSend', 'possible' ),
+		'smtp2go'      => array( 'SMTP2GO', 'possible' ),
+		'resend'       => array( 'Resend', 'likely' ),
+	);
+
+	/**
+	 * Known plugin slugs. Entries may also say what data is sent ("data"), to whom ("recipient")
+	 * and add a "note".
 	 *
-	 * @return array<string, array{service: string, role: string, transfer: string}>
+	 * @return array<string, array<string, string>>
 	 */
 	public function map(): array {
 		$map = array(
@@ -39,6 +78,11 @@ final class Detector {
 			'woocommerce-gateway-amazon-payments-advanced' => array( 'Amazon Pay', 'payments', 'likely' ),
 			'klarna-payments-for-woocommerce'              => array( 'Klarna', 'payments_bnpl', 'possible' ),
 			'klarna-checkout-for-woocommerce'              => array( 'Klarna', 'payments_bnpl', 'possible' ),
+			'woocommerce-pay-for-payment'                  => array( 'Pay for Payment for WooCommerce', 'payment_fees', 'unlikely' ),
+			// Tax and shipping services.
+			'woocommerce-services'                         => array( 'WooCommerce Tax / Shipping & Tax (Automattic)', 'tax_and_shipping', 'likely', self::AUTOMATTIC_SERVICES ),
+			'woocommerce-tax'                              => array( 'WooCommerce Tax (Automattic)', 'tax_and_shipping', 'likely', self::AUTOMATTIC_SERVICES ),
+			'woocommerce-shipping'                         => array( 'WooCommerce Shipping (Automattic)', 'tax_and_shipping', 'likely', self::AUTOMATTIC_SERVICES ),
 			// Google.
 			'google-listings-and-ads'                      => array( 'Google for WooCommerce', 'advertising', 'likely' ),
 			'woocommerce-google-analytics-integration'     => array( 'Google Analytics for WooCommerce', 'analytics', 'likely' ),
@@ -47,6 +91,16 @@ final class Detector {
 			'facebook-for-woocommerce'                     => array( 'Meta (Facebook for WooCommerce, Pixel)', 'advertising', 'likely' ),
 			'official-facebook-pixel'                      => array( 'Meta Pixel', 'advertising', 'likely' ),
 			'pixelyoursite'                                => array( 'PixelYourSite (tracking pixels)', 'advertising', 'likely' ),
+			// TikTok.
+			'tiktok-for-business'                          => array(
+				'TikTok for Business (TikTok Pixel)',
+				'advertising',
+				'likely',
+				array(
+					'data'      => 'browsing and purchase events (advertising pixel)',
+					'recipient' => 'TikTok',
+				),
+			),
 			// E-mail marketing.
 			'mailchimp-for-woocommerce'                    => array( 'Mailchimp', 'email_marketing', 'likely' ),
 			'mailchimp-for-wp'                             => array( 'Mailchimp (MC4WP)', 'email_marketing', 'likely' ),
@@ -55,6 +109,9 @@ final class Detector {
 			'klaviyo'                                      => array( 'Klaviyo', 'email_marketing', 'likely' ),
 			'mailin'                                       => array( 'Brevo', 'email_marketing', 'possible' ),
 			'newsletter'                                   => array( 'Newsletter (self-hosted)', 'email_marketing', 'unlikely' ),
+			// Transactional e-mail (the provider is read from the plugin settings).
+			'wp-mail-smtp'                                 => array( 'WP Mail SMTP', 'email_transactional', 'possible' ),
+			'wp-mail-smtp-pro'                             => array( 'WP Mail SMTP', 'email_transactional', 'possible' ),
 			// Consent.
 			'complianz-gdpr'                               => array( 'Complianz', 'consent', 'unlikely' ),
 			'complianz-gdpr-premium'                       => array( 'Complianz', 'consent', 'unlikely' ),
@@ -88,14 +145,19 @@ final class Detector {
 			'ai-engine'                                    => array( 'AI Engine (chatbot)', 'ai_chatbot', 'likely' ),
 			// Other.
 			'akismet'                                      => array( 'Akismet', 'anti_spam', 'likely' ),
+			'code-snippets'                                => array( 'Code Snippets', 'custom_code', 'possible', self::REVIEW_SNIPPETS ),
+			'code-snippets-pro'                            => array( 'Code Snippets Pro', 'custom_code', 'possible', self::REVIEW_SNIPPETS ),
 		);
 
 		$out = array();
-		foreach ( $map as $slug => list( $service, $role, $transfer ) ) {
-			$out[ $slug ] = array(
-				'service'  => $service,
-				'role'     => $role,
-				'transfer' => $transfer,
+		foreach ( $map as $slug => $entry ) {
+			$out[ $slug ] = array_merge(
+				array(
+					'service'  => $entry[0],
+					'role'     => $entry[1],
+					'transfer' => $entry[2],
+				),
+				$entry[3] ?? array()
 			);
 		}
 
@@ -149,6 +211,9 @@ final class Detector {
 				continue;
 			}
 			$info = $this->identify( $slug, $map, $patterns );
+			if ( null !== $info && 'email_transactional' === $info['role'] && 0 === strpos( $slug, 'wp-mail-smtp' ) ) {
+				$info = $this->mailer( $info );
+			}
 			if ( null === $info ) {
 				$unknown[] = array(
 					'slug' => $slug,
@@ -199,6 +264,33 @@ final class Detector {
 	}
 
 	/**
+	 * WP Mail SMTP: the configured mailer is the real e-mail provider.
+	 *
+	 * @param array<string, string> $info Map entry.
+	 * @return array<string, string>
+	 */
+	private function mailer( array $info ): array {
+		$options = (array) get_option( 'wp_mail_smtp', array() );
+		$mailer  = defined( 'WPMS_ON' ) && WPMS_ON && defined( 'WPMS_MAILER' ) ? (string) WPMS_MAILER : (string) ( $options['mail']['mailer'] ?? 'mail' );
+		if ( 'smtp' === $mailer ) {
+			$host     = sanitize_text_field( (string) ( defined( 'WPMS_ON' ) && WPMS_ON && defined( 'WPMS_SMTP_HOST' ) ? WPMS_SMTP_HOST : ( $options['smtp']['host'] ?? '' ) ) );
+			$provider = '' !== $host ? 'SMTP server ' . $host : 'an SMTP server';
+			$transfer = 'possible';
+		} else {
+			list( $provider, $transfer ) = self::MAILERS[ $mailer ] ?? array( $mailer, 'possible' );
+		}
+		return array_merge(
+			$info,
+			array(
+				'service'   => $info['service'] . ' → ' . $provider,
+				'transfer'  => $transfer,
+				'data'      => 'e-mails sent by the site (order, account and form e-mails, with the recipients\' addresses)',
+				'recipient' => $provider,
+			)
+		);
+	}
+
+	/**
 	 * Whether any detected service has the given role.
 	 *
 	 * @param string $role Role (payments_bnpl, email_marketing, cart_recovery, ...).
@@ -225,6 +317,15 @@ final class Detector {
 				static fn( $integration ) => ( $integration['role'] ?? '' ) === $role
 			)
 		);
+	}
+
+	/**
+	 * Whether a plugin is active, by directory slug.
+	 *
+	 * @param string $slug Plugin directory slug.
+	 */
+	public function is_active( string $slug ): bool {
+		return in_array( $slug, array_map( array( $this, 'slug' ), $this->active_plugins() ), true );
 	}
 
 	/**

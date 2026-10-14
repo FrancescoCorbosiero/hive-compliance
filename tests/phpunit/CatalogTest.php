@@ -28,7 +28,7 @@ class CatalogTest extends Hive_TestCase {
 		$catalog = $this->catalog();
 		$this->assertSame( array(), $catalog->errors() );
 		$this->assertTrue( $catalog->is_valid() );
-		$this->assertSame( '1.0.0', $catalog->version() );
+		$this->assertSame( '1.1.0', $catalog->version() );
 	}
 
 	public function test_catalog_contains_exactly_the_spec_ids_in_their_groups() {
@@ -110,6 +110,44 @@ class CatalogTest extends Hive_TestCase {
 		$refs = implode( ' ', $this->catalog()->get( 'bnpl_disclosure' )->legal_refs );
 		$this->assertStringContainsString( '2023/2225', $refs );
 		$this->assertStringContainsString( '20 November 2026', $refs );
+	}
+
+	public function test_every_element_label_exists_in_italian_and_english() {
+		foreach ( $this->plugin()->catalog()->entries() as $entry ) {
+			foreach ( $entry->required_elements as $element ) {
+				$where = $entry->id . '.' . $element['key'];
+				$this->assertNotSame( '', $element['labels']['it'] ?? '', $where );
+				$this->assertNotSame( '', $element['labels']['en'] ?? '', $where );
+				$this->assertNotSame( $element['labels']['en'], $element['labels']['it'], $where . ' is translated' );
+			}
+		}
+		$element = $this->plugin()->catalog()->get( 'terms_of_sale' )->required_elements[0];
+		$this->assertSame( 'Identità del venditore, indirizzo geografico e recapiti', Entry::element_label( $element, 'it-IT' ) );
+		$this->assertSame( 'Seller identity, geographical address and contact details', Entry::element_label( $element, 'de' ), 'Falls back to English.' );
+	}
+
+	public function test_a_plain_string_label_is_still_accepted() {
+		$entry = Entry::from_array(
+			array(
+				'id'                    => 'x',
+				'title'                 => array( 'en' => 'X' ),
+				'type'                  => 'page',
+				'group'                 => 'core',
+				'applies_when'          => array( 'always' => true ),
+				'required_elements'     => array(
+					array(
+						'key'       => 'a',
+						'label'     => 'Only English',
+						'legal_ref' => '',
+					),
+				),
+				'placeholders_used'     => array(),
+				'legal_refs'            => array(),
+				'review_cadence_months' => 12,
+				'checklist_status'      => 'draft',
+			)
+		);
+		$this->assertSame( 'Only English', Entry::element_label( $entry->required_elements[0], 'it' ) );
 	}
 
 	public function test_titles_fall_back_to_primary_language_then_english() {

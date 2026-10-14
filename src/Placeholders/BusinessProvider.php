@@ -76,6 +76,9 @@ final class BusinessProvider implements Provider {
 		if ( 0 === strpos( $key, 'social_' ) ) {
 			return $this->business->social()[ substr( $key, 7 ) ] ?? null;
 		}
+		if ( 'legal_form' === $key ) {
+			return $this->business->legal_form_text();
+		}
 		$value = $this->business->value( $key );
 		if ( 'country' === $key && '' !== $value ) {
 			return Markets::country_name( $value );

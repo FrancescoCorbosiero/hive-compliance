@@ -52,7 +52,7 @@ final class ContentLinter {
 			$this->placeholders( $markdown ),
 			$this->urls( $markdown ),
 			$this->todos( $markdown ),
-			$this->headings( $markdown, $entry ),
+			$this->headings( $markdown, $entry, $lang ),
 			$this->shortcodes( $markdown ),
 			$this->catalog_rules( $markdown, $entry )
 		);
@@ -148,21 +148,22 @@ final class ContentLinter {
 	}
 
 	/**
-	 * Required elements without a heading (warning). A heading counts when it carries the
-	 * element's {#key} anchor or its text equals the element's label. Not applied to fragments.
+	 * Required elements without a heading (warning). A heading counts only when it carries the
+	 * element's {#key} anchor: its text may be rewritten, in any language. Not applied to fragments.
 	 *
 	 * @param string $markdown Markdown.
 	 * @param Entry  $entry    Catalog entry.
+	 * @param string $lang     Document language (for the labels listed).
 	 * @return Finding[]
 	 */
-	private function headings( string $markdown, Entry $entry ): array {
+	private function headings( string $markdown, Entry $entry, string $lang ): array {
 		if ( $entry->is_fragment() ) {
 			return array();
 		}
 		$missing = array();
 		foreach ( $entry->required_elements as $element ) {
-			if ( ! self::has_heading( $markdown, $element['key'], $element['label'] ) ) {
-				$missing[] = $element['label'] . ' {#' . $element['key'] . '}';
+			if ( ! self::has_heading( $markdown, $element['key'] ) ) {
+				$missing[] = Entry::element_label( $element, $lang ) . ' {#' . $element['key'] . '}';
 			}
 		}
 		if ( ! $missing ) {
@@ -172,15 +173,14 @@ final class ContentLinter {
 	}
 
 	/**
-	 * Whether a required element has a heading.
+	 * Whether a required element has a heading, i.e. a heading with its {#key} anchor.
 	 *
 	 * @param string $markdown Markdown.
 	 * @param string $key      Element key.
-	 * @param string $label    Element label.
 	 */
-	public static function has_heading( string $markdown, string $key, string $label ): bool {
+	public static function has_heading( string $markdown, string $key ): bool {
 		foreach ( Markdown::headings( $markdown ) as $heading ) {
-			if ( $heading['anchor'] === $key || Markdown::same_heading( $heading['text'], $label ) ) {
+			if ( $heading['anchor'] === $key ) {
 				return true;
 			}
 		}
