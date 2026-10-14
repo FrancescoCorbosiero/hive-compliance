@@ -42,13 +42,6 @@ final class BusinessScreen extends Screen {
 	}
 
 	/**
-	 * Repeater script.
-	 */
-	public function enqueue(): void {
-		wp_enqueue_script( 'hive-compliance-repeater', HIVE_COMPLIANCE_URL . 'assets/js/repeater.js', array(), HIVE_COMPLIANCE_VERSION, true );
-	}
-
-	/**
 	 * Handles the form submission (admin-post.php).
 	 */
 	public function handle_save(): void {
@@ -82,77 +75,167 @@ final class BusinessScreen extends Screen {
 		$checks   = $business->checks( (string) ( $this->plugin->profile()->get()['seller_country'] ?? '' ) );
 		$required = BusinessData::required( $data );
 		$missing  = array_filter( $required, static fn( $key ) => '' === trim( (string) $data[ $key ] ) );
+		$fields   = BusinessData::fields();
+		$icons    = array(
+			'identity'     => 'building',
+			'registration' => 'id',
+			'address'      => 'location',
+			'contacts'     => 'email',
+			'privacy'      => 'shield',
+		);
 
 		echo '<div class="wrap hive-wrap">';
-		$this->header( $this->title(), __( 'Facts about the business, used by the {{business.*}} placeholders. They are exported to the LLM as context and never imported back.', 'hive-compliance' ) );
+		$this->header(
+			$this->title(),
+			__( 'Facts about the business, used by the {{business.*}} placeholders. They are exported to the LLM as context and never imported back.', 'hive-compliance' ),
+			sprintf( '<a class="button" href="%1$s">%2$s %3$s</a>', esc_url( Request::page_url( 'placeholders' ) ), $this->icon( 'editor-code' ), esc_html__( 'All placeholders', 'hive-compliance' ) ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in icon().
+		);
+
+		$this->render_completeness( $required, $missing, $fields );
+
 		$this->form_open( self::ACTION_SAVE );
 
-		$fields = BusinessData::fields();
 		foreach ( BusinessData::groups() as $group => $group_label ) {
-			echo '<h2>' . esc_html( $group_label ) . '</h2><table class="form-table" role="presentation"><tbody>';
+			$group_errors = 0;
+			foreach ( $fields as $key => $field ) {
+				if ( $field['group'] === $group && ( in_array( $key, $missing, true ) || ( isset( $checks[ $key ] ) && $checks[ $key ]->is_error() ) ) ) {
+					++$group_errors;
+				}
+			}
+			$this->panel_open(
+				$group_label,
+				array(
+					'icon' => $icons[ $group ] ?? 'admin-generic',
+					'id'   => 'hive-group-' . $group,
+					/* translators: %d: number of fields needing attention. */
+					'meta' => $group_errors ? $this->badge( sprintf( _n( '%d field needs attention', '%d fields need attention', $group_errors, 'hive-compliance' ), $group_errors ), 'error' ) : $this->badge( __( 'complete', 'hive-compliance' ), 'ok' ),
+				)
+			);
+			echo '<table class="form-table" role="presentation"><tbody>';
 			foreach ( $fields as $key => $field ) {
 				if ( $field['group'] === $group ) {
 					$this->field_row( $key, $field, (string) $data[ $key ], $checks[ $key ] ?? null, in_array( $key, $missing, true ), in_array( $key, $required, true ) );
 				}
 			}
 			echo '</tbody></table>';
-		}
+			$this->panel_close();
+		}//end foreach
 
-		echo '<h2>' . esc_html__( 'Social profiles', 'hive-compliance' ) . '</h2>';
-		echo '<p class="description">' . esc_html__( 'Only this shop\'s own profiles. Available as {{business.social_<network>}}.', 'hive-compliance' ) . '</p>';
+		$this->panel_open(
+			__( 'Social profiles', 'hive-compliance' ),
+			array(
+				'icon'        => 'share',
+				'description' => __( 'Only this shop\'s own profiles. Available as {{business.social_<network>}}.', 'hive-compliance' ),
+			)
+		);
 		$this->repeater( 'social', (array) $data['social'], array( 'network', 'url' ), $checks );
+		$this->panel_close();
 
-		echo '<h2>' . esc_html__( 'Custom values', 'hive-compliance' ) . '</h2>';
-		echo '<p class="description">' . esc_html__( 'Your own key/value pairs, available as {{custom.<key>}}. Keys: lowercase letters, digits and _.', 'hive-compliance' ) . '</p>';
+		$this->panel_open(
+			__( 'Custom values', 'hive-compliance' ),
+			array(
+				'icon'        => 'tag',
+				'description' => __( 'Your own key/value pairs, available as {{custom.<key>}}. Keys: lowercase letters, digits and _.', 'hive-compliance' ),
+			)
+		);
 		$this->repeater( 'custom', (array) $data['custom'], array( 'key', 'value' ), $checks );
+		$this->panel_close();
 
-		submit_button( __( 'Save business data', 'hive-compliance' ) );
+		echo '<div class="hive-actionbar"><div class="hive-actionbar__group">';
+		submit_button( __( 'Save business data', 'hive-compliance' ), 'primary', 'submit', false );
+		echo '<span class="hive-meta">' . esc_html__( 'Saving never blocks: fields with problems are flagged, not rejected.', 'hive-compliance' ) . '</span>';
+		echo '</div></div>';
 		echo '</form></div>';
+	}
+
+	/**
+	 * Completeness bar for the required fields.
+	 *
+	 * @param string[]                             $required Required field keys.
+	 * @param string[]                             $missing  Required fields still empty.
+	 * @param array<string, array<string, string>> $fields   Field definitions.
+	 */
+	private function render_completeness( array $required, array $missing, array $fields ): void {
+		$total = count( $required );
+		$done  = $total - count( $missing );
+		echo '<div class="hive-completeness">';
+		/* translators: 1: filled required fields, 2: required fields. */
+		echo '<span class="hive-completeness__text"><strong>' . esc_html( sprintf( __( '%1$d of %2$d required fields', 'hive-compliance' ), $done, $total ) ) . '</strong></span>';
+		echo '<span class="hive-completeness__bar">' . $this->progress( $done, $total, true ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in progress().
+		if ( $missing ) {
+			$links = array();
+			foreach ( $missing as $key ) {
+				$links[] = sprintf( '<a href="#hive-business-%1$s">%2$s</a>', esc_attr( $key ), esc_html( $fields[ $key ]['label'] ?? $key ) );
+			}
+			echo '<span class="hive-completeness__missing">' . esc_html__( 'Still missing:', 'hive-compliance' ) . ' ' . implode( ', ', $links ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped above.
+		} else {
+			echo '<span class="hive-ok">' . $this->icon( 'yes-alt' ) . ' ' . esc_html__( 'Everything the legal notice needs is filled in.', 'hive-compliance' ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in icon().
+		}
+		echo '</div>';
 	}
 
 	/**
 	 * One field row.
 	 *
-	 * @param string                $key     Field key.
-	 * @param array<string, string> $field   Field definition.
-	 * @param string                $value   Current value.
-	 * @param Check|null            $check   Validation result.
+	 * @param string                $key      Field key.
+	 * @param array<string, string> $field    Field definition.
+	 * @param string                $value    Current value.
+	 * @param Check|null            $check    Validation result.
 	 * @param bool                  $missing  Whether a required field is empty.
 	 * @param bool                  $required Whether the field is required.
 	 */
 	private function field_row( string $key, array $field, string $value, ?Check $check, bool $missing, bool $required ): void {
-		$id   = 'hive-business-' . $key;
-		$name = 'business[' . $key . ']';
+		$id      = 'hive-business-' . $key;
+		$name    = 'business[' . $key . ']';
+		$invalid = ( null !== $check && $check->is_error() ) || $missing;
 		echo '<tr><th scope="row"><label for="' . esc_attr( $id ) . '">' . esc_html( $field['label'] ) . '</label>';
 		if ( $required ) {
-			echo ' <span class="hive-required">*</span>';
+			echo ' <span class="hive-required" title="' . esc_attr__( 'Required', 'hive-compliance' ) . '">*</span>';
 		}
 		echo '</th><td>';
 
 		if ( 'textarea' === $field['type'] ) {
-			printf( '<textarea id="%1$s" name="%2$s" rows="3" class="large-text">%3$s</textarea>', esc_attr( $id ), esc_attr( $name ), esc_textarea( $value ) );
+			printf( '<textarea id="%1$s" name="%2$s" rows="3" class="large-text%4$s">%3$s</textarea>', esc_attr( $id ), esc_attr( $name ), esc_textarea( $value ), $invalid ? ' hive-invalid' : '' );
 		} elseif ( 'legal_form' === $field['type'] ) {
-			printf( '<select id="%1$s" name="%2$s"><option value="">%3$s</option>', esc_attr( $id ), esc_attr( $name ), esc_html__( '— Select —', 'hive-compliance' ) );
-			foreach ( BusinessData::legal_forms() as $form => $label ) {
-				printf( '<option value="%1$s"%2$s>%3$s</option>', esc_attr( $form ), selected( $value, $form, false ), esc_html( $label ) );
-			}
-			echo '</select>';
+			$select = $this->select(
+				$id,
+				$name,
+				BusinessData::legal_forms(),
+				$value,
+				array(
+					'placeholder' => __( '— Select —', 'hive-compliance' ),
+					'class'       => 'regular-text' . ( $invalid ? ' hive-invalid' : '' ),
+				)
+			);
+			echo $select; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in select().
 		} elseif ( 'country' === $field['type'] ) {
-			printf( '<select id="%1$s" name="%2$s"><option value="">%3$s</option>', esc_attr( $id ), esc_attr( $name ), esc_html__( '— Select —', 'hive-compliance' ) );
-			foreach ( self::countries() as $code => $label ) {
-				printf( '<option value="%1$s"%2$s>%3$s</option>', esc_attr( $code ), selected( $value, $code, false ), esc_html( $label ) );
-			}
-			echo '</select>';
+			$select = $this->select(
+				$id,
+				$name,
+				self::countries(),
+				$value,
+				array(
+					'placeholder' => __( '— Select a country —', 'hive-compliance' ),
+					'class'       => 'regular-text' . ( $invalid ? ' hive-invalid' : '' ),
+				)
+			);
+			echo $select; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in select().
 		} else {
 			$type = 'email' === $field['type'] ? 'email' : ( 'phone' === $field['type'] ? 'tel' : 'text' );
-			printf( '<input type="%1$s" id="%2$s" name="%3$s" value="%4$s" class="regular-text%5$s">', esc_attr( $type ), esc_attr( $id ), esc_attr( $name ), esc_attr( $value ), null !== $check && $check->is_error() ? ' hive-invalid' : '' );
-		}
-		printf( ' <code class="hive-token">{{business.%s}}</code>', esc_html( $key ) );
+			printf( '<input type="%1$s" id="%2$s" name="%3$s" value="%4$s" class="regular-text%5$s">', esc_attr( $type ), esc_attr( $id ), esc_attr( $name ), esc_attr( $value ), $invalid ? ' hive-invalid' : '' );
+		}//end if
+		printf(
+			'<span class="hive-form-row-token"><code class="hive-token">{{business.%1$s}}</code><button type="button" class="button-link hive-copy" data-copy="%2$s" aria-label="%3$s">%4$s</button></span>',
+			esc_html( $key ),
+			esc_attr( '{{business.' . $key . '}}' ),
+			esc_attr__( 'Copy placeholder', 'hive-compliance' ),
+			esc_html__( 'Copy', 'hive-compliance' )
+		);
 
 		if ( null !== $check && Check::OK !== $check->severity ) {
-			printf( '<p class="hive-field-message hive-field-message--%1$s">%2$s</p>', esc_attr( $check->severity ), esc_html( $check->message ) );
+			echo $this->field_message( $check->severity, $check->message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in field_message().
 		} elseif ( $missing ) {
-			echo '<p class="hive-field-message hive-field-message--error">' . esc_html( in_array( $key, BusinessData::REQUIRED, true ) ? __( 'Required for the legal notice.', 'hive-compliance' ) : __( 'Required for an impresa individuale.', 'hive-compliance' ) ) . '</p>';
+			echo $this->field_message( 'error', in_array( $key, BusinessData::REQUIRED, true ) ? __( 'Required for the legal notice.', 'hive-compliance' ) : __( 'Required for an impresa individuale.', 'hive-compliance' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in field_message().
 		}
 		echo '</td></tr>';
 	}
@@ -178,25 +261,32 @@ final class BusinessScreen extends Screen {
 		foreach ( $columns as $column ) {
 			echo '<th>' . esc_html( $labels[ $column ] ) . '</th>';
 		}
-		echo '<th></th></tr></thead><tbody>';
+		echo '<th class="hive-repeater__actions"><span class="screen-reader-text">' . esc_html__( 'Actions', 'hive-compliance' ) . '</span></th></tr></thead><tbody>';
 		foreach ( array_values( $rows ) as $index => $row ) {
+			$check = $checks[ $name . '_' . $index ] ?? null;
 			echo '<tr>';
 			foreach ( $columns as $column ) {
 				printf(
-					'<td><input type="%1$s" name="business[%2$s][%3$d][%4$s]" value="%5$s" class="widefat"%6$s></td>',
+					'<td><input type="%1$s" name="business[%2$s][%3$d][%4$s]" value="%5$s" class="widefat%7$s"%6$s aria-label="%8$s">%9$s</td>',
 					'url' === $column ? 'url' : 'text',
 					esc_attr( $name ),
 					(int) $index,
 					esc_attr( $column ),
 					esc_attr( (string) ( $row[ $column ] ?? '' ) ),
-					'network' === $column ? ' list="hive-networks"' : ''
+					'network' === $column ? ' list="hive-networks"' : '',
+					null !== $check && 'url' !== $column && 'value' !== $column ? ' hive-invalid' : '',
+					esc_attr( $labels[ $column ] ),
+					null !== $check && ( 'url' === $column || 'value' === $column ) ? $this->field_message( 'error', $check->message ) : '' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in field_message().
 				);
 			}
-			$check = $checks[ $name . '_' . $index ] ?? null;
-			echo '<td>' . ( null !== $check ? '<span class="hive-field-message hive-field-message--error">' . esc_html( $check->message ) . '</span>' : '' ) . '</td></tr>';
-		}
+			printf(
+				'<td class="hive-repeater__actions"><button type="button" class="hive-repeater__remove" data-hive-remove-row aria-label="%1$s" title="%1$s" hidden>%2$s</button></td></tr>',
+				esc_attr__( 'Remove row', 'hive-compliance' ),
+				$this->icon( 'no-alt' ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in icon().
+			);
+		}//end foreach
 		echo '</tbody></table>';
-		printf( '<p><button type="button" class="button" data-hive-add-row="%1$s">%2$s</button></p>', esc_attr( $name ), esc_html__( 'Add row', 'hive-compliance' ) );
+		printf( '<p><button type="button" class="button" data-hive-add-row="%1$s">%3$s %2$s</button></p>', esc_attr( $name ), esc_html__( 'Add row', 'hive-compliance' ), $this->icon( 'plus-alt2' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in icon().
 		if ( 'social' === $name ) {
 			echo '<datalist id="hive-networks">';
 			foreach ( BusinessData::NETWORKS as $network ) {

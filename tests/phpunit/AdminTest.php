@@ -164,6 +164,28 @@ class AdminTest extends Hive_TestCase {
 		$this->assertStringContainsString( ' hidden>', $export, 'Hidden until the script runs.' );
 	}
 
+	public function test_long_lists_are_filterable() {
+		$business = $this->render_screen( 'business' );
+		$this->assertStringContainsString( 'id="hive-business-country" name="business[country]" class="hive-combobox', $business, 'Country dropdown becomes a filterable combobox.' );
+		$this->assertStringContainsString( 'id="hive-business-legal_form" name="business[legal_form]" class="regular-text"', $business, 'Short dropdowns stay native.' );
+
+		$export = $this->render_screen( 'export' );
+		$this->assertStringContainsString( 'data-hive-filter="hive-export-docs"', $export, 'The document list has a search field.' );
+
+		$this->assertStringContainsString( 'data-hive-filter="hive-markets-us"', $this->render_screen( 'profile', array( 'step' => 'markets' ) ) );
+		$this->assertStringContainsString( 'id="hive-seller-country" name="seller_country" class="hive-combobox', $this->render_screen( 'profile', array( 'step' => 'seller' ) ) );
+		$this->assertStringContainsString( 'id="hive-default-language" name="default_language" class="hive-combobox', $this->render_screen( 'settings' ) );
+		$this->assertStringContainsString( 'data-hive-filter="hive-placeholder-picker"', $this->render_screen( 'documents', array( 'doc' => 'terms_of_sale', 'lang' => 'it' ) ) );
+	}
+
+	public function test_dashboard_shows_setup_steps_until_the_profile_and_business_data_are_complete() {
+		delete_option( \Hive\Compliance\Profile\Profile::OPTION );
+		$html = $this->render_screen( '' );
+		$this->assertStringContainsString( 'class="hive-onboarding"', $html );
+		$this->assertStringContainsString( 'class="hive-stats"', $html );
+		$this->assertStringContainsString( 'Open the store profile', $html );
+	}
+
 	public function test_rest_preview_requires_the_capability_and_renders() {
 		$request = new WP_REST_Request( 'POST', '/hive-compliance/v1/preview' );
 		$request->set_body_params(

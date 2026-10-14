@@ -41,13 +41,6 @@ final class SettingsScreen extends Screen {
 	}
 
 	/**
-	 * Repeater script for the custom integrations.
-	 */
-	public function enqueue(): void {
-		wp_enqueue_script( 'hive-compliance-repeater', HIVE_COMPLIANCE_URL . 'assets/js/repeater.js', array(), HIVE_COMPLIANCE_VERSION, true );
-	}
-
-	/**
 	 * Handles the form submission (admin-post.php).
 	 */
 	public function handle_save(): void {
@@ -76,52 +69,74 @@ final class SettingsScreen extends Screen {
 		$provider  = $languages->provider();
 
 		echo '<div class="wrap hive-wrap">';
-		$this->header( $this->title() );
+		$this->header( $this->title(), __( 'Languages, import limits, uninstall behaviour and the integrations the plugin cannot detect by itself.', 'hive-compliance' ) );
 		$this->form_open( self::ACTION_SAVE );
-		echo '<table class="form-table" role="presentation"><tbody>';
 
-		echo '<tr><th scope="row">' . esc_html__( 'Languages', 'hive-compliance' ) . '</th><td>';
+		$this->panel_open(
+			__( 'Languages', 'hive-compliance' ),
+			array(
+				'icon' => 'translation',
+				'meta' => '<span>' . esc_html( sprintf( /* translators: %d: number of enabled languages. */ _n( '%d enabled', '%d enabled', count( $languages->enabled() ), 'hive-compliance' ), count( $languages->enabled() ) ) ) . '</span>',
+			)
+		);
 		if ( Languages::PROVIDER_OWN !== $provider ) {
 			/* translators: %s: WPML or Polylang. */
-			printf( '<p>%s</p>', esc_html( sprintf( __( 'Languages come from %s.', 'hive-compliance' ), Languages::PROVIDER_WPML === $provider ? 'WPML' : 'Polylang' ) ) );
-			echo '<p>';
+			echo '<p>' . esc_html( sprintf( __( 'Languages come from %s. Manage them there; the default language is highlighted.', 'hive-compliance' ), Languages::PROVIDER_WPML === $provider ? 'WPML' : 'Polylang' ) ) . '</p>';
+			echo '<p class="hive-badges">';
 			foreach ( $languages->enabled() as $code ) {
-				echo $this->badge( $code . ' — ' . $languages->label( $code ), $code === $languages->default_language() ? 'ok' : 'muted' ) . ' '; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped.
+				echo $this->badge( $code . ' — ' . $languages->label( $code ), $code === $languages->default_language() ? 'ok' : 'muted', true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped.
 			}
 			echo '</p>';
 		} else {
-			echo '<p><label for="hive-default-language">' . esc_html__( 'Default language', 'hive-compliance' ) . '</label><br><select id="hive-default-language" name="default_language">';
+			$options = array();
 			foreach ( $languages->available() as $code => $label ) {
-				printf( '<option value="%1$s"%2$s>%3$s</option>', esc_attr( $code ), selected( $settings['default_language'], $code, false ), esc_html( $code . ' — ' . $label ) );
+				$options[ $code ] = $code . ' — ' . $label;
 			}
-			echo '</select></p>' . $this->select_all( 'hive-enabled-languages' ) . '<fieldset class="hive-checkgrid" id="hive-enabled-languages"><legend class="screen-reader-text">' . esc_html__( 'Enabled languages', 'hive-compliance' ) . '</legend>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in select_all().
-			foreach ( $languages->available() as $code => $label ) {
-				printf( '<label class="hive-check"><input type="checkbox" name="enabled_languages[]" value="%1$s"%2$s> %3$s</label>', esc_attr( $code ), checked( in_array( $code, (array) $settings['enabled_languages'], true ), true, false ), esc_html( $code . ' — ' . $label ) );
-			}
-			echo '</fieldset><p class="description">' . esc_html__( 'Each document can exist once per enabled language.', 'hive-compliance' ) . '</p>';
-		}
-		echo '</td></tr>';
+			echo '<div class="hive-field"><label class="hive-field__label" for="hive-default-language">' . esc_html__( 'Default language', 'hive-compliance' ) . '</label>';
+			echo '<div class="hive-combobox--inline-wrap">' . $this->select( 'hive-default-language', 'default_language', $options, (string) $settings['default_language'], array( 'class' => 'regular-text' ) ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in select().
+			echo '<span class="hive-field__hint">' . esc_html__( 'The language of the dashboard status, the skeletons and the links placeholders. It is always enabled.', 'hive-compliance' ) . '</span></div>';
 
+			echo '<div class="hive-field"><span class="hive-field__label" id="hive-enabled-languages-label">' . esc_html__( 'Enabled languages', 'hive-compliance' ) . '</span>';
+			echo $this->filter_input( 'hive-enabled-languages', __( 'Find a language', 'hive-compliance' ) ) . $this->select_all( 'hive-enabled-languages' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in the helpers.
+			echo '<fieldset class="hive-checkgrid" id="hive-enabled-languages" aria-labelledby="hive-enabled-languages-label">';
+			foreach ( $options as $code => $label ) {
+				echo $this->choice( 'enabled_languages[]', (string) $code, $label, in_array( $code, (array) $settings['enabled_languages'], true ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in choice().
+			}
+			echo '</fieldset><span class="hive-field__hint">' . esc_html__( 'Each document can exist once per enabled language.', 'hive-compliance' ) . '</span></div>';
+		}//end if
+		$this->panel_close();
+
+		$this->panel_open( __( 'Import', 'hive-compliance' ), array( 'icon' => 'upload' ) );
 		printf(
-			'<tr><th scope="row"><label for="hive-max-import">%1$s</label></th><td><input type="number" id="hive-max-import" name="max_import_kb" min="64" max="20480" value="%2$d" class="small-text"> KB</td></tr>',
+			'<div class="hive-field"><label class="hive-field__label" for="hive-max-import">%1$s</label><span><input type="number" id="hive-max-import" name="max_import_kb" min="64" max="20480" value="%2$d" class="small-text"> KB</span><span class="hive-field__hint">%3$s</span></div>',
 			esc_html__( 'Largest import file', 'hive-compliance' ),
-			(int) $settings['max_import_kb']
+			(int) $settings['max_import_kb'],
+			esc_html__( 'Bundles and JSON backups above this size are refused before they are parsed.', 'hive-compliance' )
 		);
+		$this->panel_close();
 
+		$this->panel_open( __( 'Uninstall', 'hive-compliance' ), array( 'icon' => 'trash' ) );
 		printf(
-			'<tr><th scope="row">%1$s</th><td><label><input type="checkbox" name="remove_data_on_uninstall" value="1"%2$s> %3$s</label><p class="description">%4$s</p></td></tr>',
-			esc_html__( 'Uninstall', 'hive-compliance' ),
+			'<label class="hive-check"><input type="checkbox" name="remove_data_on_uninstall" value="1"%1$s> <span class="hive-check__text"><span>%2$s</span><span class="hive-meta">%3$s</span></span></label>',
 			checked( ! empty( $settings['remove_data_on_uninstall'] ), true, false ),
 			esc_html__( 'Remove all documents, revisions and settings when the plugin is deleted', 'hive-compliance' ),
 			esc_html__( 'Off by default: data is kept. Bound pages are ordinary pages and are never deleted.', 'hive-compliance' )
 		);
+		$this->panel_close();
 
-		echo '<tr><th scope="row">' . esc_html__( 'Custom integrations', 'hive-compliance' ) . '</th><td>';
+		$this->panel_open(
+			__( 'Custom integrations', 'hive-compliance' ),
+			array(
+				'icon'        => 'admin-plugins',
+				'description' => __( 'In-house plugins and services that cannot be detected. They are listed in the export context with the detected integrations.', 'hive-compliance' ),
+			)
+		);
 		$this->integrations( (array) $settings['custom_integrations'] );
-		echo '</td></tr>';
+		$this->panel_close();
 
-		echo '</tbody></table>';
-		submit_button();
+		echo '<div class="hive-actionbar"><div class="hive-actionbar__group">';
+		submit_button( __( 'Save settings', 'hive-compliance' ), 'primary', 'submit', false );
+		echo '</div></div>';
 		echo '</form></div>';
 	}
 
@@ -138,12 +153,11 @@ final class SettingsScreen extends Screen {
 			'recipient' => __( 'Recipient', 'hive-compliance' ),
 			'transfer'  => __( 'Transfer outside the EU', 'hive-compliance' ),
 		);
-		echo '<p class="description">' . esc_html__( 'In-house plugins and services that cannot be detected. They are listed in the export context with the detected integrations.', 'hive-compliance' ) . '</p>';
 		echo '<table class="widefat striped hive-repeater" data-hive-repeater="custom_integrations"><thead><tr>';
 		foreach ( $labels as $label ) {
 			echo '<th>' . esc_html( $label ) . '</th>';
 		}
-		echo '</tr></thead><tbody>';
+		echo '<th class="hive-repeater__actions"><span class="screen-reader-text">' . esc_html__( 'Actions', 'hive-compliance' ) . '</span></th></tr></thead><tbody>';
 		$rows[] = array_fill_keys( Settings::INTEGRATION_FIELDS, '' );
 		foreach ( array_values( $rows ) as $index => $row ) {
 			echo '<tr>';
@@ -157,7 +171,7 @@ final class SettingsScreen extends Screen {
 				);
 			}
 			printf(
-				'<td><select name="custom_integrations[%1$d][transfer]" aria-label="%2$s"><option value="no"%3$s>%4$s</option><option value="yes"%5$s>%6$s</option></select></td></tr>',
+				'<td><select name="custom_integrations[%1$d][transfer]" aria-label="%2$s"><option value="no"%3$s>%4$s</option><option value="yes"%5$s>%6$s</option></select></td>',
 				(int) $index,
 				esc_attr( $labels['transfer'] ),
 				selected( 'yes' !== ( $row['transfer'] ?? '' ), true, false ),
@@ -165,8 +179,13 @@ final class SettingsScreen extends Screen {
 				selected( 'yes' === ( $row['transfer'] ?? '' ), true, false ),
 				esc_html__( 'Yes', 'hive-compliance' )
 			);
+			printf(
+				'<td class="hive-repeater__actions"><button type="button" class="hive-repeater__remove" data-hive-remove-row aria-label="%1$s" title="%1$s" hidden>%2$s</button></td></tr>',
+				esc_attr__( 'Remove row', 'hive-compliance' ),
+				$this->icon( 'no-alt' ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in icon().
+			);
 		}//end foreach
 		echo '</tbody></table>';
-		printf( '<p><button type="button" class="button" data-hive-add-row="custom_integrations">%s</button></p>', esc_html__( 'Add row', 'hive-compliance' ) );
+		printf( '<p><button type="button" class="button" data-hive-add-row="custom_integrations">%2$s %1$s</button></p>', esc_html__( 'Add row', 'hive-compliance' ), $this->icon( 'plus-alt2' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in icon().
 	}
 }

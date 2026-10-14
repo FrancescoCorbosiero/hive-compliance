@@ -58,13 +58,13 @@ final class SkeletonActions {
 		if ( ! $document->is_empty() || '' === $this->plugin->skeletons()->skeleton( $entry, $document->lang ) ) {
 			return;
 		}
-		printf( '<form method="post" action="%s" class="hive-skeleton-form">', esc_url( admin_url( 'admin-post.php' ) ) );
+		printf( '<form method="post" action="%s" class="hive-skeleton-notice">', esc_url( admin_url( 'admin-post.php' ) ) );
 		printf( '<input type="hidden" name="action" value="%s">', esc_attr( self::ACTION_ONE ) );
 		wp_nonce_field( self::ACTION_ONE );
 		printf( '<input type="hidden" name="doc" value="%1$s"><input type="hidden" name="lang" value="%2$s">', esc_attr( $entry->id ), esc_attr( $document->lang ) );
-		echo '<p>' . esc_html__( 'This document is empty.', 'hive-compliance' ) . ' ';
+		echo '<span class="dashicons dashicons-lightbulb" aria-hidden="true"></span><p><strong>' . esc_html__( 'This document is empty.', 'hive-compliance' ) . '</strong></p>';
 		submit_button( __( 'Generate skeleton', 'hive-compliance' ), 'secondary', 'submit', false );
-		echo ' <span class="hive-meta">' . esc_html__( 'Headings from the required elements and their placeholders, no prose. Complete it here or through an LLM export.', 'hive-compliance' ) . '</span></p></form>';
+		echo '<span class="hive-meta">' . esc_html__( 'Headings from the required elements and their placeholders, no prose. Complete it here or through an LLM export.', 'hive-compliance' ) . '</span></form>';
 	}
 
 	/**

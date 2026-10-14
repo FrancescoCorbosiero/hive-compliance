@@ -12,7 +12,7 @@ use Hive\Compliance\Plugin;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Registers the menu pages and the shared admin stylesheet.
+ * Registers the menu pages and the shared admin assets.
  */
 final class Menu {
 
@@ -56,16 +56,19 @@ final class Menu {
 	}
 
 	/**
-	 * Enqueues assets on the plugin's screens only.
+	 * Enqueues assets on the plugin's screens only: the stylesheet, the shared script
+	 * (combobox, filters, select all, tabs, repeaters) and the screen's own assets.
 	 */
 	public function enqueue(): void {
 		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only screen routing.
 		if ( 0 !== strpos( $page, 'hive-compliance' ) ) {
 			return;
 		}
-		wp_enqueue_style( 'hive-compliance-admin', HIVE_COMPLIANCE_URL . 'assets/css/admin.css', array(), HIVE_COMPLIANCE_VERSION );
+		wp_enqueue_style( 'dashicons' );
+		wp_enqueue_style( 'hive-compliance-admin', HIVE_COMPLIANCE_URL . 'assets/css/admin.css', array( 'dashicons' ), HIVE_COMPLIANCE_VERSION );
 		wp_enqueue_style( 'hive-compliance-front', HIVE_COMPLIANCE_URL . 'assets/css/front.css', array(), HIVE_COMPLIANCE_VERSION );
-		wp_enqueue_script( 'hive-compliance-select-all', HIVE_COMPLIANCE_URL . 'assets/js/select-all.js', array( 'wp-i18n' ), HIVE_COMPLIANCE_VERSION, true );
+		wp_enqueue_script( 'hive-compliance-admin', HIVE_COMPLIANCE_URL . 'assets/js/admin.js', array( 'wp-i18n' ), HIVE_COMPLIANCE_VERSION, true );
+		wp_set_script_translations( 'hive-compliance-admin', 'hive-compliance' );
 		foreach ( $this->screens as $screen ) {
 			$slug = '' === $screen->slug() ? 'hive-compliance' : 'hive-compliance-' . $screen->slug();
 			if ( $slug === $page ) {

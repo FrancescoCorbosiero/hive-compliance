@@ -80,6 +80,14 @@ The plugin does not write legal text. It provides:
    - Once the privacy policy is bound, it offers to make that page the WordPress privacy policy page.
    - Each offer needs the capability that owns the setting (`manage_woocommerce` or `manage_privacy_options`) in addition to `manage_hive_compliance`.
 
+Every screen uses the WordPress admin look with a few shared components (`assets/css/admin.css`, `assets/js/admin.js`, no build step):
+
+- Dropdowns with many options (countries, pages, languages) become a **filterable combobox**: type to narrow the list, use the arrow keys and Enter to pick. The native `<select>` stays in the form, so saving works without JavaScript.
+- Long checkbox lists (markets, US states, languages, the 73 documents on the Export screen) have a **search field**, **Select all / Select none** and a live count.
+- The dashboard opens with a getting-started strip (profile, business data, documents), status tiles and one card per kind of issue, each linking to where it is fixed.
+- The editor shows **Preview** and **Checks** as tabs under the Markdown, flags unsaved changes, and saves with Ctrl+S.
+- Long forms (Business Data, Placeholders, Settings, import review) keep their Save button in a bar pinned to the bottom of the window.
+
 Deleting the plugin keeps all data, unless **Settings → Remove all documents, revisions and settings when the plugin is deleted** is on. Bound pages are ordinary pages and are never deleted.
 
 ## The LLM round-trip

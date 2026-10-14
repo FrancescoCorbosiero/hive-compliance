@@ -41,7 +41,7 @@ src/                           PSR-4 Hive\Compliance\ → src/
                 ImportScreen.php  SettingsScreen.php  PrintScreen.php  BindingActions.php  SkeletonActions.php
 blocks/document/ business-identity/ legal-links/   block.json  index.js  index.asset.php (hand-written; no build step)
 assets/css/  admin.css  print.css  front.css
-assets/js/   editor.js  page-guard.js  repeater.js
+assets/js/   admin.js (combobox, list filters, select all, tabs, repeaters, drop zone)  editor.js  placeholders.js  page-guard.js
 tests/       bootstrap.php, TestCase.php, phpunit/*Test.php, fixtures/import/*.md (one failing fixture per rule)
 ```
 

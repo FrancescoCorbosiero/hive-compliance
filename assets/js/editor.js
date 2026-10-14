@@ -1,6 +1,6 @@
 /**
  * Document editor: CodeMirror (Markdown), live preview and checks through the REST API,
- * placeholder insertion. Plain JS, no build step.
+ * placeholder insertion, unsaved-changes indicator, Ctrl+S. Plain JS, no build step.
  *
  * @package Hive\Compliance
  */
@@ -14,7 +14,9 @@
 
 	var preview = document.getElementById( 'hive-preview' );
 	var findingsBox = document.getElementById( 'hive-findings' );
+	var findingsCount = document.getElementById( 'hive-findings-count' );
 	var form = document.getElementById( 'hive-document-form' );
+	var editor = textarea.closest( '.hive-editor' );
 	var codemirror = null;
 	var dirty = false;
 	var timer = null;
@@ -53,17 +55,39 @@
 		return node;
 	}
 
+	function icon( name ) {
+		var span = element( 'span', 'dashicons dashicons-' + name );
+		span.setAttribute( 'aria-hidden', 'true' );
+		return span;
+	}
+
+	var ICONS = { error: 'dismiss', warning: 'warning', conflict: 'randomize' };
+
 	function renderFindings( findings ) {
 		findingsBox.textContent = '';
+		var errors = findings.filter( function ( finding ) {
+			return 'error' === finding.severity;
+		} ).length;
+		if ( findingsCount ) {
+			findingsCount.textContent = String( findings.length );
+			findingsCount.className = 'hive-badge hive-badge--plain hive-badge--' + ( findings.length ? ( errors ? 'error' : 'warning' ) : 'ok' );
+		}
 		if ( ! findings.length ) {
-			findingsBox.appendChild( element( 'p', 'hive-ok', config.i18n.noFindings ) );
+			var ok = element( 'p', 'hive-ok' );
+			ok.appendChild( icon( 'yes-alt' ) );
+			ok.appendChild( document.createTextNode( ' ' + config.i18n.noFindings ) );
+			findingsBox.appendChild( ok );
 			return;
 		}
 		var list = element( 'ul', 'hive-findings' );
 		findings.forEach( function ( finding ) {
 			var item = element( 'li', 'hive-finding hive-finding--' + finding.severity );
-			item.appendChild( element( 'strong', '', finding.severity ) );
-			item.appendChild( document.createTextNode( ' ' + finding.message ) );
+			var iconBox = element( 'span', 'hive-finding__icon' );
+			iconBox.appendChild( icon( ICONS[ finding.severity ] || 'info-outline' ) );
+			item.appendChild( iconBox );
+			var body = element( 'div', 'hive-finding__body' );
+			body.appendChild( element( 'span', 'hive-finding__severity', finding.severity ) );
+			body.appendChild( document.createTextNode( finding.message ) );
 			if ( finding.details && finding.details.length ) {
 				var details = element( 'ul' );
 				finding.details.forEach( function ( detail ) {
@@ -71,8 +95,9 @@
 					li.appendChild( element( 'code', '', detail ) );
 					details.appendChild( li );
 				} );
-				item.appendChild( details );
+				body.appendChild( details );
 			}
+			item.appendChild( body );
 			list.appendChild( item );
 		} );
 		findingsBox.appendChild( list );
@@ -92,12 +117,21 @@
 			preview.innerHTML = response.html;
 			renderFindings( response.findings || [] );
 		} ).catch( function ( error ) {
-			preview.insertBefore( element( 'p', 'hive-finding hive-finding--error', config.i18n.previewError + ' ' + ( error && error.message ? error.message : '' ) ), preview.firstChild );
+			var note = element( 'p', 'hive-finding hive-finding--error' );
+			note.appendChild( element( 'span', 'hive-finding__body', config.i18n.previewError + ' ' + ( error && error.message ? error.message : '' ) ) );
+			preview.insertBefore( note, preview.firstChild );
 		} );
 	}
 
+	function setDirty( value ) {
+		dirty = value;
+		if ( editor ) {
+			editor.classList.toggle( 'is-dirty', value );
+		}
+	}
+
 	function onChange() {
-		dirty = true;
+		setDirty( true );
 		window.clearTimeout( timer );
 		timer = window.setTimeout( refresh, 600 );
 	}
@@ -115,14 +149,39 @@
 		} );
 	} );
 
+	// Sidebar fields belong to the form through form="…"; changing them counts as unsaved work.
+	document.querySelectorAll( '[form="hive-document-form"]' ).forEach( function ( field ) {
+		field.addEventListener( 'change', function () {
+			setDirty( true );
+		} );
+	} );
+
+	function submit() {
+		if ( ! form ) {
+			return;
+		}
+		if ( form.requestSubmit ) {
+			form.requestSubmit();
+		} else {
+			form.submit();
+		}
+	}
+
 	if ( form ) {
 		form.addEventListener( 'submit', function () {
 			if ( codemirror ) {
 				codemirror.save();
 			}
-			dirty = false;
+			setDirty( false );
 		} );
 	}
+
+	document.addEventListener( 'keydown', function ( event ) {
+		if ( ( event.ctrlKey || event.metaKey ) && ! event.altKey && 's' === event.key.toLowerCase() ) {
+			event.preventDefault();
+			submit();
+		}
+	} );
 
 	window.addEventListener( 'beforeunload', function ( event ) {
 		if ( dirty ) {

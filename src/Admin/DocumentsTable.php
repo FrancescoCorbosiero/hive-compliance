@@ -101,7 +101,13 @@ final class DocumentsTable extends \WP_List_Table {
 			Entry::TYPE_INTERNAL => __( 'Internal', 'hive-compliance' ),
 		);
 		$out   = sprintf( '<strong><a class="row-title" href="%s">%s</a></strong>', esc_url( $url ), esc_html( $entry->title( Languages::locale_to_code( (string) get_user_locale() ) ) ) );
-		$out  .= sprintf( '<div class="hive-meta"><code>%1$s</code> · %2$s · %3$s</div>', esc_html( $entry->id ), esc_html( $types[ $entry->type ] ?? $entry->type ), esc_html( $entry->group ) );
+		$out  .= sprintf(
+			'<div class="hive-doc-meta"><span class="hive-badge hive-badge--%1$s hive-badge--plain">%2$s</span><span class="hive-badge hive-badge--muted hive-badge--plain">%3$s</span><code>%4$s</code></div>',
+			esc_attr( $entry->type ),
+			esc_html( $types[ $entry->type ] ?? $entry->type ),
+			esc_html( ucfirst( $entry->group ) ),
+			esc_html( $entry->id )
+		);
 		if ( ! $item['applies'] ) {
 			$out .= '<div class="hive-meta">' . esc_html__( 'Not applicable to the current profile', 'hive-compliance' ) . '</div>';
 		}
@@ -114,18 +120,23 @@ final class DocumentsTable extends \WP_List_Table {
 	 * @param array<string, mixed> $item Row.
 	 */
 	protected function column_languages( $item ) {
-		$entry = $this->entry( $item );
-		$out   = array();
+		$entry  = $this->entry( $item );
+		$labels = array(
+			Document::STATUS_EMPTY     => __( 'empty', 'hive-compliance' ),
+			Document::STATUS_DRAFT     => __( 'draft', 'hive-compliance' ),
+			Document::STATUS_PUBLISHED => __( 'published', 'hive-compliance' ),
+		);
+		$out    = array();
 		foreach ( (array) $item['coverage'] as $lang => $status ) {
 			$out[] = sprintf(
 				'<a class="hive-lang hive-lang--%1$s" href="%2$s" title="%3$s">%4$s</a>',
 				esc_attr( $status ),
 				esc_url( Request::editor_url( $entry->id, (string) $lang ) ),
-				esc_attr( $status ),
+				esc_attr( $lang . ': ' . ( $labels[ $status ] ?? $status ) ),
 				esc_html( (string) $lang )
 			);
 		}
-		return implode( ' ', $out );
+		return '<span class="hive-langs">' . implode( '', $out ) . '</span>';
 	}
 
 	/**
@@ -149,7 +160,7 @@ final class DocumentsTable extends \WP_List_Table {
 	 * @param array<string, mixed> $item Row.
 	 */
 	protected function column_version( $item ) {
-		return $item['version'] ? esc_html( 'v' . (int) $item['version'] ) : '—';
+		return $item['version'] ? esc_html( 'v' . (int) $item['version'] ) : '<span class="hive-dash">—</span>';
 	}
 
 	/**
@@ -158,9 +169,9 @@ final class DocumentsTable extends \WP_List_Table {
 	 * @param array<string, mixed> $item Row.
 	 */
 	protected function column_reviewed( $item ) {
-		$out = '' !== $item['last_reviewed'] ? esc_html( mysql2date( get_option( 'date_format' ), (string) $item['last_reviewed'] ) ) : '—';
+		$out = '' !== $item['last_reviewed'] ? esc_html( mysql2date( get_option( 'date_format' ), (string) $item['last_reviewed'] ) ) : '<span class="hive-dash">—</span>';
 		if ( $item['overdue'] ) {
-			$out .= ' <span class="hive-badge hive-badge--warning">' . esc_html__( 'Review due', 'hive-compliance' ) . '</span>';
+			$out .= '<br><span class="hive-badge hive-badge--warning">' . esc_html__( 'Review due', 'hive-compliance' ) . '</span>';
 		}
 		return $out;
 	}
@@ -173,10 +184,17 @@ final class DocumentsTable extends \WP_List_Table {
 	protected function column_checklist( $item ) {
 		$total = (int) $item['checklist_total'];
 		if ( 0 === $total ) {
-			return '—';
+			return '<span class="hive-dash">—</span>';
 		}
 		$done = (int) $item['checklist_done'];
-		return sprintf( '<span class="hive-progress" title="%1$s"><span style="width:%2$d%%"></span></span> %3$d/%4$d', esc_attr( sprintf( '%d/%d', $done, $total ) ), (int) round( 100 * $done / $total ), $done, $total );
+		return sprintf(
+			'<span class="hive-progress%5$s" title="%1$s"><span style="width:%2$d%%"></span></span> <span class="hive-meta">%3$d/%4$d</span>',
+			esc_attr( sprintf( '%d/%d', $done, $total ) ),
+			(int) round( 100 * $done / $total ),
+			$done,
+			$total,
+			$done >= $total ? ' hive-progress--full' : ''
+		);
 	}
 
 	/**
@@ -211,7 +229,7 @@ final class DocumentsTable extends \WP_List_Table {
 	protected function column_missing( $item ) {
 		$missing = (array) $item['missing'];
 		if ( ! $missing ) {
-			return '0';
+			return '<span class="hive-dash">0</span>';
 		}
 		return sprintf( '<span class="hive-badge hive-badge--error" title="%1$s">%2$d</span>', esc_attr( implode( ', ', $missing ) ), count( $missing ) );
 	}
