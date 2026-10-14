@@ -15,6 +15,7 @@ use Hive\Compliance\Admin\ExportScreen;
 use Hive\Compliance\Admin\ImportScreen;
 use Hive\Compliance\Admin\Menu;
 use Hive\Compliance\Admin\Notices;
+use Hive\Compliance\Admin\PlaceholdersScreen;
 use Hive\Compliance\Admin\PrintScreen;
 use Hive\Compliance\Admin\ProfileScreen;
 use Hive\Compliance\Admin\SettingsScreen;
@@ -140,6 +141,7 @@ final class Plugin {
 		return array(
 			new DashboardScreen( $this ),
 			new EditorScreen( $this ),
+			new PlaceholdersScreen( $this ),
 			new BusinessScreen( $this ),
 			new ProfileScreen( $this ),
 			new ExportScreen( $this ),

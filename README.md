@@ -64,6 +64,14 @@ The plugin does not write legal text. It provides:
        - profile markets with no shipping zone;
        - a VAT number, PEC or e-mail address in the widgets, menus or header/footer template parts that differs from Business Data. This is a simple text scan of every active widget area, every menu, and the template parts named header or footer.
      - The **Full catalog** view lists every entry. **Generate skeletons for empty documents** covers newly enabled languages and newly applicable documents.
+   - **Placeholders:** every `{{placeholder}}` in one table per namespace (`business`, `store`, `links`, `custom`, plus any added through the filter). For each one it shows:
+     - a **Copy** button for the token;
+     - the current value, per language;
+     - a status: set, missing, invalid (with the validation message), or unknown (used in a document but defined nowhere);
+     - the documents that use it, linked to the editor;
+     - where the value comes from, with a link to that setting.
+
+     Business values, custom values and page links can be changed right there; the business values go through the same checks as on Business Data. Store facts are read-only and link to the WordPress or WooCommerce screen that sets them. Search and a "Need attention" filter narrow the list, and the dashboard has a **Placeholders** card listing the ones that need action.
    - **Documents:** the editor.
      - CodeMirror for Markdown, with a live preview through the real render pipeline and the content checks.
      - A sidebar with the required-elements checklist, placeholder picker, changelog (linked to WordPress revisions), page binding, language switcher and status.

@@ -24,6 +24,7 @@ src/                           PSR-4 Hive\Compliance\ → src/
   Profile/      Profile.php  StoreFacts.php  Markets.php
   Business/     BusinessData.php  Validator.php (P.IVA, codice fiscale, EU VAT, REA, e-mail, E.164, URL)  Check.php
   Placeholders/ Syntax.php  Registry.php  Resolver.php  Resolution.php  Provider.php (+ Business, Store, Links, Custom providers)
+                Inventory.php (every placeholder: value, status, usage, source; the Placeholders screen)
   Render/       Renderer.php  MarkdownRenderer.php  Shortcodes.php  Block.php  PageBindings.php  PageManager.php  ShellGuard.php
                 SiteElements.php (footer shortcodes and blocks)  BusinessIdentity.php  LegalLinks.php  SitePages.php
   Checks/       StoreChecks.php (dashboard "Store checks")  IdentityScan.php (widgets, menus, template parts)
@@ -36,7 +37,7 @@ src/                           PSR-4 Hive\Compliance\ → src/
   Skeleton/     Generator.php
   Rest/         Controller.php
   Admin/        Menu.php  Screen.php  Request.php  Notices.php  Overview.php  DocumentsTable.php (WP_List_Table)
-                DashboardScreen.php  EditorScreen.php  BusinessScreen.php  ProfileScreen.php  ExportScreen.php
+                DashboardScreen.php  EditorScreen.php  PlaceholdersScreen.php  BusinessScreen.php  ProfileScreen.php  ExportScreen.php
                 ImportScreen.php  SettingsScreen.php  PrintScreen.php  BindingActions.php  SkeletonActions.php
 blocks/document/ business-identity/ legal-links/   block.json  index.js  index.asset.php (hand-written; no build step)
 assets/css/  admin.css  print.css  front.css

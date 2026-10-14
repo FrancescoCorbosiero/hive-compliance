@@ -345,3 +345,41 @@
 	table-layout: fixed;
 	width: 100%;
 }
+
+/* Placeholders screen */
+.hive-ph-summary {
+	font-size: 14px;
+}
+
+.hive-ph-toolbar {
+	margin: 8px 0 16px;
+}
+
+.hive-placeholders-screen h2 code {
+	font-size: 12px;
+	font-weight: 400;
+}
+
+.hive-ph-table td {
+	vertical-align: top;
+}
+
+.hive-ph-table .hive-ph-col-token {
+	width: 26%;
+}
+
+.hive-ph-table .hive-ph-col-status {
+	width: 12%;
+}
+
+.hive-ph-table select {
+	max-width: 100%;
+}
+
+.hive-copy {
+	font-size: 12px;
+}
+
+.hive-ph-new-key {
+	width: 14em;
+}

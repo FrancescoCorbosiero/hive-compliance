@@ -89,6 +89,8 @@ final class DashboardScreen extends Screen {
 		);
 		$this->card( __( 'Bound pages', 'hive-compliance' ), $pages ? 'warning' : 'ok', $pages, '' );
 
+		$this->card( __( 'Placeholders', 'hive-compliance' ), $cards['placeholders'] ? 'warning' : 'ok', $cards['placeholders'], Request::page_url( 'placeholders' ) );
+
 		$checks = array_map( static fn( $warning ) => $warning['message'] . ( $warning['details'] ? ' — ' . implode( ', ', $warning['details'] ) : '' ), $cards['store_checks'] );
 		$this->card( __( 'Store checks', 'hive-compliance' ), $checks ? 'warning' : 'ok', $checks, '' );
 

@@ -10,6 +10,7 @@ namespace Hive\Compliance\Admin;
 use Hive\Compliance\Catalog\Entry;
 use Hive\Compliance\Document\Document;
 use Hive\Compliance\Plugin;
+use Hive\Compliance\Placeholders\Inventory;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -62,7 +63,7 @@ final class Overview {
 	 * Cards above the table.
 	 *
 	 * @param array<string, array<string, mixed>> $rows Rows of applicable entries.
-	 * @return array{business: array<string, array<string, string>>, unbound: Entry[], overdue: Entry[], live_drafts: Entry[], dirty_pages: Entry[], catalog_errors: string[], store_checks: array<int, array{id: string, message: string, details: string[]}>}
+	 * @return array{business: array<string, array<string, string>>, unbound: Entry[], overdue: Entry[], live_drafts: Entry[], dirty_pages: Entry[], catalog_errors: string[], store_checks: array<int, array{id: string, message: string, details: string[]}>, placeholders: string[]}
 	 */
 	public function cards( array $rows ): array {
 		$cards = array(
@@ -73,6 +74,7 @@ final class Overview {
 			'dirty_pages'    => array(),
 			'catalog_errors' => $this->plugin->catalog()->errors(),
 			'store_checks'   => $this->plugin->store_checks()->warnings(),
+			'placeholders'   => $this->placeholders_needing_attention(),
 		);
 		foreach ( $rows as $row ) {
 			$entry = $row['entry'];
@@ -90,6 +92,24 @@ final class Overview {
 			}
 		}
 		return $cards;
+	}
+
+	/**
+	 * Placeholders of the default language that need action, as "{{token}}: reason" lines.
+	 *
+	 * @return string[]
+	 */
+	private function placeholders_needing_attention(): array {
+		$lines = array();
+		foreach ( ( new Inventory( $this->plugin ) )->rows( $this->plugin->languages()->default_language() ) as $rows ) {
+			foreach ( $rows as $row ) {
+				if ( Inventory::needs_attention( $row ) ) {
+					$reason  = '' !== $row['message'] ? $row['message'] : ( Inventory::MISSING === $row['status'] ? __( 'missing, used in a document', 'hive-compliance' ) : (string) $row['status'] );
+					$lines[] = '{{' . $row['token'] . '}}: ' . $reason;
+				}
+			}
+		}
+		return $lines;
 	}
 
 	/**
